@@ -3,9 +3,17 @@
 #include "geometry_msgs/Quaternion.h"
 #include "geometry_msgs/Vector3.h"
 
-
+#include "nav_msgs/Odometry.h"
 
 #include "IMUM6.h"
+
+//#ifndef DEBUG
+//#define DEBUG
+//#endif
+
+//#ifndef TEST
+//#define TEST
+//#endif
 
 #define SERIAL_PATH "/dev/ttyAMA0"
 #define BAUDRATE B115200
@@ -20,27 +28,27 @@
 using namespace std;
 
 
-void ParseRegisters(int32_t i_register_data, float & f_data_l, float & f_data_h)
+void ParseRegisters(int32_t i_register_data, int & i_data_l, int & i_data_h)
 {
-	UNION32 union32;
+	IMUM6::UNION32 union32;
 
 	union32.i = 0x00000000;
-	union32.i |= ((-(unsigned int)i_register_data) & 0x0000FFFF);
-	f_data_l = union32.f;
+	union32.i |= (((signed int)i_register_data & 0x000000FF) << 8) | (((signed int)i_register_data & 0x0000FF00) >> 8);
+	i_data_l = union32.i;
 	
 	union32.i = 0x00000000;
-	union32.i |= ( ((-(unsigned int)i_register_data) >> 16) & 0x0000FFFF );
-	f_data_h = union32.f;
+	union32.i |= ((((signed int)i_register_data >> 16) & 0x000000FF) << 8) | ((((signed int)i_register_data >> 16) & 0x0000FF00) >> 8);
+	i_data_h = union32.i;
 	
 }
 
-void ParseRegisters(int32_t i_register_data, float f_data_h)
+void ParseRegisters(int32_t i_register_data, int & i_data_h)
 {
-	UNION32 union32;
+	IMUM6::UNION32 union32;
 	
 	union32.i = 0x00000000;
-	union32.i |= ( ((-(unsigned int)i_register_data) >> 16) & 0x0000FFFF );
-	f_data_h = union32.f;
+	union32.i |= ((((signed int)i_register_data >> 16) & 0x000000FF) << 8) | ((((signed int)i_register_data >> 16) & 0x0000FF00) >> 8);
+	i_data_h = union32.i;
 }
 
 int main(int argc, char **argv)
@@ -50,6 +58,8 @@ int main(int argc, char **argv)
 	tcflag_t parity_on;
 	
 	vector<int> T_i_registers;
+	
+	IMUM6::UM6_DATA data;
 	
 	// ROS PARAMS
 	
@@ -83,8 +93,9 @@ int main(int argc, char **argv)
 	stringstream ss_topic;
 	ss_topic << str_namespace << "/imu";
 	pub_um6 = n.advertise<sensor_msgs::Imu>(ss_topic.str().c_str(), 1);
-	
-	
+	#ifdef TEST
+	ros::Publisher pub_pose_demo = n.advertise<nav_msgs::Odometry>("odom_demo", 1);
+	#endif
 
 	// Define frequency
 	ros::Rate loop_rate(d_frequency);
@@ -109,14 +120,14 @@ int main(int argc, char **argv)
 		
 		case 1:
 		{
-			parity = PARODD
+			parity = PARODD;
 			parity_on = PARENB;
 			break;
 		}
 		
 		case 2:
 		{
-			parity = ~PARODD
+			parity = ~PARODD;
 			parity_on = PARENB;
 			break;
 		}
@@ -144,30 +155,56 @@ int main(int argc, char **argv)
 			
 			p_im_um6->ProcessData(T_i_registers);
 			
-			//printf("Read Registers: \n");
-			//for(uint i = 0; i < T_i_registers.size(); i++)
-			//{
-				//printf("%x_", T_i_registers[i]);
-				//printf("::%x_", imimu.GetDataRegister(T_i_registers[i]) );
-			//}
-			//printf("\n");
+			#ifdef DEBUG
 			
+			printf("Read Registers: \n");
+			for(uint i = 0; i < T_i_registers.size(); i++)
+			{
+				printf("%x_", T_i_registers[i]);
+				printf("::%x_", p_im_um6->GetDataRegister(T_i_registers[i]) );
+			}
+			printf("\n");
+			
+			#endif
 			
 			geometry_msgs::Quaternion orientation;
 			geometry_msgs::Vector3 linear_acceleration;
 			
+			#ifdef TEST
+			nav_msgs::Odometry pose_demo;
+			#endif
+			
+			int i_orientation_x, i_orientation_y, i_orientation_z, i_orientation_w;
+			int i_linear_acceleration_x, i_linear_acceleration_y, i_linear_acceleration_z;
 		
-			ParseRegisters(p_im_um6->GetDataRegister(IMUM6::UM6_QUAT_AB),
-			 orientation.y, orientation.x);
+			ParseRegisters(p_im_um6->GetDataRegister(IMUM6::REGISTERS::UM6_QUAT_AB), i_orientation_y, i_orientation_x);
 			 
-			ParseRegisters(p_im_um6->GetDataRegister(IMUM6::UM6_QUAT_CD),
-			 orientation.w, orientation.z);
+			ParseRegisters(p_im_um6->GetDataRegister(IMUM6::REGISTERS::UM6_QUAT_CD), i_orientation_w, i_orientation_z);
 			 
-			ParseRegisters(p_im_um6->GetDataRegister(IMUM6::UM6_ACCEL_RAW_XY),
-			 orientation.y, orientation.x);
-			 
-			ParseRegisters(p_im_um6->GetDataRegister(IMUM6::UM6_ACCEL_RAW_Z,
-			linear_acceleration.z)
+			ParseRegisters(p_im_um6->GetDataRegister(IMUM6::REGISTERS::UM6_ACCEL_PROC_XY), i_linear_acceleration_y, i_linear_acceleration_x);
+			
+			ParseRegisters(p_im_um6->GetDataRegister(IMUM6::REGISTERS::UM6_ACCEL_PROC_Z), i_linear_acceleration_z);
+			
+			linear_acceleration.x = 0.000183105 * (double)i_linear_acceleration_x;
+			linear_acceleration.y = 0.000183105 * (double)i_linear_acceleration_y;
+			linear_acceleration.z = 0.000183105 * (double)i_linear_acceleration_z;
+			
+			orientation.x = 0.0000335693 * (double)i_orientation_x;
+			orientation.y = 0.0000335693 * (double)i_orientation_y;
+			orientation.z = 0.0000335693 * (double)i_orientation_z;
+			orientation.w = 0.0000335693 * (double)i_orientation_w;
+			
+			
+			#ifdef TEST
+			pose_demo.header.stamp = ros::Time::now();
+			pose_demo.header.frame_id = "odom";
+			
+			
+			pose_demo.pose.pose.position.x = 0.0;
+			pose_demo.pose.pose.position.y = 0.0;
+			pose_demo.pose.pose.position.z = 0.0;
+			pose_demo.pose.pose.orientation = orientation;
+			#endif
 			
 			imu_packet.orientation = orientation;
 			imu_packet.linear_acceleration = linear_acceleration;
@@ -177,7 +214,15 @@ int main(int argc, char **argv)
 			if(pub_um6.getNumSubscribers() > 0 || b_always_on)
 			{
 				pub_um6.publish(imu_packet);
-			}		
+			}
+			
+			#ifdef TEST
+			if(pub_um6.getNumSubscribers() > 0 || b_always_on)
+			{
+				pub_pose_demo.publish(pose_demo);
+			}
+			#endif
+					
 		
 		}
 			
