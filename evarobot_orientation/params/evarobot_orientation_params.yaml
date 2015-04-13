@@ -1,0 +1,4 @@
+namespace: gazebo
+frameNamespace: imu
+alwaysOn: true
+frequency: 10.0

@@ -1,0 +1,9 @@
+  commandTopic: cmd_vel
+  maxLinearVel: 1.2
+  maxAngularVel: 3.0
+  wheelSeparation: 0.29
+  wheelDiameter: 12.2
+  pwmFrequency: 1000.0
+  pwmDuty: 80
+  pwmCounts: 256
+  pwmMode: 2

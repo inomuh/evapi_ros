@@ -1,0 +1,9 @@
+<launch>
+	<master auto="start"/>
+	
+	<!-- Run evarobot_infrared -->
+	<node pkg="evarobot_infrared" type="evarobot_infrared" respawn="false" name="evarobot_infrared" output="screen">
+		<rosparam file="$(find evarobot_infrared)/params/evarobot_infrared_params.yaml" command="load"/>
+	</node>
+	
+</launch>

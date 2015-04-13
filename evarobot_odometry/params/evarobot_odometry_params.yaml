@@ -1,0 +1,10 @@
+devicePath: /dev/evarobotEncoder
+alwaysOn: true
+odomTopic: odom
+odomFrame: odom
+wheelSeparation: 0.29
+height: 0.25
+frequency: 10
+gearRatio: 67
+CPR: 64
+wheelDiameter: 12.2
