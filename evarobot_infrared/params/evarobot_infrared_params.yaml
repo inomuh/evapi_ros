@@ -1,6 +1,6 @@
 devicePath: /dev/spidev0.0
-namespace: gazebo
-frameNamespace: infrared
+namespace: sensor
+frameNamespace: sensor
 alwaysOn: true
 spiMode: 0
 spiSpeed: 1000000

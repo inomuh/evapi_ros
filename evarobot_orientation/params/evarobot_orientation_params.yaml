@@ -1,4 +1,4 @@
-namespace: gazebo
-frameNamespace: imu
+namespace: sensor
+frameNamespace: sensor
 alwaysOn: true
 frequency: 10.0

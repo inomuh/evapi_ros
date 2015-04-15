@@ -1,6 +1,6 @@
 devicePath: /dev/evarobotSonar
-namespace: gazebo
-frameNamespace: sonar
+namespace: sensor
+frameNamespace: sensor
 alwaysOn: true
 frequency: 10.0
 field_of_view: [0.7, 0.7, 0.7]
