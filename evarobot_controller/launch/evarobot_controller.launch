@@ -1,0 +1,9 @@
+<launch>
+	<master auto="start"/>
+	
+	<!-- Run evarobot_controller -->
+	<node pkg="evarobot_controller" type="evarobot_controller" respawn="false" name="evarobot_controller" output="screen">
+		<rosparam file="$(find evarobot_controller)/params/evarobot_controller_params.yaml" command="load"/>
+	</node>
+	
+</launch>

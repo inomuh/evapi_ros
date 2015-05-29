@@ -3,6 +3,8 @@
 #include "geometry_msgs/Vector3.h"
 #include "geometry_msgs/Pose2D.h"
 
+#include "geometry_msgs/PointStamped.h"
+
 #include <string>    
 #include <sstream>
 
@@ -27,6 +29,8 @@ int main(int argc, char **argv)
 	string str_device_path;
 	string str_frame_id;
 	string str_topic;
+	string str_vel_frame_id;
+	string str_vel_topic;
 	
 	bool b_always_on;
 	
@@ -36,6 +40,9 @@ int main(int argc, char **argv)
 	n.param<string>("evarobot_odometry/devicePath", str_device_path, "/dev/evarobotEncoder");
 	n.param<string>("evarobot_odometry/odomTopic", str_topic, "odom");
 	n.param<string>("evarobot_odometry/odomFrame", str_frame_id, "odom");
+	
+	n.param<string>("evarobot_odometry/wheelTopic", str_vel_topic, "wheel_vel");
+	n.param<string>("evarobot_odometry/wheelFrame", str_vel_frame_id, "wheel");
 	
 	n.param("evarobot_odometry/alwaysOn", b_always_on, false);
 
@@ -74,6 +81,7 @@ int main(int argc, char **argv)
 	
 
 	ros::Publisher pose_pub = n.advertise<nav_msgs::Odometry>(str_topic.c_str(), 10);
+	ros::Publisher vel_pub = n.advertise<geometry_msgs::PointStamped>(str_vel_topic.c_str(), 10);
 
 	ros::Rate loop_rate(d_frequency);
 
@@ -85,6 +93,7 @@ int main(int argc, char **argv)
 	int i_fd;
 
 	nav_msgs::Odometry msg;
+	geometry_msgs::PointStamped wheel_vel;
 	geometry_msgs::Pose2D odom_pose;
 	geometry_msgs::Pose2D delta_odom_pose;
 
@@ -116,6 +125,8 @@ int main(int argc, char **argv)
 		read(i_fd, c_read_buf, sizeof(c_read_buf));
 		str_data = c_read_buf; 
 		
+		cout << str_data << endl;
+
 		dur_time = ros::Time::now() - read_time;
 
 		read_time = ros::Time::now();
@@ -129,7 +140,7 @@ int main(int argc, char **argv)
 			str_data = "";
 		}	
 
-//		cout << "left_read: " << f_left_read << " right_read: " << f_right_read << endl;
+		cout << "left_read: " << f_left_read << " right_read: " << f_right_read << endl;
 
 		float f_delta_sr, f_delta_sl, f_delta_s; 
 
@@ -137,19 +148,19 @@ int main(int argc, char **argv)
 		f_delta_sr =  PI * d_wheel_diameter * (f_right_read - f_right_read_last) / (i_gear_ratio * i_cpr);
 		f_delta_sl =  PI * d_wheel_diameter * (f_left_read - f_left_read_last) / (i_gear_ratio * i_cpr);
 
-//		cout << "deltaSr: " << f_delta_sr << " deltaSl: " << f_delta_sl << endl;
+		cout << "deltaSr: " << f_delta_sr << " deltaSl: " << f_delta_sl << endl;
 
 		// Oryantasyondaki değişim hesaplanıyor.
 		delta_odom_pose.theta = (f_delta_sr - f_delta_sl) / d_wheel_separation;
 		f_delta_s = (f_delta_sr + f_delta_sl) / 2;
 
-//		cout << "delta_teta: " << delta_odom_pose.theta << " deltaS: " << f_delta_s << endl;
+		cout << "delta_teta: " << delta_odom_pose.theta << " deltaS: " << f_delta_s << endl;
 
 		// x ve y eksenlerindeki yer değiştirme hesaplanıyor.
 		delta_odom_pose.x = f_delta_s * cos(odom_pose.theta + delta_odom_pose.theta * 0.5);
 		delta_odom_pose.y = f_delta_s * sin(odom_pose.theta + delta_odom_pose.theta * 0.5);
 
-	//	cout << "delta_odom x: " <<  delta_odom_pose.x << " y: " <<  delta_odom_pose.y << endl;
+		cout << "delta_odom x: " <<  delta_odom_pose.x << " y: " <<  delta_odom_pose.y << endl;
 
 		// Yeni pozisyonlar hesaplanıyor.
 		odom_pose.x += delta_odom_pose.x;
@@ -160,7 +171,8 @@ int main(int argc, char **argv)
 		f_right_read_last = f_right_read;
 		f_left_read_last = f_left_read;
 
-//		cout << "read_last ri: " << f_right_read_last << " le: " << f_left_read_last << endl;
+	//	cout << "read_last ri: " << f_right_read_last << " le: " << f_left_read_last << endl;
+	
 			
 		// Yayınlanacak Posizyon Verisi dolduruluyor.
 		msg.pose.pose.position.x = odom_pose.x;
@@ -173,17 +185,31 @@ int main(int argc, char **argv)
 		msg.pose.pose.orientation.w = cos(odom_pose.theta);
 
 		float f_lin_vel = 0, f_ang_vel = 0;
+		float f_lin_vel_right = 0, f_lin_vel_left = 0;
 
-//		cout << "dur_time: " << dur_time.toSec() << endl;
+		cout << "dur_time: " << dur_time.toSec() << endl;
 
 		if(dur_time.toSec() > 0)
 		{
 			f_lin_vel = sqrt(pow(delta_odom_pose.x, 2) + pow(delta_odom_pose.y, 2)) / dur_time.toSec();
 			f_ang_vel = delta_odom_pose.theta / dur_time.toSec();
+			
+			f_lin_vel_right = f_delta_sr / dur_time.toSec();
+			f_lin_vel_left = f_delta_sl / dur_time.toSec();
 		}
 		else
 		{
 			ROS_ERROR("Division by Zero");
+		}
+		
+		wheel_vel.header.frame_id = str_vel_frame_id;
+		wheel_vel.header.stamp = ros::Time::now();
+		wheel_vel.point.x = f_lin_vel_left;
+		wheel_vel.point.y = f_lin_vel_right;
+		
+		if(vel_pub.getNumSubscribers() > 0 || b_always_on)
+		{
+			vel_pub.publish(wheel_vel);
 		}
 		
 		// Yayınlacak Hız Verisi dolduruluyor.
@@ -202,7 +228,7 @@ int main(int argc, char **argv)
 
 		// Odometry verisinin frame id'si yazılıyor. (string)
 		msg.header.frame_id = str_frame_id;
-
+		msg.child_frame_id = "base_link";
 		// Veri topikten basılıyor.
 		if(pose_pub.getNumSubscribers() > 0 || b_always_on)
 		{

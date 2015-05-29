@@ -27,77 +27,26 @@ public:
 			 unsigned int u_i_counts, 
 			 double d_duty, 
 			 int i_mode,
-			 IMGPIO * m1_in, 
-			 IMGPIO * m2_in,
-			 IMGPIO * m1_en,
-			 IMGPIO * m2_en);
+			 IMGPIO * gpio_ins);
 			 
 	~IMDRIVER()
 	{
 		printf("driver kapatiliyor\n");
-		this->Disable();
 		delete pwm;
 	}
 			 
 	void CallbackVel(const geometry_msgs::Twist::ConstPtr & msg);
 	void CallbackWheelVel(const geometry_msgs::Twist::ConstPtr & msg);
-	void Enable()
-	{
-		this->m1_en->SetPinDirection(IMGPIO::OUTPUT);	
-		this->m2_en->SetPinDirection(IMGPIO::OUTPUT);
-		
-		this->m1_en->SetPinValue(IMGPIO::HIGH);
-		this->m2_en->SetPinValue(IMGPIO::HIGH);
-		
-/*		this->m1_en->SetPinDirection(IMGPIO::INPUT);	
-		this->m2_en->SetPinDirection(IMGPIO::INPUT);*/
-	}
-	
-	void Disable()
-	{
-		this->m1_en->SetPinDirection(IMGPIO::OUTPUT);	
-		this->m2_en->SetPinDirection(IMGPIO::OUTPUT);
-		
-		this->m1_en->SetPinValue(IMGPIO::LOW);
-		this->m2_en->SetPinValue(IMGPIO::LOW);
-		
-	}
-	
-	int CheckError()
-	{
-		int i_ret = 0;
-		
-		string str_m1_data;
-		string str_m2_data;
-		
-		this->m1_en->GetPinValue(str_m1_data);
-		this->m2_en->GetPinValue(str_m2_data);
-		
-		if(str_m1_data == IMGPIO::LOW)
-		{
-			--i_ret;
-		}
-		
-		if(str_m2_data == IMGPIO::LOW)
-		{
-			--i_ret;
-		}
-		
-		return i_ret;
-	}
 	
 private:
 	IMPWM * pwm;
-	IMGPIO * m1_in;
-	IMGPIO * m2_in;
-	IMGPIO * m1_en;
-	IMGPIO * m2_en;
+	IMGPIO * gpio_ins;
 
 	
 	float f_max_lin_vel; 
-	float f_max_ang_vel; 
-	float f_wheel_separation; 
-	float f_wheel_diameter;
+    float f_max_ang_vel; 
+    float f_wheel_separation; 
+    float f_wheel_diameter;
 
 	double d_frequency;
 	double d_duty;
@@ -115,34 +64,21 @@ IMDRIVER::IMDRIVER(float f_max_lin_vel,
 				   unsigned int u_i_counts, 
 				   double d_duty, 
 				   int i_mode,
-				   IMGPIO * m1_in, 
-				   IMGPIO * m2_in,
-				   IMGPIO * m1_en,
-				   IMGPIO * m2_en)
+				   IMGPIO * gpio_ins)
 {
 	this->f_max_lin_vel = f_max_lin_vel; 
     this->f_max_ang_vel = f_max_ang_vel; 
     this->f_wheel_separation = f_wheel_separation; 
     this->f_wheel_diameter = f_wheel_diameter;
 
-	this->u_i_counts = u_i_counts;
 	this->i_const_count =  (u_i_counts - 1) / this->f_max_lin_vel;
 		
 	this->pwm = new IMPWM(d_frequency, u_i_counts, d_duty, i_mode);
 	
-	this->m1_in = m1_in;
-	this->m2_in = m2_in;
-	this->m1_en = m1_en;
-	this->m2_en = m2_en;
+	this->gpio_ins = gpio_ins;
 	
-	for(int i = 0; i < 2; i++)
-		this->m1_in[i].SetPinDirection(IMGPIO::OUTPUT);
-	
-	for(int i = 0; i < 2; i++)
-		this->m2_in[i].SetPinDirection(IMGPIO::OUTPUT);	
-		
-	// enable motors
-	this->Enable();
+	for(int i = 0; i < 4; i++)
+		this->gpio_ins[i].SetPinDirection(IMGPIO::OUTPUT);
 	
 }
 
@@ -156,51 +92,53 @@ void IMDRIVER::CallbackVel(const geometry_msgs::Twist::ConstPtr & msg)
 
 	if(f_left_wheel_velocity < 0)
 	{
-		this->m1_in[0].SetPinValue(IMGPIO::LOW);
-		this->m1_in[1].SetPinValue(IMGPIO::HIGH);
+		this->gpio_ins[0].SetPinValue(IMGPIO::LOW);
+		this->gpio_ins[1].SetPinValue(IMGPIO::HIGH);
 	}
 	else if(f_left_wheel_velocity > 0)
 	{
-		this->m1_in[0].SetPinValue(IMGPIO::HIGH);
-		this->m1_in[1].SetPinValue(IMGPIO::LOW);
+		this->gpio_ins[0].SetPinValue(IMGPIO::HIGH);
+		this->gpio_ins[1].SetPinValue(IMGPIO::LOW);
 	}
 	else
 	{
-		this->m1_in[0].SetPinValue(IMGPIO::LOW);
-		this->m1_in[1].SetPinValue(IMGPIO::LOW);
+		this->gpio_ins[0].SetPinValue(IMGPIO::LOW);
+		this->gpio_ins[1].SetPinValue(IMGPIO::LOW);
 	}
 	
 	if(f_right_wheel_velocity < 0)
 	{
-		this->m2_in[0].SetPinValue(IMGPIO::LOW);
-		this->m2_in[1].SetPinValue(IMGPIO::HIGH);
+		this->gpio_ins[2].SetPinValue(IMGPIO::LOW);
+		this->gpio_ins[3].SetPinValue(IMGPIO::HIGH);
 	}
 	else if(f_right_wheel_velocity > 0)
 	{
-		this->m2_in[0].SetPinValue(IMGPIO::HIGH);
-		this->m2_in[1].SetPinValue(IMGPIO::LOW);
+		this->gpio_ins[2].SetPinValue(IMGPIO::HIGH);
+		this->gpio_ins[3].SetPinValue(IMGPIO::LOW);
 	}
 	else
 	{
-		this->m2_in[0].SetPinValue(IMGPIO::LOW);
-		this->m2_in[1].SetPinValue(IMGPIO::LOW);
+		this->gpio_ins[2].SetPinValue(IMGPIO::LOW);
+		this->gpio_ins[3].SetPinValue(IMGPIO::LOW);
 	}
-	
 	
 	int i_left_wheel_duty = int(fabs(f_left_wheel_velocity) * this->i_const_count);
 	int i_right_wheel_duty = int(fabs(f_right_wheel_velocity) * this->i_const_count); 
 
-	i_left_wheel_duty = i_left_wheel_duty>=this->u_i_counts ? this->u_i_counts - 1:i_left_wheel_duty;
+	i_left_wheel_duty = i_left_wheel_duty>=u_i_counts ? u_i_counts - 1:i_left_wheel_duty;
 	
-	i_right_wheel_duty = i_right_wheel_duty>=this->u_i_counts ? this->u_i_counts - 1:i_right_wheel_duty;
+	i_right_wheel_duty = i_right_wheel_duty>=u_i_counts ? u_i_counts - 1:i_right_wheel_duty;
 
 	cout << "left_duty: " << i_left_wheel_duty << " right duty: " << i_right_wheel_duty << endl;
 
 	if(i_left_wheel_duty != 0)
 		pwm->SetDutyCycleCount(i_left_wheel_duty, 0);
+//	pwm->SetDutyCycleCount(this->i_const_count - 1, 0);
+//	cout << this->i_const_count << endl;
 	
 	if(i_right_wheel_duty != 0)
 		pwm->SetDutyCycleCount(i_right_wheel_duty, 1);
+//	pwm->SetDutyCycleCount(this->i_const_count - 1, 1);
 }
 
 
@@ -212,70 +150,54 @@ void IMDRIVER::CallbackWheelVel(const geometry_msgs::Twist::ConstPtr & msg)
 
 	if(f_left_wheel_velocity < 0)
 	{
-		this->m1_in[0].SetPinValue(IMGPIO::LOW);
-		this->m1_in[1].SetPinValue(IMGPIO::HIGH);
+		this->gpio_ins[0].SetPinValue(IMGPIO::LOW);
+		this->gpio_ins[1].SetPinValue(IMGPIO::HIGH);
 	}
 	else if(f_left_wheel_velocity > 0)
 	{
-		this->m1_in[0].SetPinValue(IMGPIO::HIGH);
-		this->m1_in[1].SetPinValue(IMGPIO::LOW);
+		this->gpio_ins[0].SetPinValue(IMGPIO::HIGH);
+		this->gpio_ins[1].SetPinValue(IMGPIO::LOW);
 	}
 	else
 	{
-		this->m1_in[0].SetPinValue(IMGPIO::LOW);
-		this->m1_in[1].SetPinValue(IMGPIO::LOW);
+		this->gpio_ins[0].SetPinValue(IMGPIO::LOW);
+		this->gpio_ins[1].SetPinValue(IMGPIO::LOW);
 	}
 	
 	if(f_right_wheel_velocity < 0)
 	{
-		this->m2_in[0].SetPinValue(IMGPIO::LOW);
-		this->m2_in[1].SetPinValue(IMGPIO::HIGH);
+		this->gpio_ins[2].SetPinValue(IMGPIO::LOW);
+		this->gpio_ins[3].SetPinValue(IMGPIO::HIGH);
 	}
 	else if(f_right_wheel_velocity > 0)
 	{
-		this->m2_in[0].SetPinValue(IMGPIO::HIGH);
-		this->m2_in[1].SetPinValue(IMGPIO::LOW);
+		this->gpio_ins[2].SetPinValue(IMGPIO::HIGH);
+		this->gpio_ins[3].SetPinValue(IMGPIO::LOW);
 	}
 	else
 	{
-		this->m2_in[0].SetPinValue(IMGPIO::LOW);
-		this->m2_in[1].SetPinValue(IMGPIO::LOW);
+		this->gpio_ins[2].SetPinValue(IMGPIO::LOW);
+		this->gpio_ins[3].SetPinValue(IMGPIO::LOW);
 	}
 	
-
 	int i_left_wheel_duty = int(fabs(f_left_wheel_velocity) * this->i_const_count);
 	int i_right_wheel_duty = int(fabs(f_right_wheel_velocity) * this->i_const_count); 
 
-	cout << "left_duty----: " << i_left_wheel_duty << " right duty-----: " << i_right_wheel_duty << endl;
-
-	i_left_wheel_duty = i_left_wheel_duty>=this->u_i_counts ? this->u_i_counts - 1:i_left_wheel_duty;
+	i_left_wheel_duty = i_left_wheel_duty>=u_i_counts ? u_i_counts - 1:i_left_wheel_duty;
 	
-	i_right_wheel_duty = i_right_wheel_duty>=this->u_i_counts ? this->u_i_counts - 1:i_right_wheel_duty;
-	
-	cout << "u_i_counts " << this->u_i_counts << endl;
+	i_right_wheel_duty = i_right_wheel_duty>=u_i_counts ? u_i_counts - 1:i_right_wheel_duty;
 
 	cout << "left_duty: " << i_left_wheel_duty << " right duty: " << i_right_wheel_duty << endl;
 
 
 	if(i_left_wheel_duty != 0)
 		pwm->SetDutyCycleCount(i_left_wheel_duty, 0);
+//	pwm->SetDutyCycleCount(this->i_const_count - 1, 0);
+//	cout << this->i_const_count << endl;
 	
 	if(i_right_wheel_duty != 0)
 		pwm->SetDutyCycleCount(i_right_wheel_duty, 1);
-
-	if(this->CheckError() == -1)
-	{
-		ROS_ERROR("Failure at Left Motor.");
-	}
-	else if(this->CheckError() == -2)
-	{
-		ROS_ERROR("Failure at Right Motor.");
-	}
-	else if(this->CheckError() == -3)
-	{
-		ROS_ERROR("Failure at Both of Motors.");
-	}
-
+//	pwm->SetDutyCycleCount(this->i_const_count - 1, 1);
 }
 
 
@@ -300,18 +222,6 @@ int main(int argc, char **argv)
   int i_counts;
   
   int i_mode;
-  
-  int i_m1_in1, i_m1_in2, i_m1_en;
-  int i_m2_in1, i_m2_in2, i_m2_en;
-
-  n.param<int>("evarobot_driver/M1_IN1", i_m1_in1, 1);
-  n.param<int>("evarobot_driver/M1_IN2", i_m1_in2, 12);
-  n.param<int>("evarobot_driver/M1_EN", i_m1_en, 5);
-
-  
-  n.param<int>("evarobot_driver/M2_IN1", i_m2_in1, 0);
-  n.param<int>("evarobot_driver/M2_IN2", i_m2_in2, 19);
-  n.param<int>("evarobot_driver/M2_EN", i_m2_en, 6);
 
   
   n.param<string>("evarobot_driver/commandTopic", str_topic, "cntr_wheel_vel");
@@ -362,31 +272,12 @@ int main(int argc, char **argv)
 	  ROS_ERROR("Undefined PWM Mode.");
   }
   
-  stringstream ss1, ss2;
   
-  ss1 << i_m1_in1;
-  ss2 << i_m1_in2;
   
-  IMGPIO gpio_m1_in[2] = {IMGPIO(ss1.str()), IMGPIO(ss2.str())};
-  
-  ss1.str("");
-  ss2.str("");
-  ss1 << i_m2_in1;
-  ss2 << i_m2_in2;
-  IMGPIO gpio_m2_in[2] = {IMGPIO(ss1.str()), IMGPIO(ss2.str())};
-  
-  ss1.str("");
-  ss2.str("");
-  ss1 << i_m1_en;
-  ss2 << i_m2_en;
-  
-  IMGPIO gpio_m1_en = IMGPIO(ss1.str());
-  IMGPIO gpio_m2_en = IMGPIO(ss2.str());
+  IMGPIO gpio[4] = {IMGPIO(IMGPIO::GPIO4), IMGPIO(IMGPIO::GPIO12), IMGPIO(IMGPIO::GPIO11), IMGPIO(IMGPIO::GPIO13)};
      
-  IMDRIVER imdriver((float)d_max_lin_vel, (float)d_max_ang_vel, 
-				  (float)d_wheel_separation, (float)d_wheel_diameter,
-					d_frequency, i_counts, d_duty, i_mode, 
-					gpio_m1_in, gpio_m2_in, &gpio_m1_en, &gpio_m2_en);
+  IMDRIVER imdriver((float)d_max_lin_vel, (float)d_max_ang_vel, (float)d_wheel_separation, (float)d_wheel_diameter,
+					d_frequency, i_counts, d_duty, i_mode, gpio);
   
   //ros::Subscriber sub = n.subscribe(str_topic.c_str(), 2, &IMDRIVER::CallbackVel, &imdriver);
   ros::Subscriber sub = n.subscribe(str_topic.c_str(), 2, &IMDRIVER::CallbackWheelVel, &imdriver);

@@ -1,0 +1,9 @@
+<launch>
+  <include file="$(find evarobot_bumper)/launch/evarobot_bumper.launch" />
+  <include file="$(find evarobot_driver)/launch/driver.launch" />
+  <include file="$(find evarobot_infrared)/launch/evarobot_infrared.launch" />
+  <include file="$(find evarobot_odometry)/launch/evarobot_odometry.launch" />
+  <include file="$(find evarobot_orientation)/launch/evarobot_orientation.launch" />
+  <include file="$(find evarobot_sonar)/launch/evarobot_sonar.launch" />
+</launch>
+

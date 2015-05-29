@@ -1,0 +1,16 @@
+desiredTopic: cmd_vel
+measuredTopic: wheel_vel
+controllerTopic: cntr_wheel_vel
+alwaysOn: true
+
+wheelSeparation: 0.29
+
+integralConstLeft: 0.2
+derivativeConstLeft: 0.1
+proportionalConstLeft: 1.3
+
+integralConstRight: 0.2
+derivativeConstRight: 0.1
+proportionalConstRight: 1.3
+
+Frequency: 10.0
