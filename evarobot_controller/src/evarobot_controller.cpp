@@ -14,6 +14,9 @@ using namespace std;
 float g_f_left_desired = 0.0;
 float g_f_right_desired = 0.0;
 
+float g_f_pre_angular_desired = 0.0;
+float g_f_pre_linear_desired = 0.0;
+
 bool b_is_new_measured = false;
 bool b_is_new_desired = false;
 
@@ -34,6 +37,13 @@ public:
 		~PIDController();
 		
 		float RunController(float f_desired, float f_measured);
+		void Reset()
+		{
+		        this->d_proportional_error = 0.0;
+        	        this->d_derivative_error = 0.0;
+	                this->d_integral_error = 0.0;
+
+		}
 		
 private:
 	double d_integral_error;
@@ -103,7 +113,7 @@ float PIDController::RunController(float f_desired, float f_measured)
 		this->d_derivative_error = 0.0;
 		this->d_integral_error = 0.0;
 
-		printf("\n");
+//		printf("\n");
 
 		f_ret = 0.0;
 		
@@ -123,7 +133,7 @@ float PIDController::RunController(float f_desired, float f_measured)
 		f_ret = (f_ret * this->max_vel) / fabs(f_ret);
 	}
 			
-	printf("%lf, %lf, %lf, %f \n", this->d_proportional_error, this->d_integral_error, this->d_derivative_error, f_ret);
+//	printf("%lf, %lf, %lf, %f \n", this->d_proportional_error, this->d_integral_error, this->d_derivative_error, f_ret);
 	
 	return f_ret;
 	
@@ -140,8 +150,16 @@ void CallbackMeasured(const geometry_msgs::PointStamped::ConstPtr & msg)
 
 void CallbackDesired(const geometry_msgs::Twist::ConstPtr & msg)
 {
-	b_is_new_desired = true;
+//	b_is_new_desired = true;
 	
+	if(fabs(g_f_pre_linear_desired - msg->linear.x) > 0.1 || fabs(g_f_pre_angular_desired - msg->angular.z) > 0.1)
+	{
+		b_is_new_desired = true;
+		g_f_pre_linear_desired = msg->linear.x;
+		g_f_pre_angular_desired = msg->angular.z;
+	}
+
+
 	float f_linear_vel = msg->linear.x;
 	float f_angular_vel = msg->angular.z;
 
@@ -243,10 +261,20 @@ int main(int argc, char **argv)
   {
 	  //if(b_is_new_desired && b_is_new_measured)
 	 // {
-		printf("left:  ");  
+		if(b_is_new_desired)
+		{
+			left_controller.Reset();
+			right_controller.Reset();
+		}
+
+//		printf("left:  ");
+//		printf("left_desired: %f\n", g_f_left_desired);
+//		printf("left_measured: %f\n", g_f_left_measured);
 		msg.linear.x = left_controller.RunController(g_f_left_desired, g_f_left_measured);
 		
-		printf("right:  ");
+//		printf("right:  ");
+//		printf("right_desired: %f\n", g_f_right_desired);
+//		printf("right_measured: %f\n", g_f_right_measured);
 		msg.linear.y = right_controller.RunController(g_f_right_desired, g_f_right_measured);
 		
 		b_is_new_desired = false;

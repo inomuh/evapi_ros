@@ -8,27 +8,13 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>		/* ioctl */
 
+#include "IMEIO.h"
+
 
 #define MAX_BUMPER 3
 
-struct bumper_ioc_transfer 
-{
-	int i_gpio_pin[MAX_BUMPER];
-	int i_size; 
+char SEM_NAME[]= "i2c";
 
-};
-
-struct bumper_data
-{
-	int i_bumper_no;
-	int i_value;
-};
-
-#define BUMPER_IOCTL_BASE 0xB0
-
-		
-#define IOCTL_SET_BUMPERS _IOW(BUMPER_IOCTL_BASE, 0, struct bumper_ioc_transfer) /* Set Param */
-#define IOCTL_READ_BUMPERS _IOWR(BUMPER_IOCTL_BASE, 1, struct bumper_data) /* Read range */
 
 using namespace std;
 
@@ -36,17 +22,29 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-	int i_fd;
-	struct bumper_ioc_transfer pins;
-	struct bumper_data data;
 	
+	key_t key;
+	sem_t *mutex;
+	FILE * fd;
+
+	key = 1005;
+
+	mutex = sem_open(SEM_NAME,O_CREAT,0644,1);
+	if(mutex == SEM_FAILED)
+	{
+		perror("unable to create semaphore");
+		sem_unlink(SEM_NAME);
+
+		return(-1);
+	}
+
+
 	// ROS PARAMS
-	vector<int> T_i_bumper_pins;
-			
 	double d_frequency;
 	
 	string str_topic_name;
-	string str_driver_path;
+	string str_i2c_device_address;
+	string str_i2c_path;
 	
 	bool b_always_on;
 	// rosparams end
@@ -58,7 +56,8 @@ int main(int argc, char **argv)
 	ros::init(argc, argv, "evarobot_bumper");
 	ros::NodeHandle n;
 	
-	n.param<string>("evarobot_bumper/driverPath", str_driver_path, "/dev/evarobotBumper");
+	n.param<string>("evarobot_bumper/i2c_path", str_i2c_path, "/dev/i2c-1");
+
 	n.param<string>("evarobot_bumper/commandTopic", str_topic_name, "bumper");
 	n.param("evarobot_bumper/alwaysOn", b_always_on, false);
 
@@ -68,55 +67,38 @@ int main(int argc, char **argv)
 		ROS_ERROR("Failed to get param 'frequency'");
 	} 
 
-	n.getParam("evarobot_bumper/pinBumper", T_i_bumper_pins);
-
-	
-
-	if(T_i_bumper_pins.size() > MAX_BUMPER)
-	{
-		ROS_ERROR("Number of bumper sensors mustn't be greater than %d", MAX_BUMPER);
-	}
-	
-	#ifdef DEBUG
-		ROS_INFO("Number of bumpers: %d", T_i_bumper_pins.size());
-	#endif
-	
 		
-	
 	// Set publisher
 	pub_bumper = n.advertise<im_msgs::Bumper>(str_topic_name.c_str(), 10);
 	
 	// Define frequency
 	ros::Rate loop_rate(d_frequency);
 	
-	i_fd = open(str_driver_path.c_str(), O_RDWR);
-	if(i_fd < 0)
-	{
-		printf("file %s either does not exist or has been locked by another process\n", str_driver_path.c_str());
-		exit(-1);
-	}
+	IMEIO * eio = new IMEIO(0b00100000, string("/dev/i2c-1"),  mutex);
 	
-	pins.i_size = T_i_bumper_pins.size();
+	eio->SetPinADirection(IMEIO::BUMPER0, IMEIO::INPUT);
+	eio->SetPinADirection(IMEIO::BUMPER1, IMEIO::INPUT);
+	eio->SetPinADirection(IMEIO::BUMPER2, IMEIO::INPUT);
 	
-	for(uint i = 0; i < T_i_bumper_pins.size(); i++)
-	{
-		pins.i_gpio_pin[i] = T_i_bumper_pins[i];
-	}
+	vector<int> T_i_bumper_no;
 	
-	ioctl(i_fd, IOCTL_SET_BUMPERS, &pins);
+	T_i_bumper_no.resize(MAX_BUMPER);
+	
+	T_i_bumper_no[0] = IMEIO::BUMPER0;
+	T_i_bumper_no[1] = IMEIO::BUMPER1;
+	T_i_bumper_no[2] = IMEIO::BUMPER2;
 
 	while(ros::ok())
 	{		
 		
-		for(uint i = 0; i < T_i_bumper_pins.size(); i++)
+		for(uint i = 0; i < T_i_bumper_no.size(); i++)
 		{
 			im_msgs::BumperState bumper_state;
 		
-			data.i_bumper_no = i;
-			ioctl(i_fd, IOCTL_READ_BUMPERS, &data);
+			bool b_data;
+			eio->GetPinAValue(T_i_bumper_no[i], b_data);
 			
-			bumper_state.bumper_state = (data.i_value == 1) ? false : true;
-			
+			bumper_state.bumper_state = b_data;
 			bumpers.state.push_back(bumper_state);
 
 		}
@@ -128,8 +110,8 @@ int main(int argc, char **argv)
 		{
 			pub_bumper.publish(bumpers);
 		}
-		bumpers.state.clear();
 		
+		bumpers.state.clear();
 		loop_rate.sleep();	
 	
 	}

@@ -8,6 +8,10 @@
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
   <maintainer email="mehmet.akcakoca@inovasyonmuhendislik.com">Mehmet Akcakoca</maintainer>
+  <author>Mehmet Akcakoca</author>
+  <license>BSD</license>
+  <url>http://evarobot.com</url>
+  <url type="repository">https://github.com/inomuh/evapi_ros</url>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->

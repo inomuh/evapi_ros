@@ -196,7 +196,7 @@ void ahrs(IMU & imu, fuse_function * fuse, rotation_output_function * output)
         fuse(rotation, dt, angular_velocity, acceleration, magnetic_field);
 
         output(rotation);
-        std::cout << "  " << acceleration << "  " << magnetic_field << std::endl << std::flush;
+  //      std::cout << "  " << acceleration << "  " << magnetic_field << std::endl << std::flush;
 
         // Ensure that each iteration of the loop takes at least 20 ms.
         while(millis() - start < 20)

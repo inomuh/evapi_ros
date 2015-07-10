@@ -1,8 +1,10 @@
   commandTopic: cntr_wheel_vel
   maxLinearVel: 1.0
   maxAngularVel: 3.0
-  wheelSeparation: 0.29
-  wheelDiameter: 0.122
+  wheelSeparation: 0.32
+  wheelDiameter: 0.17 # evarobot50
+  wheelDiameter: 0.14 # hcrRobot 
+#  wheelDiameter: 0.122 # evarobot0
   pwmFrequency: 1000.0
   pwmDuty: 90
   pwmCounts: 256

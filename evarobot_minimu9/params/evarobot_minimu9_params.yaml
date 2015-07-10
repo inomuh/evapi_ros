@@ -1,5 +1,5 @@
 i2cDevice: /dev/i2c-1
 topicName: imu_data
-frame_id: imu
+frame_id: sensor/imu_link
 alwaysOn: true
 frequency: 10.0

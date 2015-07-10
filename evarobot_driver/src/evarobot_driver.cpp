@@ -194,7 +194,7 @@ void IMDRIVER::CallbackVel(const geometry_msgs::Twist::ConstPtr & msg)
 	
 	i_right_wheel_duty = i_right_wheel_duty>=this->u_i_counts ? this->u_i_counts - 1:i_right_wheel_duty;
 
-	cout << "left_duty: " << i_left_wheel_duty << " right duty: " << i_right_wheel_duty << endl;
+//	cout << "left_duty: " << i_left_wheel_duty << " right duty: " << i_right_wheel_duty << endl;
 
 	if(i_left_wheel_duty != 0)
 		pwm->SetDutyCycleCount(i_left_wheel_duty, 0);
@@ -246,15 +246,15 @@ void IMDRIVER::CallbackWheelVel(const geometry_msgs::Twist::ConstPtr & msg)
 	int i_left_wheel_duty = int(fabs(f_left_wheel_velocity) * this->i_const_count);
 	int i_right_wheel_duty = int(fabs(f_right_wheel_velocity) * this->i_const_count); 
 
-	cout << "left_duty----: " << i_left_wheel_duty << " right duty-----: " << i_right_wheel_duty << endl;
+//	cout << "left_duty----: " << i_left_wheel_duty << " right duty-----: " << i_right_wheel_duty << endl;
 
 	i_left_wheel_duty = i_left_wheel_duty>=this->u_i_counts ? this->u_i_counts - 1:i_left_wheel_duty;
 	
 	i_right_wheel_duty = i_right_wheel_duty>=this->u_i_counts ? this->u_i_counts - 1:i_right_wheel_duty;
 	
-	cout << "u_i_counts " << this->u_i_counts << endl;
+//	cout << "u_i_counts " << this->u_i_counts << endl;
 
-	cout << "left_duty: " << i_left_wheel_duty << " right duty: " << i_right_wheel_duty << endl;
+//	cout << "left_duty: " << i_left_wheel_duty << " right duty: " << i_right_wheel_duty << endl;
 
 
 	if(i_left_wheel_duty != 0)

@@ -125,7 +125,7 @@ int main(int argc, char **argv)
 	{
 		
 		stringstream ss_frame;
-		ss_frame << str_frame_id << "/ir" << i;
+		ss_frame << str_frame_id << "/ir" << i << "_link";
 		
 		sensor_msgs::Range dummy_ir;
 		
@@ -193,7 +193,10 @@ int main(int argc, char **argv)
 			
 			T_irs[i].range = 0.01 * ((1 / (T_d_par_a[i] * (double)i_raw_data + T_d_par_b[i])) - T_d_par_k[i]);
 			T_irs[i].header.stamp = ros::Time::now();
-					
+			
+			if(T_irs[i].range > T_irs[i].max_range || T_irs[i].range < 0)
+				T_irs[i].range = T_irs[i].max_range;
+								
 			// Publish Data
 			if(T_pub_ir[i].getNumSubscribers() > 0 || b_always_on)
 			{

@@ -12,21 +12,21 @@
 #include <unistd.h>		/* exit */
 #include <sys/ioctl.h>		/* ioctl */
 
-//#ifndef DEBUG
-//#define DEBUG
-//#endif
+#ifndef DEBUG
+#define DEBUG
+#endif
 
 // In order to change max number of sonar, MAX_SONAR macros 
 // in evarobot_sonar.cpp(ROS) and driver_sonar.h(MODULE)
 // should be modified.
-#define MAX_SONAR 7
+
 #define MAX_TRIGGER_TIME 1.2
+#define MAX_SONAR 7
 
 struct sonar_ioc_transfer 
 {
-	int i_gpio_reflection[MAX_SONAR];
-	int	i_gpio_trigger[MAX_SONAR];
-	int i_size;
+	int i_gpio_pins[MAX_SONAR];
+	int i_size; 
 
 };
 
@@ -44,6 +44,9 @@ struct sonar_data
 #define IOCTL_READ_RANGE _IOWR(SNRDRIVER_IOCTL_BASE, 1, struct sonar_data) 
 
 
+int SONAR[] = {23, 24, 25, 7, 16, 20, 21};
+
+
 using namespace std;
 
 int main(int argc, char **argv)
@@ -53,8 +56,7 @@ int main(int argc, char **argv)
 	struct sonar_data data;
 	
 	// ROS PARAMS
-	vector<int> T_i_trigger_pins;
-	vector<int> T_i_reflection_pins;
+	vector<int> T_i_sonar_pins;
 	vector<double> T_d_posX, T_d_posY, T_d_posZ, T_d_angle_yaw;
 	vector<double> T_d_min_ranges, T_d_max_ranges;
 	vector<double> T_d_field_of_views;
@@ -95,8 +97,7 @@ int main(int argc, char **argv)
 	n.getParam("evarobot_sonar/minRange", T_d_min_ranges);
 	n.getParam("evarobot_sonar/maxRange", T_d_max_ranges);
 
-	n.getParam("evarobot_sonar/pinTrigger", T_i_trigger_pins);
-	n.getParam("evarobot_sonar/pinReflection", T_i_reflection_pins);
+	n.getParam("evarobot_sonar/sonarPins", T_i_sonar_pins);
 	
 	n.getParam("evarobot_sonar/posX", T_d_posX);
 	n.getParam("evarobot_sonar/posY", T_d_posY);
@@ -105,16 +106,15 @@ int main(int argc, char **argv)
 	
 	if( !(T_d_field_of_views.size() == T_d_min_ranges.size()
 	&& T_d_min_ranges.size() == T_d_max_ranges.size()
-	&& T_d_min_ranges.size() == T_i_trigger_pins.size()
-	&& T_i_trigger_pins.size() == T_i_reflection_pins.size() 
-	&& T_i_reflection_pins.size() == T_d_posX.size()
+	&& T_d_min_ranges.size() == T_i_sonar_pins.size()
+	&& T_i_sonar_pins.size() == T_d_posX.size()
 	&& T_d_posX.size() == T_d_posY.size()
 	&& T_d_posY.size() == T_d_posZ.size()
 	&& T_d_posZ.size() == T_d_angle_yaw.size())	)
 	{
 		ROS_ERROR("Size of params are not same.");
 	}
-	else if(T_i_trigger_pins.size() > MAX_SONAR)
+	else if(T_i_sonar_pins.size() > MAX_SONAR)
 	{
 		ROS_ERROR("Number of sonar devices mustn't be greater than %d", MAX_SONAR);
 	}
@@ -162,7 +162,7 @@ int main(int argc, char **argv)
 	
 	
 	// Set publishers
-	for(uint i = 0; i < T_i_trigger_pins.size(); i++)
+	for(uint i = 0; i < T_i_sonar_pins.size(); i++)
 	{
 		stringstream ss_topic;
 		ss_topic << str_namespace << "/sonar" << i;
@@ -173,7 +173,7 @@ int main(int argc, char **argv)
 	// Define frequency
 	ros::Rate loop_rate(d_frequency);
 
-	d_sleep_time = 1 / d_frequency / T_i_reflection_pins.size();
+	d_sleep_time = 1 / d_frequency / T_i_sonar_pins.size();
 	
 /*	
 	if(d_sleep_time < CRITIC_TRIGGER_TIME)
@@ -183,16 +183,16 @@ int main(int argc, char **argv)
 */	
 	
 	
-	pins.i_size = T_i_reflection_pins.size();
+	pins.i_size = T_i_sonar_pins.size();
 	
 	// init sonar variables
-	for(uint i = 0; i < T_i_reflection_pins.size(); i++)
+	for(uint i = 0; i < T_i_sonar_pins.size(); i++)
 	{
-		pins.i_gpio_reflection[i] = T_i_reflection_pins[i];
-		pins.i_gpio_trigger[i] = T_i_trigger_pins[i];
+		
+		pins.i_gpio_pins[i] = SONAR[T_i_sonar_pins[i]];
 		
 		stringstream ss_frame;
-		ss_frame << str_frame_id << "/sonar" << i;
+		ss_frame << str_frame_id << "/sonar" << i << "_link";
 		
 		sensor_msgs::Range dummy_sonar;
 		
@@ -213,8 +213,8 @@ int main(int argc, char **argv)
 		{
 			// Read sensors
 			data.i_sonar_no = i;
-			while(ioctl(i_fd, IOCTL_READ_RANGE, &data) != 1);
-			
+		//	while(ioctl(i_fd, IOCTL_READ_RANGE, &data) != 1);
+			ioctl(i_fd, IOCTL_READ_RANGE, &data);
 			T_sonars[i].range = (float)(data.i_distance * 0.0001);
 			T_sonars[i].header.stamp = ros::Time::now();
 			//printf("Sonar Distance[%d]:  %d \n", i_i, data.i_distance);
