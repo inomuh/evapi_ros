@@ -228,13 +228,13 @@ void IMDRIVER::CallbackWheelVel(const geometry_msgs::Twist::ConstPtr & msg)
 	
 	if(f_right_wheel_velocity < 0)
 	{
-		this->m2_in[0].SetPinValue(IMGPIO::LOW);
-		this->m2_in[1].SetPinValue(IMGPIO::HIGH);
+		this->m2_in[0].SetPinValue(IMGPIO::HIGH);
+		this->m2_in[1].SetPinValue(IMGPIO::LOW);
 	}
 	else if(f_right_wheel_velocity > 0)
 	{
-		this->m2_in[0].SetPinValue(IMGPIO::HIGH);
-		this->m2_in[1].SetPinValue(IMGPIO::LOW);
+		this->m2_in[0].SetPinValue(IMGPIO::LOW);
+		this->m2_in[1].SetPinValue(IMGPIO::HIGH);
 	}
 	else
 	{
