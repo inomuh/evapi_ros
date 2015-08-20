@@ -1,0 +1,12 @@
+Source: ros-indigo-evarobot-odometry
+Section: misc
+Priority: extra
+Maintainer: Mehmet Akcakoca <akcakocamehmet@gmail.com>
+Build-Depends: debhelper (>= 9.0.0), ros-indigo-catkin, ros-indigo-geometry-msgs, ros-indigo-nav-msgs, ros-indigo-roscpp
+Homepage: http://evarobot.com
+Standards-Version: 3.9.2
+
+Package: ros-indigo-evarobot-odometry
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-indigo-geometry-msgs, ros-indigo-nav-msgs, ros-indigo-roscpp
+Description: The evarobot_odometry package
