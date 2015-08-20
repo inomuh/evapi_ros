@@ -1,0 +1,14 @@
+ros-indigo-im-msgs (0.1.2-0trusty) trusty; urgency=high
+
+  * add im_msgs
+  * Contributors: Mehmet Akcakoca
+
+ -- Mehmet Akcakoca <akcakocamehmet@gmail.com>  Wed, 19 Aug 2015 21:00:00 -0000
+
+ros-indigo-im-msgs (0.1.1-0trusty) trusty; urgency=high
+
+
+
+ -- Mehmet Akcakoca <akcakocamehmet@gmail.com>  Wed, 19 Aug 2015 21:00:00 -0000
+
+
