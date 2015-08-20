@@ -1,0 +1,6 @@
+<map id="IMPWM::IMPWM" name="IMPWM::IMPWM">
+<area shape="rect" id="node2" href="$classIMPWM.html#a05a2041e77d4f7970cefea54be36fb4b" title="PWM1 ve PWM2 için global ayarlama ve ilklendirme işlemlerinden sorumlu fonksiyondur. " alt="" coords="204,5,353,32"/>
+<area shape="rect" id="node3" href="$classIMPWM.html#a22528017b7d59761fe56672126396c11" title="GPIO18&#39;i ALT5 ve GPIO13&#39;u ALT0 alternatif fonksiyonlara PWM sinyali çıktısını üretebilmek için ayarla..." alt="" coords="195,56,363,83"/>
+<area shape="rect" id="node4" href="$classIMPWM.html#ab4967bd34c9cae505fcd7a176d89024d" title="Fiziksel hafızaya eşleme yapan fonksiyondur. " alt="" coords="182,107,375,133"/>
+<area shape="rect" id="node5" href="$classIMPWM.html#acbf9d59aec8a11835f71ee4ecb3eb567" title="IMPWM::SetDutyCycleCount" alt="" coords="181,157,376,184"/>
+</map>

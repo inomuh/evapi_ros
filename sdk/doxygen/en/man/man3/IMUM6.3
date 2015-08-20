@@ -1,0 +1,956 @@
+.TH "IMUM6" 3 "Thu Jul 9 2015" "evarobot library" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+IMUM6 \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <IMUM6\&.h>\fP
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "struct \fBPACKET_TYPE\fP"
+.br
+.ti -1c
+.RI "struct \fBREGISTERS\fP"
+.br
+.ti -1c
+.RI "struct \fBUM6_DATA\fP"
+.br
+.ti -1c
+.RI "union \fBUNION32\fP"
+.br
+.in -1c
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBIMUM6\fP (\fBIMSerial\fP *\fBp_imserial\fP)"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "bool \fBisReceivedData\fP (char *p_c_start_bits, int i_length)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "bool \fBisCommandCompleted\fP () const "
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "bool \fBCheckData\fP ()"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "void \fBGetFWVersion\fP ()"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetBaudRate\fP (long l_baudrate)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetFrequency\fP (int i_frequency)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetGPSBaudrate\fP (long l_baudrate)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetDetailedSatelliteStatusTrasmission\fP (bool b_status)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetSatelliteSummaryTrasmission\fP (bool b_status)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetGPSCourseVelocityTrasmission\fP (bool b_status)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetGPSRelativePositionTrasmission\fP (bool b_status)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetGPSPositionTransmission\fP (bool b_status)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetTemperatureMeasurementTransmission\fP (bool b_status)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetCovarianceMatrixTransmission\fP (bool b_status)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetEulerAngleTransmission\fP (bool b_status)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetQuaternionTransmission\fP (bool b_status)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetProcessedMagnetometerTransmission\fP (bool b_status)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetProcessedAccelerometerTransmission\fP (bool b_status)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetProcessedGyroTransmission\fP (bool b_status)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetRawMagnetometerTransmission\fP (bool b_status)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetRawAccelerometerTransmission\fP (bool b_status)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetRawGyroTransmission\fP (bool b_status)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetMode\fP (bool b_mode)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetPPSTiming\fP (bool b_status)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetQuaterninonState\fP (bool b_status)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetGyroCalibration\fP (bool b_status)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetEKFAccelerometerUpdates\fP (bool b_status)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetEKFMagnetometerUpdates\fP (bool b_status)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "bool \fBGetRawData\fP (\fBIMUM6::UM6_DATA\fP &data)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBProcessData\fP (vector< int > &T_i_registers)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int32_t \fBGetDataRegister\fP (int i_register) const "
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetCommand\fP (int i_register)"
+.br
+.RI "\fIBrief\&. \fP"
+.in -1c
+.SS "Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "struct \fBIMUM6::UM6_DATA\fP \fBum6_data\fP"
+.br
+.in -1c
+.SS "Private Member Functions"
+
+.in +1c
+.ti -1c
+.RI "bool \fBParseData\fP ()"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "void \fBStoreData\fP ()"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "void \fBSetRegisterPinValue\fP (int32_t &i_register, int i_pin_no, int i_count_of_pins, char c_value)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetRegister32bitValue\fP (int i_register, float f_data)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetRegister32bitValue\fP (int i_register, int32_t i_data)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetRegister16bitValue\fP (int i_register, int16_t i_data)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBSetRegister16bitValue\fP (int i_register, int16_t *p_i_data)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBCalculateChecksum\fP ()"
+.br
+.RI "\fIBrief\&. \fP"
+.in -1c
+.SS "Private Attributes"
+
+.in +1c
+.ti -1c
+.RI "int32_t \fBi_data_registers\fP [85]"
+.br
+.ti -1c
+.RI "int32_t \fBi_communication_register\fP"
+.br
+.ti -1c
+.RI "int32_t \fBi_misc_config_register\fP"
+.br
+.ti -1c
+.RI "char \fBc_input_buffer\fP [500]"
+.br
+.ti -1c
+.RI "char \fBc_start_bits\fP [3]"
+.br
+.ti -1c
+.RI "bool \fBb_command_complete\fP"
+.br
+.ti -1c
+.RI "list< char > \fBT_c_stored_data\fP"
+.br
+.ti -1c
+.RI "list< char > \fBT_c_serial_log\fP"
+.br
+.ti -1c
+.RI "bool \fBb_incomplete_packet\fP"
+.br
+.ti -1c
+.RI "int \fBi_incomplete_no\fP"
+.br
+.ti -1c
+.RI "int \fBi_start_bit_counter\fP"
+.br
+.ti -1c
+.RI "int \fBi_buffer_read_index\fP"
+.br
+.ti -1c
+.RI "\fBIMSerial\fP * \fBp_imserial\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line 31 of file IMUM6\&.h\&.
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "IMUM6::IMUM6 (\fBIMSerial\fP *p_imserial)"
+
+.PP
+Constructor\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\param\fP 
+.RE
+.PP
+
+.PP
+Definition at line 10 of file IMUM6\&.cpp\&.
+.PP
+References b_command_complete, b_incomplete_packet, c_start_bits, i_buffer_read_index, i_communication_register, i_incomplete_no, i_misc_config_register, i_start_bit_counter, and p_imserial\&.
+.SH "Member Function Documentation"
+.PP 
+.SS "int IMUM6::CalculateChecksum ()\fC [private]\fP"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 1154 of file IMUM6\&.cpp\&.
+.SS "bool IMUM6::CheckData ()"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 231 of file IMUM6\&.cpp\&.
+.PP
+References IMUM6::UM6_DATA::c_adress, IMUM6::UM6_DATA::c_checksum, IMUM6::UM6_DATA::c_databytes, IMUM6::UM6_DATA::c_PT, c_start_bits, IMUM6::PACKET_TYPE::i_size_of_data, IMUM6::UM6_DATA::packet_type, and um6_data\&.
+.SS "int32_t IMUM6::GetDataRegister (inti_register) const"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 1106 of file IMUM6\&.cpp\&.
+.PP
+References i_data_registers\&.
+.SS "void IMUM6::GetFWVersion ()"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.SS "bool IMUM6::GetRawData (\fBIMUM6::UM6_DATA\fP &data)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 144 of file IMUM6\&.cpp\&.
+.PP
+References ParseData(), and um6_data\&.
+.SS "bool IMUM6::isCommandCompleted () const"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 1162 of file IMUM6\&.cpp\&.
+.PP
+References b_command_complete\&.
+.SS "bool IMUM6::isReceivedData (char *p_c_start_bits, inti_length)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 157 of file IMUM6\&.cpp\&.
+.PP
+References i_start_bit_counter, and T_c_stored_data\&.
+.PP
+Referenced by ParseData()\&.
+.SS "bool IMUM6::ParseData ()\fC [private]\fP"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 27 of file IMUM6\&.cpp\&.
+.PP
+References b_incomplete_packet, IMUM6::UM6_DATA::c_adress, IMUM6::UM6_DATA::c_checksum, IMUM6::UM6_DATA::c_databytes, IMUM6::UM6_DATA::c_PT, c_start_bits, IMUM6::PACKET_TYPE::i_batch_length, IMUM6::PACKET_TYPE::i_command_failed, i_incomplete_no, IMUM6::PACKET_TYPE::i_packet_has_data, IMUM6::PACKET_TYPE::i_packet_is_batch, IMUM6::PACKET_TYPE::i_size_of_data, isReceivedData(), IMUM6::UM6_DATA::packet_type, StoreData(), T_c_stored_data, and um6_data\&.
+.PP
+Referenced by GetRawData()\&.
+.SS "int IMUM6::ProcessData (vector< int > &T_i_registers)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 1043 of file IMUM6\&.cpp\&.
+.PP
+References b_command_complete, IMUM6::UNION32::c, IMUM6::UM6_DATA::c_adress, IMUM6::UM6_DATA::c_databytes, IMUM6::UNION32::i, IMUM6::PACKET_TYPE::i_batch_length, IMUM6::PACKET_TYPE::i_command_failed, i_data_registers, IMUM6::PACKET_TYPE::i_packet_has_data, IMUM6::PACKET_TYPE::i_packet_is_batch, IMUM6::UM6_DATA::packet_type, and um6_data\&.
+.SS "int IMUM6::SetBaudRate (longl_baudrate)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 331 of file IMUM6\&.cpp\&.
+.PP
+References i_communication_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetCommand (inti_register)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 1111 of file IMUM6\&.cpp\&.
+.PP
+References b_command_complete, c_start_bits, p_imserial, and IMSerial::WriteData()\&.
+.SS "int IMUM6::SetCovarianceMatrixTransmission (boolb_status)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 587 of file IMUM6\&.cpp\&.
+.PP
+References i_communication_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetDetailedSatelliteStatusTrasmission (boolb_status)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 465 of file IMUM6\&.cpp\&.
+.PP
+References i_communication_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetEKFAccelerometerUpdates (boolb_status)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 848 of file IMUM6\&.cpp\&.
+.PP
+References i_misc_config_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_MISC_CONFIG\&.
+.SS "int IMUM6::SetEKFMagnetometerUpdates (boolb_status)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 866 of file IMUM6\&.cpp\&.
+.PP
+References i_misc_config_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_MISC_CONFIG\&.
+.SS "int IMUM6::SetEulerAngleTransmission (boolb_status)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 606 of file IMUM6\&.cpp\&.
+.PP
+References i_communication_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetFrequency (inti_frequency)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 295 of file IMUM6\&.cpp\&.
+.PP
+References i_communication_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetGPSBaudrate (longl_baudrate)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 404 of file IMUM6\&.cpp\&.
+.PP
+References i_communication_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetGPSCourseVelocityTrasmission (boolb_status)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 506 of file IMUM6\&.cpp\&.
+.PP
+References i_communication_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetGPSPositionTransmission (boolb_status)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 548 of file IMUM6\&.cpp\&.
+.PP
+References i_communication_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetGPSRelativePositionTrasmission (boolb_status)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 528 of file IMUM6\&.cpp\&.
+.PP
+References i_communication_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetGyroCalibration (boolb_status)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 830 of file IMUM6\&.cpp\&.
+.PP
+References i_misc_config_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_MISC_CONFIG\&.
+.SS "int IMUM6::SetMode (boolb_mode)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 767 of file IMUM6\&.cpp\&.
+.PP
+References i_communication_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetPPSTiming (boolb_status)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 793 of file IMUM6\&.cpp\&.
+.PP
+References i_misc_config_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_MISC_CONFIG\&.
+.SS "int IMUM6::SetProcessedAccelerometerTransmission (boolb_status)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 667 of file IMUM6\&.cpp\&.
+.PP
+References i_communication_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetProcessedGyroTransmission (boolb_status)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 687 of file IMUM6\&.cpp\&.
+.PP
+References i_communication_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetProcessedMagnetometerTransmission (boolb_status)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 647 of file IMUM6\&.cpp\&.
+.PP
+References i_communication_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetQuaterninonState (boolb_status)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 811 of file IMUM6\&.cpp\&.
+.PP
+References i_misc_config_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_MISC_CONFIG\&.
+.SS "int IMUM6::SetQuaternionTransmission (boolb_status)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 627 of file IMUM6\&.cpp\&.
+.PP
+References i_communication_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetRawAccelerometerTransmission (boolb_status)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 727 of file IMUM6\&.cpp\&.
+.PP
+References i_communication_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetRawGyroTransmission (boolb_status)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 747 of file IMUM6\&.cpp\&.
+.PP
+References i_communication_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetRawMagnetometerTransmission (boolb_status)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 707 of file IMUM6\&.cpp\&.
+.PP
+References i_communication_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetRegister16bitValue (inti_register, int16_ti_data)\fC [private]\fP"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 1025 of file IMUM6\&.cpp\&.
+.PP
+References IMUM6::UNION32::i, and SetRegister32bitValue()\&.
+.SS "int IMUM6::SetRegister16bitValue (inti_register, int16_t *p_i_data)\fC [private]\fP"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 1009 of file IMUM6\&.cpp\&.
+.PP
+References IMUM6::UNION32::i, and SetRegister32bitValue()\&.
+.SS "int IMUM6::SetRegister32bitValue (inti_register, floatf_data)\fC [private]\fP"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 926 of file IMUM6\&.cpp\&.
+.PP
+References b_command_complete, IMUM6::UNION32::c, c_start_bits, IMUM6::UNION32::f, p_imserial, and IMSerial::WriteData()\&.
+.PP
+Referenced by SetBaudRate(), SetCovarianceMatrixTransmission(), SetDetailedSatelliteStatusTrasmission(), SetEKFAccelerometerUpdates(), SetEKFMagnetometerUpdates(), SetEulerAngleTransmission(), SetFrequency(), SetGPSBaudrate(), SetGPSCourseVelocityTrasmission(), SetGPSPositionTransmission(), SetGPSRelativePositionTrasmission(), SetGyroCalibration(), SetMode(), SetPPSTiming(), SetProcessedAccelerometerTransmission(), SetProcessedGyroTransmission(), SetProcessedMagnetometerTransmission(), SetQuaterninonState(), SetQuaternionTransmission(), SetRawAccelerometerTransmission(), SetRawGyroTransmission(), SetRawMagnetometerTransmission(), SetRegister16bitValue(), SetSatelliteSummaryTrasmission(), and SetTemperatureMeasurementTransmission()\&.
+.SS "int IMUM6::SetRegister32bitValue (inti_register, int32_ti_data)\fC [private]\fP"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 967 of file IMUM6\&.cpp\&.
+.PP
+References b_command_complete, IMUM6::UNION32::c, c_start_bits, IMUM6::UNION32::i, p_imserial, and IMSerial::WriteData()\&.
+.SS "void IMUM6::SetRegisterPinValue (int32_t &i_register, inti_pin_no, inti_count_of_pins, charc_value)\fC [private]\fP"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 882 of file IMUM6\&.cpp\&.
+.PP
+Referenced by SetBaudRate(), SetCovarianceMatrixTransmission(), SetDetailedSatelliteStatusTrasmission(), SetEKFAccelerometerUpdates(), SetEKFMagnetometerUpdates(), SetEulerAngleTransmission(), SetFrequency(), SetGPSBaudrate(), SetGPSCourseVelocityTrasmission(), SetGPSPositionTransmission(), SetGPSRelativePositionTrasmission(), SetGyroCalibration(), SetMode(), SetPPSTiming(), SetProcessedAccelerometerTransmission(), SetProcessedGyroTransmission(), SetProcessedMagnetometerTransmission(), SetQuaterninonState(), SetQuaternionTransmission(), SetRawAccelerometerTransmission(), SetRawGyroTransmission(), SetRawMagnetometerTransmission(), SetSatelliteSummaryTrasmission(), and SetTemperatureMeasurementTransmission()\&.
+.SS "int IMUM6::SetSatelliteSummaryTrasmission (boolb_status)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 485 of file IMUM6\&.cpp\&.
+.PP
+References i_communication_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetTemperatureMeasurementTransmission (boolb_status)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 568 of file IMUM6\&.cpp\&.
+.PP
+References i_communication_register, SetRegister32bitValue(), SetRegisterPinValue(), and IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "void IMUM6::StoreData ()\fC [private]\fP"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 202 of file IMUM6\&.cpp\&.
+.PP
+References IMSerial::isReadyRead(), p_imserial, IMSerial::ReadData(), and T_c_stored_data\&.
+.PP
+Referenced by ParseData()\&.
+.SH "Member Data Documentation"
+.PP 
+.SS "bool IMUM6::b_command_complete\fC [private]\fP"
+
+.PP
+Definition at line 952 of file IMUM6\&.h\&.
+.PP
+Referenced by IMUM6(), isCommandCompleted(), ProcessData(), SetCommand(), and SetRegister32bitValue()\&.
+.SS "bool IMUM6::b_incomplete_packet\fC [private]\fP"
+
+.PP
+Definition at line 958 of file IMUM6\&.h\&.
+.PP
+Referenced by IMUM6(), and ParseData()\&.
+.SS "char IMUM6::c_input_buffer[500]\fC [private]\fP"
+
+.PP
+Definition at line 950 of file IMUM6\&.h\&.
+.SS "char IMUM6::c_start_bits[3]\fC [private]\fP"
+
+.PP
+Definition at line 951 of file IMUM6\&.h\&.
+.PP
+Referenced by CheckData(), IMUM6(), ParseData(), SetCommand(), and SetRegister32bitValue()\&.
+.SS "int IMUM6::i_buffer_read_index\fC [private]\fP"
+
+.PP
+Definition at line 962 of file IMUM6\&.h\&.
+.PP
+Referenced by IMUM6()\&.
+.SS "int32_t IMUM6::i_communication_register\fC [private]\fP"
+
+.PP
+Definition at line 948 of file IMUM6\&.h\&.
+.PP
+Referenced by IMUM6(), SetBaudRate(), SetCovarianceMatrixTransmission(), SetDetailedSatelliteStatusTrasmission(), SetEulerAngleTransmission(), SetFrequency(), SetGPSBaudrate(), SetGPSCourseVelocityTrasmission(), SetGPSPositionTransmission(), SetGPSRelativePositionTrasmission(), SetMode(), SetProcessedAccelerometerTransmission(), SetProcessedGyroTransmission(), SetProcessedMagnetometerTransmission(), SetQuaternionTransmission(), SetRawAccelerometerTransmission(), SetRawGyroTransmission(), SetRawMagnetometerTransmission(), SetSatelliteSummaryTrasmission(), and SetTemperatureMeasurementTransmission()\&.
+.SS "int32_t IMUM6::i_data_registers[85]\fC [private]\fP"
+
+.PP
+Definition at line 947 of file IMUM6\&.h\&.
+.PP
+Referenced by GetDataRegister(), and ProcessData()\&.
+.SS "int IMUM6::i_incomplete_no\fC [private]\fP"
+
+.PP
+Definition at line 960 of file IMUM6\&.h\&.
+.PP
+Referenced by IMUM6(), and ParseData()\&.
+.SS "int32_t IMUM6::i_misc_config_register\fC [private]\fP"
+
+.PP
+Definition at line 949 of file IMUM6\&.h\&.
+.PP
+Referenced by IMUM6(), SetEKFAccelerometerUpdates(), SetEKFMagnetometerUpdates(), SetGyroCalibration(), SetPPSTiming(), and SetQuaterninonState()\&.
+.SS "int IMUM6::i_start_bit_counter\fC [private]\fP"
+
+.PP
+Definition at line 961 of file IMUM6\&.h\&.
+.PP
+Referenced by IMUM6(), and isReceivedData()\&.
+.SS "\fBIMSerial\fP* IMUM6::p_imserial\fC [private]\fP"
+
+.PP
+Definition at line 964 of file IMUM6\&.h\&.
+.PP
+Referenced by IMUM6(), SetCommand(), SetRegister32bitValue(), and StoreData()\&.
+.SS "list<char> IMUM6::T_c_serial_log\fC [private]\fP"
+
+.PP
+Definition at line 956 of file IMUM6\&.h\&.
+.SS "list<char> IMUM6::T_c_stored_data\fC [private]\fP"
+
+.PP
+Definition at line 955 of file IMUM6\&.h\&.
+.PP
+Referenced by isReceivedData(), ParseData(), and StoreData()\&.
+.SS "struct \fBIMUM6::UM6_DATA\fP IMUM6::um6_data"
+
+.PP
+Referenced by CheckData(), GetRawData(), ParseData(), and ProcessData()\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evarobot library from the source code\&.

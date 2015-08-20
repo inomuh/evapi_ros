@@ -1,0 +1,492 @@
+.TH "IMEIO" 3 "Thu Jul 9 2015" "evarobot library" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+IMEIO \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <IMEIO\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBIMEIO\fP (unsigned char u_c_device_address, string str_i2c_file_name, sem_t *mutex)"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "\fB~IMEIO\fP ()"
+.br
+.ti -1c
+.RI "int \fBSetPinADirection\fP (int i_pin_number, bool b_direction)"
+.br
+.RI "\fISet pin direction as input or output for PORTA\&. \fP"
+.ti -1c
+.RI "int \fBSetPinBDirection\fP (int i_pin_number, bool b_direction)"
+.br
+.RI "\fISet pin direction as input or output for PORTB\&. \fP"
+.ti -1c
+.RI "int \fBSetPinAValue\fP (int i_pin_number, bool b_value)"
+.br
+.RI "\fISet pin value as input or output for PORTA\&. \fP"
+.ti -1c
+.RI "int \fBSetPinBValue\fP (int i_pin_number, bool b_value)"
+.br
+.RI "\fISet pin value as input or output for PORTB\&. \fP"
+.ti -1c
+.RI "int \fBGetPinAValue\fP (int i_pin_number, bool &b_value)"
+.br
+.RI "\fIGet pin value as input or output for PORTA\&. \fP"
+.ti -1c
+.RI "int \fBGetPinBValue\fP (int i_pin_number, bool &b_value)"
+.br
+.RI "\fIGet pin value as input or output for PORTB\&. \fP"
+.in -1c
+.SS "Static Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "static const bool \fBOUTPUT\fP = false"
+.br
+.ti -1c
+.RI "static const bool \fBINPUT\fP = true"
+.br
+.ti -1c
+.RI "static const bool \fBHIGH\fP = true"
+.br
+.ti -1c
+.RI "static const bool \fBLOW\fP = false"
+.br
+.ti -1c
+.RI "static const int \fBRGB_LED1\fP = 0"
+.br
+.ti -1c
+.RI "static const int \fBRGB_LED2\fP = 1"
+.br
+.ti -1c
+.RI "static const int \fBRGB_LED3\fP = 2"
+.br
+.ti -1c
+.RI "static const int \fBBUZZER\fP = 3"
+.br
+.ti -1c
+.RI "static const int \fBBUMPER0\fP = 4"
+.br
+.ti -1c
+.RI "static const int \fBBUMPER1\fP = 5"
+.br
+.ti -1c
+.RI "static const int \fBBUMPER2\fP = 6"
+.br
+.ti -1c
+.RI "static const int \fBUSER_LED\fP = 7"
+.br
+.ti -1c
+.RI "static const int \fBSWR_RESET\fP = 0"
+.br
+.ti -1c
+.RI "static const int \fBEIO0\fP = 1"
+.br
+.ti -1c
+.RI "static const int \fBEIO1\fP = 2"
+.br
+.ti -1c
+.RI "static const int \fBEIO2\fP = 3"
+.br
+.ti -1c
+.RI "static const int \fBEIO3\fP = 4"
+.br
+.ti -1c
+.RI "static const int \fBEIO4\fP = 5"
+.br
+.ti -1c
+.RI "static const int \fBEIO5\fP = 6"
+.br
+.ti -1c
+.RI "static const int \fBEIO6\fP = 7"
+.br
+.in -1c
+.SS "Private Attributes"
+
+.in +1c
+.ti -1c
+.RI "unsigned char \fBu_c_pins_directions_A\fP"
+.br
+.ti -1c
+.RI "unsigned char \fBu_c_pins_data_A\fP"
+.br
+.ti -1c
+.RI "unsigned char \fBu_c_pins_directions_B\fP"
+.br
+.ti -1c
+.RI "unsigned char \fBu_c_pins_data_B\fP"
+.br
+.ti -1c
+.RI "\fBIMI2C\fP * \fBi2c\fP"
+.br
+.RI "\fIBrief\&. \fP"
+.in -1c
+.SS "Static Private Attributes"
+
+.in +1c
+.ti -1c
+.RI "static const unsigned char \fBIODIRA\fP = 0x00"
+.br
+.ti -1c
+.RI "static const unsigned char \fBIODIRB\fP = 0x01"
+.br
+.ti -1c
+.RI "static const unsigned char \fBGPIOA\fP = 0x12"
+.br
+.ti -1c
+.RI "static const unsigned char \fBGPIOB\fP = 0x13"
+.br
+.ti -1c
+.RI "static const unsigned char \fBOLATA\fP = 0x14"
+.br
+.ti -1c
+.RI "static const unsigned char \fBOLATB\fP = 0x15"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line 30 of file IMEIO\&.h\&.
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "IMEIO::IMEIO (unsigned charu_c_device_address, stringstr_i2c_file_name, sem_t *mutex)"
+
+.PP
+Constructor\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIu_c_device_address\fP address of the device connected to i2c 
+.br
+\fIstr_i2c_file_name\fP i2c driver name 
+.br
+\fImutex\fP mutex to use i2c driver simultaneously 
+.RE
+.PP
+
+.PP
+Definition at line 40 of file IMEIO\&.cpp\&.
+.PP
+References i2c, u_c_pins_data_A, u_c_pins_data_B, u_c_pins_directions_A, and u_c_pins_directions_B\&.
+.SS "IMEIO::~IMEIO ()"
+
+.PP
+Definition at line 51 of file IMEIO\&.cpp\&.
+.PP
+References i2c\&.
+.SH "Member Function Documentation"
+.PP 
+.SS "int IMEIO::GetPinAValue (inti_pin_number, bool &b_value)"
+
+.PP
+Get pin value as input or output for PORTA\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIi_pin_number\fP extended io no OR defined variables i\&.e\&. \fBIMEIO::RGB_LED1\fP 
+.br
+\fIb_value\fP value of pin number (\fBIMEIO::HIGH\fP or \fBIMEIO::LOW\fP) 
+.RE
+.PP
+\fBReturn values:\fP
+.RS 4
+\fI<0\fP if there is an error 
+.br
+\fI>0\fP if everthing is OK\&. 
+.RE
+.PP
+
+.PP
+Definition at line 122 of file IMEIO\&.cpp\&.
+.PP
+References GPIOA, i2c, IMI2C::ReadDataByte(), and u_c_pins_data_A\&.
+.SS "int IMEIO::GetPinBValue (inti_pin_number, bool &b_value)"
+
+.PP
+Get pin value as input or output for PORTB\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIi_pin_number\fP extended io no OR defined variables i\&.e\&. \fBIMEIO::EIO0\fP 
+.br
+\fIb_value\fP value of pin number (\fBIMEIO::HIGH\fP or \fBIMEIO::LOW\fP) 
+.RE
+.PP
+\fBReturn values:\fP
+.RS 4
+\fI<0\fP if there is an error 
+.br
+\fI>0\fP if everthing is OK\&. 
+.RE
+.PP
+
+.PP
+Definition at line 134 of file IMEIO\&.cpp\&.
+.PP
+References GPIOB, i2c, IMI2C::ReadDataByte(), and u_c_pins_data_B\&.
+.SS "int IMEIO::SetPinADirection (inti_pin_number, boolb_direction)"
+
+.PP
+Set pin direction as input or output for PORTA\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIi_pin_number\fP extended io no OR defined variables i\&.e\&. \fBIMEIO::RGB_LED1\fP 
+.br
+\fIb_direction\fP \fBIMEIO::OUTPUT\fP or \fBIMEIO::INPUT\fP 
+.RE
+.PP
+\fBReturn values:\fP
+.RS 4
+\fI<0\fP if there is an error 
+.br
+\fI>0\fP if everthing is OK\&. 
+.RE
+.PP
+
+.PP
+Definition at line 56 of file IMEIO\&.cpp\&.
+.PP
+References i2c, IODIRA, u_c_pins_directions_A, and IMI2C::WriteDataByte()\&.
+.SS "int IMEIO::SetPinAValue (inti_pin_number, boolb_value)"
+
+.PP
+Set pin value as input or output for PORTA\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIi_pin_number\fP extended io no OR defined variables i\&.e\&. \fBIMEIO::RGB_LED1\fP 
+.br
+\fIb_value\fP \fBIMEIO::HIGH\fP or \fBIMEIO::LOW\fP 
+.RE
+.PP
+\fBReturn values:\fP
+.RS 4
+\fI<0\fP if there is an error 
+.br
+\fI>0\fP if everthing is OK\&. 
+.RE
+.PP
+
+.PP
+Definition at line 84 of file IMEIO\&.cpp\&.
+.PP
+References GPIOA, i2c, u_c_pins_data_A, and IMI2C::WriteDataByte()\&.
+.SS "int IMEIO::SetPinBDirection (inti_pin_number, boolb_direction)"
+
+.PP
+Set pin direction as input or output for PORTB\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIi_pin_number\fP extended io no OR defined variables i\&.e\&. \fBIMEIO::EIO0\fP 
+.br
+\fIb_direction\fP \fBIMEIO::OUTPUT\fP or \fBIMEIO::INPUT\fP 
+.RE
+.PP
+\fBReturn values:\fP
+.RS 4
+\fI<0\fP if there is an error 
+.br
+\fI>0\fP if everthing is OK\&. 
+.RE
+.PP
+
+.PP
+Definition at line 70 of file IMEIO\&.cpp\&.
+.PP
+References i2c, IODIRB, u_c_pins_directions_B, and IMI2C::WriteDataByte()\&.
+.SS "int IMEIO::SetPinBValue (inti_pin_number, boolb_value)"
+
+.PP
+Set pin value as input or output for PORTB\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIi_pin_number\fP extended io no OR defined variables i\&.e\&. \fBIMEIO::EIO0\fP 
+.br
+\fIb_value\fP \fBIMEIO::HIGH\fP or \fBIMEIO::LOW\fP 
+.RE
+.PP
+\fBReturn values:\fP
+.RS 4
+\fI<0\fP if there is an error 
+.br
+\fI>0\fP if everthing is OK\&. 
+.RE
+.PP
+
+.PP
+Definition at line 104 of file IMEIO\&.cpp\&.
+.PP
+References GPIOB, i2c, u_c_pins_data_B, and IMI2C::WriteDataByte()\&.
+.SH "Member Data Documentation"
+.PP 
+.SS "const int IMEIO::BUMPER0 = 4\fC [static]\fP"
+
+.PP
+Definition at line 193 of file IMEIO\&.h\&.
+.SS "const int IMEIO::BUMPER1 = 5\fC [static]\fP"
+
+.PP
+Definition at line 194 of file IMEIO\&.h\&.
+.SS "const int IMEIO::BUMPER2 = 6\fC [static]\fP"
+
+.PP
+Definition at line 195 of file IMEIO\&.h\&.
+.SS "const int IMEIO::BUZZER = 3\fC [static]\fP"
+
+.PP
+Definition at line 191 of file IMEIO\&.h\&.
+.SS "const int IMEIO::EIO0 = 1\fC [static]\fP"
+
+.PP
+Definition at line 204 of file IMEIO\&.h\&.
+.SS "const int IMEIO::EIO1 = 2\fC [static]\fP"
+
+.PP
+Definition at line 205 of file IMEIO\&.h\&.
+.SS "const int IMEIO::EIO2 = 3\fC [static]\fP"
+
+.PP
+Definition at line 206 of file IMEIO\&.h\&.
+.SS "const int IMEIO::EIO3 = 4\fC [static]\fP"
+
+.PP
+Definition at line 207 of file IMEIO\&.h\&.
+.SS "const int IMEIO::EIO4 = 5\fC [static]\fP"
+
+.PP
+Definition at line 208 of file IMEIO\&.h\&.
+.SS "const int IMEIO::EIO5 = 6\fC [static]\fP"
+
+.PP
+Definition at line 209 of file IMEIO\&.h\&.
+.SS "const int IMEIO::EIO6 = 7\fC [static]\fP"
+
+.PP
+Definition at line 210 of file IMEIO\&.h\&.
+.SS "const unsigned char IMEIO::GPIOA = 0x12\fC [static]\fP, \fC [private]\fP"
+
+.PP
+Definition at line 247 of file IMEIO\&.h\&.
+.PP
+Referenced by GetPinAValue(), and SetPinAValue()\&.
+.SS "const unsigned char IMEIO::GPIOB = 0x13\fC [static]\fP, \fC [private]\fP"
+
+.PP
+Definition at line 248 of file IMEIO\&.h\&.
+.PP
+Referenced by GetPinBValue(), and SetPinBValue()\&.
+.SS "const bool IMEIO::HIGH = true\fC [static]\fP"
+
+.PP
+Definition at line 184 of file IMEIO\&.h\&.
+.SS "\fBIMI2C\fP* IMEIO::i2c\fC [private]\fP"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIstr_pin_number\fP 
+.br
+\fIu_c_pin\fP 
+.br
+\fIu_c_port\fP 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+Definition at line 242 of file IMEIO\&.h\&.
+.PP
+Referenced by GetPinAValue(), GetPinBValue(), IMEIO(), SetPinADirection(), SetPinAValue(), SetPinBDirection(), SetPinBValue(), and ~IMEIO()\&.
+.SS "const bool IMEIO::INPUT = true\fC [static]\fP"
+
+.PP
+Definition at line 182 of file IMEIO\&.h\&.
+.SS "const unsigned char IMEIO::IODIRA = 0x00\fC [static]\fP, \fC [private]\fP"
+
+.PP
+Definition at line 244 of file IMEIO\&.h\&.
+.PP
+Referenced by SetPinADirection()\&.
+.SS "const unsigned char IMEIO::IODIRB = 0x01\fC [static]\fP, \fC [private]\fP"
+
+.PP
+Definition at line 245 of file IMEIO\&.h\&.
+.PP
+Referenced by SetPinBDirection()\&.
+.SS "const bool IMEIO::LOW = false\fC [static]\fP"
+
+.PP
+Definition at line 185 of file IMEIO\&.h\&.
+.SS "const unsigned char IMEIO::OLATA = 0x14\fC [static]\fP, \fC [private]\fP"
+
+.PP
+Definition at line 250 of file IMEIO\&.h\&.
+.SS "const unsigned char IMEIO::OLATB = 0x15\fC [static]\fP, \fC [private]\fP"
+
+.PP
+Definition at line 251 of file IMEIO\&.h\&.
+.SS "const bool IMEIO::OUTPUT = false\fC [static]\fP"
+
+.PP
+Definition at line 181 of file IMEIO\&.h\&.
+.SS "const int IMEIO::RGB_LED1 = 0\fC [static]\fP"
+
+.PP
+Definition at line 188 of file IMEIO\&.h\&.
+.SS "const int IMEIO::RGB_LED2 = 1\fC [static]\fP"
+
+.PP
+Definition at line 189 of file IMEIO\&.h\&.
+.SS "const int IMEIO::RGB_LED3 = 2\fC [static]\fP"
+
+.PP
+Definition at line 190 of file IMEIO\&.h\&.
+.SS "const int IMEIO::SWR_RESET = 0\fC [static]\fP"
+
+.PP
+Definition at line 202 of file IMEIO\&.h\&.
+.SS "unsigned char IMEIO::u_c_pins_data_A\fC [private]\fP"
+
+.PP
+Definition at line 216 of file IMEIO\&.h\&.
+.PP
+Referenced by GetPinAValue(), IMEIO(), and SetPinAValue()\&.
+.SS "unsigned char IMEIO::u_c_pins_data_B\fC [private]\fP"
+
+.PP
+Definition at line 219 of file IMEIO\&.h\&.
+.PP
+Referenced by GetPinBValue(), IMEIO(), and SetPinBValue()\&.
+.SS "unsigned char IMEIO::u_c_pins_directions_A\fC [private]\fP"
+
+.PP
+Definition at line 215 of file IMEIO\&.h\&.
+.PP
+Referenced by IMEIO(), and SetPinADirection()\&.
+.SS "unsigned char IMEIO::u_c_pins_directions_B\fC [private]\fP"
+
+.PP
+Definition at line 218 of file IMEIO\&.h\&.
+.PP
+Referenced by IMEIO(), and SetPinBDirection()\&.
+.SS "const int IMEIO::USER_LED = 7\fC [static]\fP"
+
+.PP
+Definition at line 197 of file IMEIO\&.h\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evarobot library from the source code\&.

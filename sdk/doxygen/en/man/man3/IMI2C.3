@@ -1,0 +1,208 @@
+.TH "IMI2C" 3 "Thu Jul 9 2015" "evarobot library" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+IMI2C \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <IMI2C\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBIMI2C\fP ()"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "\fBIMI2C\fP (unsigned char u_c_device_address, string \fBstr_i2c_file_name\fP, sem_t *\fBmutex\fP)"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "\fB~IMI2C\fP (void)"
+.br
+.ti -1c
+.RI "int \fBWriteDataByte\fP (unsigned char u_c_register_address, unsigned char u_c_data)"
+.br
+.RI "\fIFunction to write byte data into a register of an I2C device\&. \fP"
+.ti -1c
+.RI "int \fBReadDataByte\fP (unsigned char u_c_register_address, unsigned char &u_c_data)"
+.br
+.RI "\fIFunction to read byte data from a register of an I2C device\&. \fP"
+.in -1c
+.SS "Private Member Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBOpenI2C\fP ()"
+.br
+.RI "\fIOpen an I2C device\&. \fP"
+.ti -1c
+.RI "int \fBCloseI2C\fP (int i_i2cfd)"
+.br
+.RI "\fIClose an I2C device\&. \fP"
+.in -1c
+.SS "Private Attributes"
+
+.in +1c
+.ti -1c
+.RI "string \fBstr_i2c_file_name\fP"
+.br
+.RI "\fIi2c device name e\&.g\&.'/dev/i2c-0' or '/dev/i2c-1' \fP"
+.ti -1c
+.RI "unsigned char \fBu_c_device_adress\fP"
+.br
+.ti -1c
+.RI "sem_t * \fBmutex\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line 43 of file IMI2C\&.h\&.
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "IMI2C::IMI2C ()"
+
+.PP
+Constructor\&. 
+.PP
+Definition at line 16 of file IMI2C\&.cpp\&.
+.PP
+References OpenI2C(), str_i2c_file_name, and u_c_device_adress\&.
+.SS "IMI2C::IMI2C (unsigned charu_c_device_address, stringstr_i2c_file_name, sem_t *mutex)"
+
+.PP
+Constructor\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIu_c_device_address\fP i2c device address 
+.br
+\fIstr_i2c_file_name\fP i2c device driver name 
+.br
+\fI*\fP mutex 
+.RE
+.PP
+
+.PP
+Definition at line 32 of file IMI2C\&.cpp\&.
+.PP
+References mutex, OpenI2C(), str_i2c_file_name, and u_c_device_adress\&.
+.SS "IMI2C::~IMI2C (void)"
+
+.PP
+Definition at line 45 of file IMI2C\&.cpp\&.
+.SH "Member Function Documentation"
+.PP 
+.SS "int IMI2C::CloseI2C (inti_i2cfd)\fC [private]\fP"
+
+.PP
+Close an I2C device\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIi_i2cfd\fP <0 if there ise an error 
+.RE
+.PP
+\fBReturn values:\fP
+.RS 4
+\fI>=0\fP no error 
+.RE
+.PP
+
+.PP
+Definition at line 80 of file IMI2C\&.cpp\&.
+.PP
+Referenced by ReadDataByte(), and WriteDataByte()\&.
+.SS "int IMI2C::OpenI2C ()\fC [private]\fP"
+
+.PP
+Open an I2C device\&. <0 if there ise an error 
+.PP
+\fBReturn values:\fP
+.RS 4
+\fI>=0\fP no error 
+.RE
+.PP
+
+.PP
+Definition at line 59 of file IMI2C\&.cpp\&.
+.PP
+References str_i2c_file_name\&.
+.PP
+Referenced by IMI2C(), ReadDataByte(), and WriteDataByte()\&.
+.SS "int IMI2C::ReadDataByte (unsigned charu_c_register_address, unsigned char &u_c_data)"
+
+.PP
+Function to read byte data from a register of an I2C device\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIu_c_register_address\fP 
+.br
+\fI&\fP u_c_data Okunan değerdir\&.  <0 if there ise an error 
+.RE
+.PP
+\fBReturn values:\fP
+.RS 4
+\fI>=0\fP no error 
+.RE
+.PP
+
+.PP
+Definition at line 149 of file IMI2C\&.cpp\&.
+.PP
+References CloseI2C(), OpenI2C(), and u_c_device_adress\&.
+.PP
+Referenced by IMEIO::GetPinAValue(), and IMEIO::GetPinBValue()\&.
+.SS "int IMI2C::WriteDataByte (unsigned charu_c_register_address, unsigned charu_c_data)"
+
+.PP
+Function to write byte data into a register of an I2C device\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIu_c_register_address\fP 
+.br
+\fIu_c_data\fP <0 if there ise an error 
+.RE
+.PP
+\fBReturn values:\fP
+.RS 4
+\fI>=0\fP no error 
+.RE
+.PP
+
+.PP
+Definition at line 102 of file IMI2C\&.cpp\&.
+.PP
+References CloseI2C(), OpenI2C(), and u_c_device_adress\&.
+.PP
+Referenced by IMEIO::SetPinADirection(), IMEIO::SetPinAValue(), IMEIO::SetPinBDirection(), and IMEIO::SetPinBValue()\&.
+.SH "Member Data Documentation"
+.PP 
+.SS "sem_t* IMI2C::mutex\fC [private]\fP"
+
+.PP
+Definition at line 169 of file IMI2C\&.h\&.
+.PP
+Referenced by IMI2C()\&.
+.SS "string IMI2C::str_i2c_file_name\fC [private]\fP"
+
+.PP
+i2c device name e\&.g\&.'/dev/i2c-0' or '/dev/i2c-1' 
+.PP
+Definition at line 164 of file IMI2C\&.h\&.
+.PP
+Referenced by IMI2C(), and OpenI2C()\&.
+.SS "unsigned char IMI2C::u_c_device_adress\fC [private]\fP"
+
+.PP
+Definition at line 167 of file IMI2C\&.h\&.
+.PP
+Referenced by IMI2C(), ReadDataByte(), and WriteDataByte()\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evarobot library from the source code\&.

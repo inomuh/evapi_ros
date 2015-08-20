@@ -1,0 +1,102 @@
+.TH "include/IMGPIO.h" 3 "Per Tem 9 2015" "evarobot library" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/IMGPIO.h \- 
+.PP
+Raspberry Pi üzerindeki GPIO'ları kontrol eden sınıftır\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <string>\fP
+.br
+\fC#include <iostream>\fP
+.br
+\fC#include <sstream>\fP
+.br
+\fC#include <unistd\&.h>\fP
+.br
+\fC#include <errno\&.h>\fP
+.br
+\fC#include <stdio\&.h>\fP
+.br
+\fC#include <stdlib\&.h>\fP
+.br
+\fC#include <sys/types\&.h>\fP
+.br
+\fC#include <sys/stat\&.h>\fP
+.br
+\fC#include <fcntl\&.h>\fP
+.br
+\fC#include <sys/poll\&.h>\fP
+.br
+\fC#include <signal\&.h>\fP
+.br
+
+.SS "Sınıflar"
+
+.in +1c
+.ti -1c
+.RI "class \fBIMGPIO\fP"
+.br
+.in -1c
+.SS "Makrolar"
+
+.in +1c
+.ti -1c
+.RI "#define \fBINCLUDE_IMGPIO_H_\fP"
+.br
+.in -1c
+.SS "Typedef'ler"
+
+.in +1c
+.ti -1c
+.RI "typedef void(* \fBCallbackFunctionPtr\fP )(void *, int)"
+.br
+.in -1c
+.SS "Fonksiyonlar"
+
+.in +1c
+.ti -1c
+.RI "void \fBCatchSignal\fP (int i_sig)"
+.br
+.in -1c
+.SH "Ayrıntılı tanımlama"
+.PP 
+Raspberry Pi üzerindeki GPIO'ları kontrol eden sınıftır\&. 
+
+
+.PP
+\fBYazar:\fP
+.RS 4
+Mehmet Akcakoca (mehmet.akcakoca@inovasyonmuhendislik.com) 
+.RE
+.PP
+\fBTarih:\fP
+.RS 4
+Mar, 2015
+.RE
+.PP
+Bu sınıf 'Linux yaklaşımı' adı verilen yöntem kullanılmaktadır\&. Linux'te GPIO'lara güvenli erişebilmek için driver yazılmıştır\&. Her bir GPIO için birer dosya üzerinden kontrol edilebilmektedir\&. Bu yöntemin dezavantjı, GPIO seviye değiştirme hızının düşük olmasıdır\&. 
+.PP
+\fBIMGPIO\&.h\fP dosyasında tanımlanmıştır\&.
+.SH "Makro Dokümantasyonu"
+.PP 
+.SS "#define INCLUDE_IMGPIO_H_"
+
+.PP
+IMGPIO\&.h dosyasının 34 numaralı satırında tanımlanmıştır\&.
+.SH "Typedef Dokümantasyonu"
+.PP 
+.SS "typedef void(* CallbackFunctionPtr)(void *, int)"
+
+.PP
+IMGPIO\&.h dosyasının 57 numaralı satırında tanımlanmıştır\&.
+.SH "Fonksiyon Dokümantasyonu"
+.PP 
+.SS "void CatchSignal (inti_sig)"
+
+.SH "Yazar"
+.PP 
+Doxygen tarafındanevarobot library için kaynak koddan otomatik üretilmiştir\&.

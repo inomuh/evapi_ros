@@ -1,0 +1,5 @@
+<map id="IMEIO::GetPinBValue" name="IMEIO::GetPinBValue">
+<area shape="rect" id="node2" href="$classIMI2C.html#ac1fab70073b31d3905019c88ba237fbc" title="Function to read byte data from a register of an I2C device. " alt="" coords="205,31,357,57"/>
+<area shape="rect" id="node3" href="$classIMI2C.html#ab3f82da464834214b5ba716c1d683d9c" title="Open an I2C device. " alt="" coords="407,5,526,32"/>
+<area shape="rect" id="node4" href="$classIMI2C.html#a20e7ca50e02f1590278e75b4d82e9e1a" title="Close an I2C device. " alt="" coords="406,56,527,83"/>
+</map>

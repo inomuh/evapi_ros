@@ -1,0 +1,126 @@
+.TH "IMADC" 3 "Thu Jul 9 2015" "evarobot library" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+IMADC \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <IMADC\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBIMADC\fP (\fBIMSPI\fP *\fBp_imspi\fP, int i_adc_bits=12)"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "int \fBReadChannel\fP (int i_channel_no)"
+.br
+.RI "\fIReads single-ended Analog to Digital Converter Channel (MCP3208)\&. \fP"
+.ti -1c
+.RI "int \fBReadChannel\fP (int i_channel_plus, int i_channel_negative)"
+.br
+.RI "\fIReads differential Analog to Digital Converter Channel (MCP3208)\&. \fP"
+.in -1c
+.SS "Private Attributes"
+
+.in +1c
+.ti -1c
+.RI "\fBIMSPI\fP * \fBp_imspi\fP"
+.br
+.RI "\fIClass \fBIMSPI\fP is used for communicating with MCP3208\&. \fP"
+.ti -1c
+.RI "int \fBi_mask\fP"
+.br
+.RI "\fIMasking variable\&. \fP"
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line 37 of file IMADC\&.h\&.
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "IMADC::IMADC (\fBIMSPI\fP *p_imspi, inti_adc_bits = \fC12\fP)"
+
+.PP
+Constructor\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIp_imspi\fP pointer of \fBIMSPI\fP class\&. 
+.br
+\fIi_adc_bits\fP number of adc bits\&. It depends ADC hardware\&. 
+.RE
+.PP
+
+.PP
+Definition at line 29 of file IMADC\&.cpp\&.
+.PP
+References i_mask, and p_imspi\&.
+.SH "Member Function Documentation"
+.PP 
+.SS "int IMADC::ReadChannel (inti_channel_no)"
+
+.PP
+Reads single-ended Analog to Digital Converter Channel (MCP3208)\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIi_channel_no\fP is channel number to read in range of 0-7 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+value of data on the channel 
+.RE
+.PP
+
+.PP
+Definition at line 41 of file IMADC\&.cpp\&.
+.PP
+References i_mask, p_imspi, and IMSPI::SpiWriteRead()\&.
+.SS "int IMADC::ReadChannel (inti_channel_plus, inti_channel_negative)"
+
+.PP
+Reads differential Analog to Digital Converter Channel (MCP3208)\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIi_channel_plus\fP is channel number to read in range of 0-7 
+.br
+\fIi_channel_negative\fP 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+value of data on the difference(i_channel_plus - i_channel_negative) 
+.RE
+.PP
+
+.PP
+Definition at line 73 of file IMADC\&.cpp\&.
+.PP
+References i_mask, p_imspi, and IMSPI::SpiWriteRead()\&.
+.SH "Member Data Documentation"
+.PP 
+.SS "int IMADC::i_mask\fC [private]\fP"
+
+.PP
+Masking variable\&. 
+.PP
+Definition at line 117 of file IMADC\&.h\&.
+.PP
+Referenced by IMADC(), and ReadChannel()\&.
+.SS "\fBIMSPI\fP* IMADC::p_imspi\fC [private]\fP"
+
+.PP
+Class \fBIMSPI\fP is used for communicating with MCP3208\&. 
+.PP
+Definition at line 108 of file IMADC\&.h\&.
+.PP
+Referenced by IMADC(), and ReadChannel()\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evarobot library from the source code\&.

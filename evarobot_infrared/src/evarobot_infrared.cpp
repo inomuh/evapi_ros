@@ -1,18 +1,4 @@
-#include "ros/ros.h"
-#include "sensor_msgs/Range.h"
-
-#include <vector>
-#include <sstream>
-
-#include "IMADC.h"
-
-//#ifndef DEBUG
-//#define DEBUG
-//#endif
-
-#define MAX_IR 7
-
-using namespace std;
+#include "evarobot_infrared/evarobot_infrared.h"
 
 int main(int argc, char **argv)
 {

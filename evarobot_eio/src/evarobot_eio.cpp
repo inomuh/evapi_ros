@@ -1,19 +1,4 @@
-#include "ros/ros.h"
-
-
-#include <vector>
-
-#include <fcntl.h>
-#include <sys/ioctl.h>		/* ioctl */
-
-#include "IMEIO.h"
-
-
-char SEM_NAME[]= "i2c";
-
-
-using namespace std;
-
+#include "evarobot_eio/evarobot_eio.h"
 
 
 int main(int argc, char **argv)

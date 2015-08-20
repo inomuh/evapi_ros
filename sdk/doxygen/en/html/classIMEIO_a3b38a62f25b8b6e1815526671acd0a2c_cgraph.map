@@ -1,0 +1,5 @@
+<map id="IMEIO::SetPinADirection" name="IMEIO::SetPinADirection">
+<area shape="rect" id="node2" href="$classIMI2C.html#a2643ea3b7905279e12c956c5b1771d27" title="Function to write byte data into a register of an I2C device. " alt="" coords="221,31,373,57"/>
+<area shape="rect" id="node3" href="$classIMI2C.html#ab3f82da464834214b5ba716c1d683d9c" title="Open an I2C device. " alt="" coords="423,5,542,32"/>
+<area shape="rect" id="node4" href="$classIMI2C.html#a20e7ca50e02f1590278e75b4d82e9e1a" title="Close an I2C device. " alt="" coords="422,56,543,83"/>
+</map>

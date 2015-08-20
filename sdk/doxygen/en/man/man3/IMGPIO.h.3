@@ -1,0 +1,102 @@
+.TH "include/IMGPIO.h" 3 "Thu Jul 9 2015" "evarobot library" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+include/IMGPIO.h \- 
+.PP
+Controls GPIO's of Raspberry Pi\&.  
+
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <string>\fP
+.br
+\fC#include <iostream>\fP
+.br
+\fC#include <sstream>\fP
+.br
+\fC#include <unistd\&.h>\fP
+.br
+\fC#include <errno\&.h>\fP
+.br
+\fC#include <stdio\&.h>\fP
+.br
+\fC#include <stdlib\&.h>\fP
+.br
+\fC#include <sys/types\&.h>\fP
+.br
+\fC#include <sys/stat\&.h>\fP
+.br
+\fC#include <fcntl\&.h>\fP
+.br
+\fC#include <sys/poll\&.h>\fP
+.br
+\fC#include <signal\&.h>\fP
+.br
+
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "class \fBIMGPIO\fP"
+.br
+.in -1c
+.SS "Macros"
+
+.in +1c
+.ti -1c
+.RI "#define \fBINCLUDE_IMGPIO_H_\fP"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef void(* \fBCallbackFunctionPtr\fP )(void *, int)"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBCatchSignal\fP (int i_sig)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Controls GPIO's of Raspberry Pi\&. 
+
+
+.PP
+\fBAuthor:\fP
+.RS 4
+Mehmet Akcakoca (mehmet.akcakoca@inovasyonmuhendislik.com) 
+.RE
+.PP
+\fBDate:\fP
+.RS 4
+Mar, 2015
+.RE
+.PP
+This class uses the 'Linux approach' (sysfs)\&. Linux already has a built-in driver for safely accessing the GPIOs\&. It basically views each property of each GPIO pin as a file\&. This is the preferred method of GPIO access\&. One disadvantage of this approach is that it tends to make for slower (but safer) GPIO pin toggling\&. 
+.PP
+Definition in file \fBIMGPIO\&.h\fP\&.
+.SH "Macro Definition Documentation"
+.PP 
+.SS "#define INCLUDE_IMGPIO_H_"
+
+.PP
+Definition at line 34 of file IMGPIO\&.h\&.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef void(* CallbackFunctionPtr)(void *, int)"
+
+.PP
+Definition at line 57 of file IMGPIO\&.h\&.
+.SH "Function Documentation"
+.PP 
+.SS "void CatchSignal (inti_sig)"
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evarobot library from the source code\&.

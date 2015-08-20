@@ -1,0 +1,68 @@
+.TH "IMUM6::UM6_DATA" 3 "Per Tem 9 2015" "evarobot library" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+IMUM6::UM6_DATA \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <IMUM6\&.h>\fP
+.SS "Public Özellikler(attribute)"
+
+.in +1c
+.ti -1c
+.RI "\fBPACKET_TYPE\fP \fBpacket_type\fP"
+.br
+.ti -1c
+.RI "char \fBc_PT\fP"
+.br
+.ti -1c
+.RI "char \fBc_adress\fP"
+.br
+.ti -1c
+.RI "char \fBc_databytes\fP [64]"
+.br
+.ti -1c
+.RI "char \fBc_checksum\fP [2]"
+.br
+.in -1c
+.SH "Ayrıntılı tanımlama"
+.PP 
+IMUM6\&.h dosyasının 44 numaralı satırında tanımlanmıştır\&.
+.SH "Üye Veri Dokümantasyonu"
+.PP 
+.SS "char IMUM6::UM6_DATA::c_adress"
+
+.PP
+IMUM6\&.h dosyasının 48 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMUM6::CheckData(), IMUM6::ParseData() ve IMUM6::ProcessData()\&.
+.SS "char IMUM6::UM6_DATA::c_checksum[2]"
+
+.PP
+IMUM6\&.h dosyasının 50 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMUM6::CheckData() ve IMUM6::ParseData()\&.
+.SS "char IMUM6::UM6_DATA::c_databytes[64]"
+
+.PP
+IMUM6\&.h dosyasının 49 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMUM6::CheckData(), IMUM6::ParseData() ve IMUM6::ProcessData()\&.
+.SS "char IMUM6::UM6_DATA::c_PT"
+
+.PP
+IMUM6\&.h dosyasının 47 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMUM6::CheckData() ve IMUM6::ParseData()\&.
+.SS "\fBPACKET_TYPE\fP IMUM6::UM6_DATA::packet_type"
+
+.PP
+IMUM6\&.h dosyasının 46 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMUM6::CheckData(), IMUM6::ParseData() ve IMUM6::ProcessData()\&.
+
+.SH "Yazar"
+.PP 
+Doxygen tarafındanevarobot library için kaynak koddan otomatik üretilmiştir\&.

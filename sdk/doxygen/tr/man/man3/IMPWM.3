@@ -1,0 +1,602 @@
+.TH "IMPWM" 3 "Per Tem 9 2015" "evarobot library" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+IMPWM \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <IMPWM\&.h>\fP
+.SS "Public Üye Fonksiyonlar"
+
+.in +1c
+.ti -1c
+.RI "\fBIMPWM\fP ()"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "\fBIMPWM\fP (double d_Hz, unsigned int \fBu_i_counts\fP, double d_duty, int i_m)"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "\fB~IMPWM\fP ()"
+.br
+.ti -1c
+.RI "unsigned int \fBSetFrequency\fP (const double &c_d_hz)"
+.br
+.RI "\fIFrekansı atar ve PWM'yi yeniden başlatır\&. \fP"
+.ti -1c
+.RI "unsigned int \fBSetCounts\fP (const unsigned int &c_u_i_counts)"
+.br
+.RI "\fIPWM çözünürlüğünü atar ve PWM'i yeniden başlatır\&. \fP"
+.ti -1c
+.RI "unsigned int \fBSetDutyCycle\fP (const double &c_d_duty, int i_pwm_no)"
+.br
+.RI "\fIDuty Cycle'yı yüzdelik olarak atar (Hızlı)\&. \fP"
+.ti -1c
+.RI "unsigned int \fBSetDutyCycleCount\fP (const unsigned int &c_u_i_counts, int i_pwm_no)"
+.br
+.ti -1c
+.RI "unsigned int \fBSetDutyCycleForce\fP (const double &c_d_duty, const int &c_i_m, int i_pwm_no)"
+.br
+.RI "\fISırasıyla PWM'i etkisizleştirir, duty cycle atar ve PWM'mi etkinleştirir\&. \fP"
+.ti -1c
+.RI "unsigned int \fBSetMode\fP (const int &c_i_m)"
+.br
+.RI "\fI'setDutyCycleForce()' fonksiyonunu kullanarak PWM Modunu atar\&. \fP"
+.ti -1c
+.RI "double \fBGetFrequency\fP () const "
+.br
+.RI "\fIPWM sinyalinin frekansını döndürür\&. \fP"
+.ti -1c
+.RI "double \fBGetDutyCycle\fP () const "
+.br
+.RI "\fIPWM sinyalinin Duty Cycle'ını yüzdelik olarak döndürür\&. \fP"
+.ti -1c
+.RI "int \fBGetCounts\fP () const "
+.br
+.RI "\fIPWM çözünürlüğünü döndürür\&. \fP"
+.ti -1c
+.RI "int \fBGetDivisor\fP () const "
+.br
+.RI "\fIBölücünün sayısını döndürür\&. \fP"
+.ti -1c
+.RI "int \fBGetMode\fP () const "
+.br
+.RI "\fIPWMMODE (\fBIMPWM::MSMODE\fP or \fBIMPWM::PWMMODE\fP)'unu döndürür\&. \fP"
+.in -1c
+.SS "Statik Public Özellikler(attribute)"
+
+.in +1c
+.ti -1c
+.RI "static const int \fBPWMMODE\fP = 1"
+.br
+.ti -1c
+.RI "static const int \fBMSMODE\fP = 2"
+.br
+.ti -1c
+.RI "static const int \fBERRFREQ\fP = 1"
+.br
+.ti -1c
+.RI "static const int \fBERRCOUNT\fP = 2"
+.br
+.ti -1c
+.RI "static const int \fBERRDUTY\fP = 3"
+.br
+.ti -1c
+.RI "static const int \fBERRMODE\fP = 4"
+.br
+.in -1c
+.SS "Özel Üye Fonksiyonlar"
+
+.in +1c
+.ti -1c
+.RI "volatile unsigned * \fBMapRegisterAddres\fP (unsigned long u_l_base_address)"
+.br
+.RI "\fIFiziksel hafızaya eşleme yapan fonksiyondur\&. \fP"
+.ti -1c
+.RI "void \fBConfigPWMPin\fP ()"
+.br
+.RI "\fIGPIO18'i ALT5 ve GPIO13'u ALT0 alternatif fonksiyonlara PWM sinyali çıktısını üretebilmek için ayarlamaktadır\&. \fP"
+.ti -1c
+.RI "void \fBConfigPWM\fP ()"
+.br
+.RI "\fIPWM1 ve PWM2 için global ayarlama ve ilklendirme işlemlerinden sorumlu fonksiyondur\&. \fP"
+.in -1c
+.SS "Özel Özellikler(attribute)"
+
+.in +1c
+.ti -1c
+.RI "double \fBd_frequency\fP"
+.br
+.ti -1c
+.RI "double \fBd_dutyCycle\fP"
+.br
+.ti -1c
+.RI "unsigned int \fBu_i_counts\fP"
+.br
+.ti -1c
+.RI "unsigned int \fBu_i_divisor\fP"
+.br
+.ti -1c
+.RI "int \fBi_mode\fP"
+.br
+.ti -1c
+.RI "volatile unsigned * \fBp_v_u_clk\fP"
+.br
+.ti -1c
+.RI "volatile unsigned * \fBp_v_u_pwm\fP"
+.br
+.ti -1c
+.RI "volatile unsigned * \fBp_v_u_gpio\fP"
+.br
+.in -1c
+.SS "Statik Özel Özellikler(attribute)"
+
+.in +1c
+.ti -1c
+.RI "static const int \fBBCM2708_PERI_BASE\fP = 0x3F000000"
+.br
+.ti -1c
+.RI "static const int \fBPWM_BASE\fP = (\fBBCM2708_PERI_BASE\fP + 0x20C000)"
+.br
+.ti -1c
+.RI "static const int \fBCLOCK_BASE\fP = (\fBBCM2708_PERI_BASE\fP + 0x101000)"
+.br
+.ti -1c
+.RI "static const int \fBGPIO_BASE\fP = (\fBBCM2708_PERI_BASE\fP + 0x200000)"
+.br
+.ti -1c
+.RI "static const int \fBPWM_CTL\fP = 0"
+.br
+.ti -1c
+.RI "static const int \fBPWM_RNG1\fP = 4"
+.br
+.ti -1c
+.RI "static const int \fBPWM_DAT1\fP = 5"
+.br
+.ti -1c
+.RI "static const int \fBPWM_RNG2\fP = 8"
+.br
+.ti -1c
+.RI "static const int \fBPWM_DAT2\fP = 9"
+.br
+.ti -1c
+.RI "static const int \fBPWMCLK_CNTL\fP = 40"
+.br
+.ti -1c
+.RI "static const int \fBPWMCLK_DIV\fP = 41"
+.br
+.ti -1c
+.RI "static const int \fBBLOCK_SIZE\fP = 4096"
+.br
+.in -1c
+.SH "Ayrıntılı tanımlama"
+.PP 
+IMPWM\&.h dosyasının 38 numaralı satırında tanımlanmıştır\&.
+.SH "Constructor & Destructor Dokümantasyonu"
+.PP 
+.SS "IMPWM::IMPWM ()"
+
+.PP
+Constructor\&. 
+.PP
+IMPWM\&.cpp dosyasının 47 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar CLOCK_BASE, ConfigPWM(), ConfigPWMPin(), d_dutyCycle, d_frequency, GPIO_BASE, i_mode, MapRegisterAddres(), p_v_u_clk, p_v_u_gpio, p_v_u_pwm, PWM_BASE, PWMMODE ve u_i_counts\&.
+.SS "IMPWM::IMPWM (doubled_Hz, unsigned intu_i_counts, doubled_duty, inti_m)"
+
+.PP
+Constructor\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fId_Hz\fP Frekans 
+.br
+\fIu_i_counts\fP PWM çözünürlüğü 
+.br
+\fId_duty\fP Duty cycle 
+.br
+\fIi_m\fP \fBIMPWM::MSMODE\fP ya da \fBIMPWM::PWMMODE\fP 
+.RE
+.PP
+
+.PP
+IMPWM\&.cpp dosyasının 79 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar CLOCK_BASE, ConfigPWM(), ConfigPWMPin(), d_dutyCycle, d_frequency, GPIO_BASE, i_mode, MapRegisterAddres(), MSMODE, p_v_u_clk, p_v_u_gpio, p_v_u_pwm, PWM_BASE, PWMMODE, SetDutyCycleCount() ve u_i_counts\&.
+.SS "IMPWM::~IMPWM ()"
+
+.PP
+IMPWM\&.cpp dosyasının 123 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar BLOCK_SIZE, p_v_u_clk, p_v_u_gpio, p_v_u_pwm, PWM_CTL, PWM_DAT1, PWM_RNG1, PWMCLK_CNTL ve PWMCLK_DIV\&.
+.SH "Üye Fonksiyon Dokümantasyonu"
+.PP 
+.SS "void IMPWM::ConfigPWM ()\fC [private]\fP"
+
+.PP
+PWM1 ve PWM2 için global ayarlama ve ilklendirme işlemlerinden sorumlu fonksiyondur\&. 
+.PP
+IMPWM\&.cpp dosyasının 487 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar d_dutyCycle, d_frequency, i_mode, p_v_u_clk, p_v_u_pwm, PWM_CTL, PWM_DAT1, PWM_DAT2, PWM_RNG1, PWM_RNG2, PWMCLK_CNTL, PWMCLK_DIV, PWMMODE, u_i_counts ve u_i_divisor\&.
+.PP
+Referans veren IMPWM(), SetCounts() ve SetFrequency()\&.
+.SS "void IMPWM::ConfigPWMPin ()\fC [private]\fP"
+
+.PP
+GPIO18'i ALT5 ve GPIO13'u ALT0 alternatif fonksiyonlara PWM sinyali çıktısını üretebilmek için ayarlamaktadır\&. 
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+
+.RE
+.PP
+
+.PP
+IMPWM\&.cpp dosyasının 440 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar p_v_u_gpio\&.
+.PP
+Referans veren IMPWM()\&.
+.SS "int IMPWM::GetCounts () const"
+
+.PP
+PWM çözünürlüğünü döndürür\&. 
+.PP
+IMPWM\&.cpp dosyasının 373 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar u_i_counts\&.
+.SS "int IMPWM::GetDivisor () const"
+
+.PP
+Bölücünün sayısını döndürür\&. 
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+
+.RE
+.PP
+
+.PP
+IMPWM\&.cpp dosyasının 375 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar u_i_divisor\&.
+.SS "double IMPWM::GetDutyCycle () const"
+
+.PP
+PWM sinyalinin Duty Cycle'ını yüzdelik olarak döndürür\&. 
+.PP
+IMPWM\&.cpp dosyasının 377 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar d_dutyCycle\&.
+.SS "double IMPWM::GetFrequency () const"
+
+.PP
+PWM sinyalinin frekansını döndürür\&. 
+.PP
+IMPWM\&.cpp dosyasının 371 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar d_frequency\&.
+.SS "int IMPWM::GetMode () const"
+
+.PP
+PWMMODE (\fBIMPWM::MSMODE\fP or \fBIMPWM::PWMMODE\fP)'unu döndürür\&. 
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+
+.RE
+.PP
+
+.PP
+IMPWM\&.cpp dosyasının 379 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_mode\&.
+.SS "volatile unsigned * IMPWM::MapRegisterAddres (unsigned longu_l_base_address)\fC [private]\fP"
+
+.PP
+Fiziksel hafızaya eşleme yapan fonksiyondur\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIu_l_base_address\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMPWM\&.cpp dosyasının 392 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar BLOCK_SIZE\&.
+.PP
+Referans veren IMPWM()\&.
+.SS "unsigned int IMPWM::SetCounts (const unsigned int &c_u_i_counts)"
+
+.PP
+PWM çözünürlüğünü atar ve PWM'i yeniden başlatır\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fI&\fP c_u_i_counts PWM çözünürlüğü 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMPWM\&.cpp dosyasının 204 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar ConfigPWM(), ERRCOUNT ve u_i_counts\&.
+.SS "unsigned int IMPWM::SetDutyCycle (const double &c_d_duty, inti_pwm_no)"
+
+.PP
+Duty Cycle'yı yüzdelik olarak atar (Hızlı)\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fI&c_d_duty\fP Duty cycle 
+.br
+\fIi_pwm_no\fP 0: PWM1 1:PWM2 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMPWM\&.cpp dosyasının 229 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar d_dutyCycle, ERRDUTY, p_v_u_pwm, PWM_DAT1, PWM_DAT2 ve u_i_counts\&.
+.SS "unsigned int IMPWM::SetDutyCycleCount (const unsigned int &c_u_i_counts, inti_pwm_no)"
+
+.PP
+\fBParametreler:\fP
+.RS 4
+\fI&c_u_i_counts\fP 
+.br
+\fIi_pwm_no\fP 0: PWM1 1:PWM2 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMPWM\&.cpp dosyasının 320 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar d_dutyCycle, ERRDUTY, p_v_u_pwm, PWM_DAT1, PWM_DAT2 ve u_i_counts\&.
+.PP
+Referans veren IMPWM()\&.
+.SS "unsigned int IMPWM::SetDutyCycleForce (const double &c_d_duty, const int &c_i_m, inti_pwm_no)"
+
+.PP
+Sırasıyla PWM'i etkisizleştirir, duty cycle atar ve PWM'mi etkinleştirir\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fI&c_d_duty\fP Duty cycle 
+.br
+\fI&c_i_m\fP \fBIMPWM::MSMODE\fP ya da \fBIMPWM::PWMMODE\fP 
+.br
+\fIi_pwm_no\fP 0: PWM1 1:PWM2 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMPWM\&.cpp dosyasının 262 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar d_dutyCycle, ERRDUTY, ERRMODE, i_mode, MSMODE, p_v_u_pwm, PWM_CTL, PWM_DAT1, PWM_DAT2, PWM_RNG1, PWM_RNG2, PWMMODE ve u_i_counts\&.
+.PP
+Referans veren SetMode()\&.
+.SS "unsigned int IMPWM::SetFrequency (const double &c_d_hz)"
+
+.PP
+Frekansı atar ve PWM'yi yeniden başlatır\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fI&\fP c_d_hz Frekans 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMPWM\&.cpp dosyasının 179 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar ConfigPWM(), d_frequency ve ERRFREQ\&.
+.SS "unsigned int IMPWM::SetMode (const int &c_i_m)"
+
+.PP
+'setDutyCycleForce()' fonksiyonunu kullanarak PWM Modunu atar\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fI&c_i_m\fP \fBIMPWM::MSMODE\fP ya da \fBIMPWM::PWMMODE\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMPWM\&.cpp dosyasının 347 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar d_dutyCycle, ERRMODE, i_mode, MSMODE, PWMMODE ve SetDutyCycleForce()\&.
+.SH "Üye Veri Dokümantasyonu"
+.PP 
+.SS "const int IMPWM::BCM2708_PERI_BASE = 0x3F000000\fC [static]\fP, \fC [private]\fP"
+
+.PP
+IMPWM\&.h dosyasının 274 numaralı satırında tanımlanmıştır\&.
+.SS "const int IMPWM::BLOCK_SIZE = 4096\fC [static]\fP, \fC [private]\fP"
+
+.PP
+IMPWM\&.h dosyasının 288 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren MapRegisterAddres() ve ~IMPWM()\&.
+.SS "const int IMPWM::CLOCK_BASE = (\fBBCM2708_PERI_BASE\fP + 0x101000)\fC [static]\fP, \fC [private]\fP"
+
+.PP
+IMPWM\&.h dosyasının 276 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMPWM()\&.
+.SS "double IMPWM::d_dutyCycle\fC [private]\fP"
+
+.PP
+IMPWM\&.h dosyasının 341 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren ConfigPWM(), GetDutyCycle(), IMPWM(), SetDutyCycle(), SetDutyCycleCount(), SetDutyCycleForce() ve SetMode()\&.
+.SS "double IMPWM::d_frequency\fC [private]\fP"
+
+.PP
+IMPWM\&.h dosyasının 340 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren ConfigPWM(), GetFrequency(), IMPWM() ve SetFrequency()\&.
+.SS "const int IMPWM::ERRCOUNT = 2\fC [static]\fP"
+
+.PP
+IMPWM\&.h dosyasının 265 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren SetCounts()\&.
+.SS "const int IMPWM::ERRDUTY = 3\fC [static]\fP"
+
+.PP
+IMPWM\&.h dosyasının 266 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren SetDutyCycle(), SetDutyCycleCount() ve SetDutyCycleForce()\&.
+.SS "const int IMPWM::ERRFREQ = 1\fC [static]\fP"
+
+.PP
+IMPWM\&.h dosyasının 264 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren SetFrequency()\&.
+.SS "const int IMPWM::ERRMODE = 4\fC [static]\fP"
+
+.PP
+IMPWM\&.h dosyasının 267 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren SetDutyCycleForce() ve SetMode()\&.
+.SS "const int IMPWM::GPIO_BASE = (\fBBCM2708_PERI_BASE\fP + 0x200000)\fC [static]\fP, \fC [private]\fP"
+
+.PP
+IMPWM\&.h dosyasının 277 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMPWM()\&.
+.SS "int IMPWM::i_mode\fC [private]\fP"
+
+.PP
+IMPWM\&.h dosyasının 344 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren ConfigPWM(), GetMode(), IMPWM(), SetDutyCycleForce() ve SetMode()\&.
+.SS "const int IMPWM::MSMODE = 2\fC [static]\fP"
+
+.PP
+IMPWM\&.h dosyasının 261 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMPWM(), SetDutyCycleForce() ve SetMode()\&.
+.SS "volatile unsigned* IMPWM::p_v_u_clk\fC [private]\fP"
+
+.PP
+IMPWM\&.h dosyasının 345 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren ConfigPWM(), IMPWM() ve ~IMPWM()\&.
+.SS "volatile unsigned * IMPWM::p_v_u_gpio\fC [private]\fP"
+
+.PP
+IMPWM\&.h dosyasının 345 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren ConfigPWMPin(), IMPWM() ve ~IMPWM()\&.
+.SS "volatile unsigned * IMPWM::p_v_u_pwm\fC [private]\fP"
+
+.PP
+IMPWM\&.h dosyasının 345 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren ConfigPWM(), IMPWM(), SetDutyCycle(), SetDutyCycleCount(), SetDutyCycleForce() ve ~IMPWM()\&.
+.SS "const int IMPWM::PWM_BASE = (\fBBCM2708_PERI_BASE\fP + 0x20C000)\fC [static]\fP, \fC [private]\fP"
+
+.PP
+IMPWM\&.h dosyasının 275 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMPWM()\&.
+.SS "const int IMPWM::PWM_CTL = 0\fC [static]\fP, \fC [private]\fP"
+
+.PP
+IMPWM\&.h dosyasının 279 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren ConfigPWM(), SetDutyCycleForce() ve ~IMPWM()\&.
+.SS "const int IMPWM::PWM_DAT1 = 5\fC [static]\fP, \fC [private]\fP"
+
+.PP
+IMPWM\&.h dosyasının 281 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren ConfigPWM(), SetDutyCycle(), SetDutyCycleCount(), SetDutyCycleForce() ve ~IMPWM()\&.
+.SS "const int IMPWM::PWM_DAT2 = 9\fC [static]\fP, \fC [private]\fP"
+
+.PP
+IMPWM\&.h dosyasının 283 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren ConfigPWM(), SetDutyCycle(), SetDutyCycleCount() ve SetDutyCycleForce()\&.
+.SS "const int IMPWM::PWM_RNG1 = 4\fC [static]\fP, \fC [private]\fP"
+
+.PP
+IMPWM\&.h dosyasının 280 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren ConfigPWM(), SetDutyCycleForce() ve ~IMPWM()\&.
+.SS "const int IMPWM::PWM_RNG2 = 8\fC [static]\fP, \fC [private]\fP"
+
+.PP
+IMPWM\&.h dosyasının 282 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren ConfigPWM() ve SetDutyCycleForce()\&.
+.SS "const int IMPWM::PWMCLK_CNTL = 40\fC [static]\fP, \fC [private]\fP"
+
+.PP
+IMPWM\&.h dosyasının 284 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren ConfigPWM() ve ~IMPWM()\&.
+.SS "const int IMPWM::PWMCLK_DIV = 41\fC [static]\fP, \fC [private]\fP"
+
+.PP
+IMPWM\&.h dosyasının 285 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren ConfigPWM() ve ~IMPWM()\&.
+.SS "const int IMPWM::PWMMODE = 1\fC [static]\fP"
+
+.PP
+IMPWM\&.h dosyasının 260 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren ConfigPWM(), IMPWM(), SetDutyCycleForce() ve SetMode()\&.
+.SS "unsigned int IMPWM::u_i_counts\fC [private]\fP"
+
+.PP
+IMPWM\&.h dosyasının 342 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren ConfigPWM(), GetCounts(), IMPWM(), SetCounts(), SetDutyCycle(), SetDutyCycleCount() ve SetDutyCycleForce()\&.
+.SS "unsigned int IMPWM::u_i_divisor\fC [private]\fP"
+
+.PP
+IMPWM\&.h dosyasının 343 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren ConfigPWM() ve GetDivisor()\&.
+
+.SH "Yazar"
+.PP 
+Doxygen tarafındanevarobot library için kaynak koddan otomatik üretilmiştir\&.

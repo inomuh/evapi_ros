@@ -1,0 +1,5 @@
+<map id="IMUM6::SetRawMagnetometerTransmission" name="IMUM6::SetRawMagnetometerTransmission">
+<area shape="rect" id="node2" href="$classIMUM6.html#a4d90f349d515d12519cfbe147a12a1ae" title="Kısa bilgi. " alt="" coords="256,5,459,32"/>
+<area shape="rect" id="node4" href="$classIMUM6.html#a68139af3de8338bcbec18c0f1782ea5d" title="Kısa bilgi. " alt="" coords="260,56,455,83"/>
+<area shape="rect" id="node3" href="$classIMSerial.html#a19f5661f15417f9e26a6525e0af0be02" title="Seri porta veri yazar. " alt="" coords="507,5,645,32"/>
+</map>
