@@ -1,0 +1,1116 @@
+.TH "IMUM6" 3 "Per Tem 9 2015" "evarobot library" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+IMUM6 \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <IMUM6\&.h>\fP
+.SS "Sınıflar"
+
+.in +1c
+.ti -1c
+.RI "struct \fBPACKET_TYPE\fP"
+.br
+.ti -1c
+.RI "struct \fBREGISTERS\fP"
+.br
+.ti -1c
+.RI "struct \fBUM6_DATA\fP"
+.br
+.ti -1c
+.RI "union \fBUNION32\fP"
+.br
+.in -1c
+.SS "Public Üye Fonksiyonlar"
+
+.in +1c
+.ti -1c
+.RI "\fBIMUM6\fP (\fBIMSerial\fP *\fBp_imserial\fP)"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "bool \fBisReceivedData\fP (char *p_c_start_bits, int i_length)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "bool \fBisCommandCompleted\fP () const "
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "bool \fBCheckData\fP ()"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "void \fBGetFWVersion\fP ()"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetBaudRate\fP (long l_baudrate)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetFrequency\fP (int i_frequency)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetGPSBaudrate\fP (long l_baudrate)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetDetailedSatelliteStatusTrasmission\fP (bool b_status)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetSatelliteSummaryTrasmission\fP (bool b_status)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetGPSCourseVelocityTrasmission\fP (bool b_status)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetGPSRelativePositionTrasmission\fP (bool b_status)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetGPSPositionTransmission\fP (bool b_status)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetTemperatureMeasurementTransmission\fP (bool b_status)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetCovarianceMatrixTransmission\fP (bool b_status)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetEulerAngleTransmission\fP (bool b_status)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetQuaternionTransmission\fP (bool b_status)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetProcessedMagnetometerTransmission\fP (bool b_status)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetProcessedAccelerometerTransmission\fP (bool b_status)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetProcessedGyroTransmission\fP (bool b_status)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetRawMagnetometerTransmission\fP (bool b_status)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetRawAccelerometerTransmission\fP (bool b_status)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetRawGyroTransmission\fP (bool b_status)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetMode\fP (bool b_mode)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetPPSTiming\fP (bool b_status)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetQuaterninonState\fP (bool b_status)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetGyroCalibration\fP (bool b_status)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetEKFAccelerometerUpdates\fP (bool b_status)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetEKFMagnetometerUpdates\fP (bool b_status)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "bool \fBGetRawData\fP (\fBIMUM6::UM6_DATA\fP &data)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBProcessData\fP (vector< int > &T_i_registers)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int32_t \fBGetDataRegister\fP (int i_register) const "
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetCommand\fP (int i_register)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.in -1c
+.SS "Public Özellikler(attribute)"
+
+.in +1c
+.ti -1c
+.RI "struct \fBIMUM6::UM6_DATA\fP \fBum6_data\fP"
+.br
+.in -1c
+.SS "Özel Üye Fonksiyonlar"
+
+.in +1c
+.ti -1c
+.RI "bool \fBParseData\fP ()"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "void \fBStoreData\fP ()"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "void \fBSetRegisterPinValue\fP (int32_t &i_register, int i_pin_no, int i_count_of_pins, char c_value)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetRegister32bitValue\fP (int i_register, float f_data)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetRegister32bitValue\fP (int i_register, int32_t i_data)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetRegister16bitValue\fP (int i_register, int16_t i_data)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBSetRegister16bitValue\fP (int i_register, int16_t *p_i_data)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBCalculateChecksum\fP ()"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.in -1c
+.SS "Özel Özellikler(attribute)"
+
+.in +1c
+.ti -1c
+.RI "int32_t \fBi_data_registers\fP [85]"
+.br
+.ti -1c
+.RI "int32_t \fBi_communication_register\fP"
+.br
+.ti -1c
+.RI "int32_t \fBi_misc_config_register\fP"
+.br
+.ti -1c
+.RI "char \fBc_input_buffer\fP [500]"
+.br
+.ti -1c
+.RI "char \fBc_start_bits\fP [3]"
+.br
+.ti -1c
+.RI "bool \fBb_command_complete\fP"
+.br
+.ti -1c
+.RI "list< char > \fBT_c_stored_data\fP"
+.br
+.ti -1c
+.RI "list< char > \fBT_c_serial_log\fP"
+.br
+.ti -1c
+.RI "bool \fBb_incomplete_packet\fP"
+.br
+.ti -1c
+.RI "int \fBi_incomplete_no\fP"
+.br
+.ti -1c
+.RI "int \fBi_start_bit_counter\fP"
+.br
+.ti -1c
+.RI "int \fBi_buffer_read_index\fP"
+.br
+.ti -1c
+.RI "\fBIMSerial\fP * \fBp_imserial\fP"
+.br
+.in -1c
+.SH "Ayrıntılı tanımlama"
+.PP 
+IMUM6\&.h dosyasının 31 numaralı satırında tanımlanmıştır\&.
+.SH "Constructor & Destructor Dokümantasyonu"
+.PP 
+.SS "IMUM6::IMUM6 (\fBIMSerial\fP *p_imserial)"
+
+.PP
+Constructor\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fI\\param\fP 
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 10 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar b_command_complete, b_incomplete_packet, c_start_bits, i_buffer_read_index, i_communication_register, i_incomplete_no, i_misc_config_register, i_start_bit_counter ve p_imserial\&.
+.SH "Üye Fonksiyon Dokümantasyonu"
+.PP 
+.SS "int IMUM6::CalculateChecksum ()\fC [private]\fP"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 1154 numaralı satırında tanımlanmıştır\&.
+.SS "bool IMUM6::CheckData ()"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 231 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar IMUM6::UM6_DATA::c_adress, IMUM6::UM6_DATA::c_checksum, IMUM6::UM6_DATA::c_databytes, IMUM6::UM6_DATA::c_PT, c_start_bits, IMUM6::PACKET_TYPE::i_size_of_data, IMUM6::UM6_DATA::packet_type ve um6_data\&.
+.SS "int32_t IMUM6::GetDataRegister (inti_register) const"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 1106 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_data_registers\&.
+.SS "void IMUM6::GetFWVersion ()"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.SS "bool IMUM6::GetRawData (\fBIMUM6::UM6_DATA\fP &data)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 144 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar ParseData() ve um6_data\&.
+.SS "bool IMUM6::isCommandCompleted () const"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 1162 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar b_command_complete\&.
+.SS "bool IMUM6::isReceivedData (char *p_c_start_bits, inti_length)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 157 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_start_bit_counter ve T_c_stored_data\&.
+.PP
+Referans veren ParseData()\&.
+.SS "bool IMUM6::ParseData ()\fC [private]\fP"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 27 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar b_incomplete_packet, IMUM6::UM6_DATA::c_adress, IMUM6::UM6_DATA::c_checksum, IMUM6::UM6_DATA::c_databytes, IMUM6::UM6_DATA::c_PT, c_start_bits, IMUM6::PACKET_TYPE::i_batch_length, IMUM6::PACKET_TYPE::i_command_failed, i_incomplete_no, IMUM6::PACKET_TYPE::i_packet_has_data, IMUM6::PACKET_TYPE::i_packet_is_batch, IMUM6::PACKET_TYPE::i_size_of_data, isReceivedData(), IMUM6::UM6_DATA::packet_type, StoreData(), T_c_stored_data ve um6_data\&.
+.PP
+Referans veren GetRawData()\&.
+.SS "int IMUM6::ProcessData (vector< int > &T_i_registers)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 1043 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar b_command_complete, IMUM6::UNION32::c, IMUM6::UM6_DATA::c_adress, IMUM6::UM6_DATA::c_databytes, IMUM6::UNION32::i, IMUM6::PACKET_TYPE::i_batch_length, IMUM6::PACKET_TYPE::i_command_failed, i_data_registers, IMUM6::PACKET_TYPE::i_packet_has_data, IMUM6::PACKET_TYPE::i_packet_is_batch, IMUM6::UM6_DATA::packet_type ve um6_data\&.
+.SS "int IMUM6::SetBaudRate (longl_baudrate)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 331 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_communication_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetCommand (inti_register)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 1111 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar b_command_complete, c_start_bits, p_imserial ve IMSerial::WriteData()\&.
+.SS "int IMUM6::SetCovarianceMatrixTransmission (boolb_status)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 587 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_communication_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetDetailedSatelliteStatusTrasmission (boolb_status)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 465 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_communication_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetEKFAccelerometerUpdates (boolb_status)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 848 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_misc_config_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_MISC_CONFIG\&.
+.SS "int IMUM6::SetEKFMagnetometerUpdates (boolb_status)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 866 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_misc_config_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_MISC_CONFIG\&.
+.SS "int IMUM6::SetEulerAngleTransmission (boolb_status)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 606 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_communication_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetFrequency (inti_frequency)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 295 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_communication_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetGPSBaudrate (longl_baudrate)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 404 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_communication_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetGPSCourseVelocityTrasmission (boolb_status)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 506 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_communication_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetGPSPositionTransmission (boolb_status)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 548 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_communication_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetGPSRelativePositionTrasmission (boolb_status)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 528 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_communication_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetGyroCalibration (boolb_status)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 830 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_misc_config_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_MISC_CONFIG\&.
+.SS "int IMUM6::SetMode (boolb_mode)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 767 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_communication_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetPPSTiming (boolb_status)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 793 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_misc_config_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_MISC_CONFIG\&.
+.SS "int IMUM6::SetProcessedAccelerometerTransmission (boolb_status)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 667 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_communication_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetProcessedGyroTransmission (boolb_status)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 687 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_communication_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetProcessedMagnetometerTransmission (boolb_status)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 647 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_communication_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetQuaterninonState (boolb_status)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 811 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_misc_config_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_MISC_CONFIG\&.
+.SS "int IMUM6::SetQuaternionTransmission (boolb_status)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 627 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_communication_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetRawAccelerometerTransmission (boolb_status)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 727 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_communication_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetRawGyroTransmission (boolb_status)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 747 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_communication_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetRawMagnetometerTransmission (boolb_status)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 707 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_communication_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetRegister16bitValue (inti_register, int16_ti_data)\fC [private]\fP"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 1025 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar IMUM6::UNION32::i ve SetRegister32bitValue()\&.
+.SS "int IMUM6::SetRegister16bitValue (inti_register, int16_t *p_i_data)\fC [private]\fP"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 1009 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar IMUM6::UNION32::i ve SetRegister32bitValue()\&.
+.SS "int IMUM6::SetRegister32bitValue (inti_register, floatf_data)\fC [private]\fP"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 926 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar b_command_complete, IMUM6::UNION32::c, c_start_bits, IMUM6::UNION32::f, p_imserial ve IMSerial::WriteData()\&.
+.PP
+Referans veren SetBaudRate(), SetCovarianceMatrixTransmission(), SetDetailedSatelliteStatusTrasmission(), SetEKFAccelerometerUpdates(), SetEKFMagnetometerUpdates(), SetEulerAngleTransmission(), SetFrequency(), SetGPSBaudrate(), SetGPSCourseVelocityTrasmission(), SetGPSPositionTransmission(), SetGPSRelativePositionTrasmission(), SetGyroCalibration(), SetMode(), SetPPSTiming(), SetProcessedAccelerometerTransmission(), SetProcessedGyroTransmission(), SetProcessedMagnetometerTransmission(), SetQuaterninonState(), SetQuaternionTransmission(), SetRawAccelerometerTransmission(), SetRawGyroTransmission(), SetRawMagnetometerTransmission(), SetRegister16bitValue(), SetSatelliteSummaryTrasmission() ve SetTemperatureMeasurementTransmission()\&.
+.SS "int IMUM6::SetRegister32bitValue (inti_register, int32_ti_data)\fC [private]\fP"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 967 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar b_command_complete, IMUM6::UNION32::c, c_start_bits, IMUM6::UNION32::i, p_imserial ve IMSerial::WriteData()\&.
+.SS "void IMUM6::SetRegisterPinValue (int32_t &i_register, inti_pin_no, inti_count_of_pins, charc_value)\fC [private]\fP"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 882 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren SetBaudRate(), SetCovarianceMatrixTransmission(), SetDetailedSatelliteStatusTrasmission(), SetEKFAccelerometerUpdates(), SetEKFMagnetometerUpdates(), SetEulerAngleTransmission(), SetFrequency(), SetGPSBaudrate(), SetGPSCourseVelocityTrasmission(), SetGPSPositionTransmission(), SetGPSRelativePositionTrasmission(), SetGyroCalibration(), SetMode(), SetPPSTiming(), SetProcessedAccelerometerTransmission(), SetProcessedGyroTransmission(), SetProcessedMagnetometerTransmission(), SetQuaterninonState(), SetQuaternionTransmission(), SetRawAccelerometerTransmission(), SetRawGyroTransmission(), SetRawMagnetometerTransmission(), SetSatelliteSummaryTrasmission() ve SetTemperatureMeasurementTransmission()\&.
+.SS "int IMUM6::SetSatelliteSummaryTrasmission (boolb_status)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 485 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_communication_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "int IMUM6::SetTemperatureMeasurementTransmission (boolb_status)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 568 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_communication_register, SetRegister32bitValue(), SetRegisterPinValue() ve IMUM6::REGISTERS::UM6_COMMUNICATION\&.
+.SS "void IMUM6::StoreData ()\fC [private]\fP"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMUM6\&.cpp dosyasının 202 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar IMSerial::isReadyRead(), p_imserial, IMSerial::ReadData() ve T_c_stored_data\&.
+.PP
+Referans veren ParseData()\&.
+.SH "Üye Veri Dokümantasyonu"
+.PP 
+.SS "bool IMUM6::b_command_complete\fC [private]\fP"
+
+.PP
+IMUM6\&.h dosyasının 952 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMUM6(), isCommandCompleted(), ProcessData(), SetCommand() ve SetRegister32bitValue()\&.
+.SS "bool IMUM6::b_incomplete_packet\fC [private]\fP"
+
+.PP
+IMUM6\&.h dosyasının 958 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMUM6() ve ParseData()\&.
+.SS "char IMUM6::c_input_buffer[500]\fC [private]\fP"
+
+.PP
+IMUM6\&.h dosyasının 950 numaralı satırında tanımlanmıştır\&.
+.SS "char IMUM6::c_start_bits[3]\fC [private]\fP"
+
+.PP
+IMUM6\&.h dosyasının 951 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren CheckData(), IMUM6(), ParseData(), SetCommand() ve SetRegister32bitValue()\&.
+.SS "int IMUM6::i_buffer_read_index\fC [private]\fP"
+
+.PP
+IMUM6\&.h dosyasının 962 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMUM6()\&.
+.SS "int32_t IMUM6::i_communication_register\fC [private]\fP"
+
+.PP
+IMUM6\&.h dosyasının 948 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMUM6(), SetBaudRate(), SetCovarianceMatrixTransmission(), SetDetailedSatelliteStatusTrasmission(), SetEulerAngleTransmission(), SetFrequency(), SetGPSBaudrate(), SetGPSCourseVelocityTrasmission(), SetGPSPositionTransmission(), SetGPSRelativePositionTrasmission(), SetMode(), SetProcessedAccelerometerTransmission(), SetProcessedGyroTransmission(), SetProcessedMagnetometerTransmission(), SetQuaternionTransmission(), SetRawAccelerometerTransmission(), SetRawGyroTransmission(), SetRawMagnetometerTransmission(), SetSatelliteSummaryTrasmission() ve SetTemperatureMeasurementTransmission()\&.
+.SS "int32_t IMUM6::i_data_registers[85]\fC [private]\fP"
+
+.PP
+IMUM6\&.h dosyasının 947 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren GetDataRegister() ve ProcessData()\&.
+.SS "int IMUM6::i_incomplete_no\fC [private]\fP"
+
+.PP
+IMUM6\&.h dosyasının 960 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMUM6() ve ParseData()\&.
+.SS "int32_t IMUM6::i_misc_config_register\fC [private]\fP"
+
+.PP
+IMUM6\&.h dosyasının 949 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMUM6(), SetEKFAccelerometerUpdates(), SetEKFMagnetometerUpdates(), SetGyroCalibration(), SetPPSTiming() ve SetQuaterninonState()\&.
+.SS "int IMUM6::i_start_bit_counter\fC [private]\fP"
+
+.PP
+IMUM6\&.h dosyasının 961 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMUM6() ve isReceivedData()\&.
+.SS "\fBIMSerial\fP* IMUM6::p_imserial\fC [private]\fP"
+
+.PP
+IMUM6\&.h dosyasının 964 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMUM6(), SetCommand(), SetRegister32bitValue() ve StoreData()\&.
+.SS "list<char> IMUM6::T_c_serial_log\fC [private]\fP"
+
+.PP
+IMUM6\&.h dosyasının 956 numaralı satırında tanımlanmıştır\&.
+.SS "list<char> IMUM6::T_c_stored_data\fC [private]\fP"
+
+.PP
+IMUM6\&.h dosyasının 955 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren isReceivedData(), ParseData() ve StoreData()\&.
+.SS "struct \fBIMUM6::UM6_DATA\fP IMUM6::um6_data"
+
+.PP
+Referans veren CheckData(), GetRawData(), ParseData() ve ProcessData()\&.
+
+.SH "Yazar"
+.PP 
+Doxygen tarafındanevarobot library için kaynak koddan otomatik üretilmiştir\&.

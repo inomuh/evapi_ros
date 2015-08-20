@@ -1,0 +1,5 @@
+<map id="include/IMSPI.h" name="include/IMSPI.h">
+<area shape="rect" id="node2" href="$IMADC_8h.html" title="Reads analog inputs through MCP3208 on evarobot sensorboard. " alt="" coords="5,80,128,107"/>
+<area shape="rect" id="node4" href="$IMSPI_8cpp.html" title="src/IMSPI.cpp" alt="" coords="152,80,259,107"/>
+<area shape="rect" id="node3" href="$IMADC_8cpp.html" title="src/IMADC.cpp" alt="" coords="10,155,123,181"/>
+</map>

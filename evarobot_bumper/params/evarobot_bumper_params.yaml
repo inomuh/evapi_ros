@@ -1,0 +1,5 @@
+i2c_path: /dev/i2c-1
+commandTopic: bumper
+alwaysOn: true
+frequency: 10.0
+#pinBumper: [21, 26, 6]

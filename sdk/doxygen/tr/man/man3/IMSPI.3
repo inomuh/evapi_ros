@@ -1,0 +1,166 @@
+.TH "IMSPI" 3 "Per Tem 9 2015" "evarobot library" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+IMSPI \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <IMSPI\&.h>\fP
+.SS "Public Üye Fonksiyonlar"
+
+.in +1c
+.ti -1c
+.RI "\fBIMSPI\fP ()"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "\fBIMSPI\fP (std::string str_devspi, unsigned char u_c_spi_mode, unsigned int u_i_spi_speed, unsigned char u_c_spi_bits_per_word)"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "\fB~IMSPI\fP ()"
+.br
+.ti -1c
+.RI "int \fBSpiWriteRead\fP (unsigned char *p_u_c_data, int i_length)"
+.br
+.RI "\fI'p_u_c_data' verisini spi'ya yazar ve dönen cevabı yine aynı değişkene kaydeder\&. \fP"
+.in -1c
+.SS "Özel Üye Fonksiyonlar"
+
+.in +1c
+.ti -1c
+.RI "int \fBSpiOpen\fP (std::string devspi)"
+.br
+.RI "\fISPI sürücü açma ve ilklendirme ile görevlidir\&. \fP"
+.ti -1c
+.RI "int \fBSpiClose\fP ()"
+.br
+.RI "\fIspidev arayüzünü kapatmak ile görevlidir\&. Destructor içerisinde çağrılır\&. \fP"
+.in -1c
+.SS "Özel Özellikler(attribute)"
+
+.in +1c
+.ti -1c
+.RI "unsigned char \fBu_c_mode\fP"
+.br
+.ti -1c
+.RI "unsigned char \fBu_c_bits_per_word\fP"
+.br
+.ti -1c
+.RI "unsigned int \fBu_i_speed\fP"
+.br
+.ti -1c
+.RI "int \fBi_spifd\fP"
+.br
+.in -1c
+.SH "Ayrıntılı tanımlama"
+.PP 
+IMSPI\&.h dosyasının 38 numaralı satırında tanımlanmıştır\&.
+.SH "Constructor & Destructor Dokümantasyonu"
+.PP 
+.SS "IMSPI::IMSPI ()"
+
+.PP
+Constructor\&. 
+.PP
+IMSPI\&.cpp dosyasının 137 numaralı satırında tanımlanmıştır\&.
+.SS "IMSPI::IMSPI (std::stringstr_devspi, unsigned charu_c_spi_mode, unsigned intu_i_spi_speed, unsigned charu_c_spi_bits_per_word)"
+
+.PP
+Constructor\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIstr_devspi\fP SPI sürücü adı 
+.br
+\fIu_c_spi_mode\fP SPI_MODE_0 - SPI_MODE_3 
+.br
+\fIu_i_spi_speed\fP 
+.br
+\fIu_c_spi_bits_per_word\fP 
+.RE
+.PP
+
+.PP
+IMSPI\&.cpp dosyasının 151 numaralı satırında tanımlanmıştır\&.
+.SS "IMSPI::~IMSPI ()"
+
+.PP
+IMSPI\&.cpp dosyasının 166 numaralı satırında tanımlanmıştır\&.
+.SH "Üye Fonksiyon Dokümantasyonu"
+.PP 
+.SS "int IMSPI::SpiClose ()\fC [private]\fP"
+
+.PP
+spidev arayüzünü kapatmak ile görevlidir\&. Destructor içerisinde çağrılır\&. 
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+
+.RE
+.PP
+
+.PP
+IMSPI\&.cpp dosyasının 79 numaralı satırında tanımlanmıştır\&.
+.SS "int IMSPI::SpiOpen (std::stringdevspi)\fC [private]\fP"
+
+.PP
+SPI sürücü açma ve ilklendirme ile görevlidir\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIdevspi\fP SPI aygıtı sürücü adı 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMSPI\&.cpp dosyasının 19 numaralı satırında tanımlanmıştır\&.
+.SS "int IMSPI::SpiWriteRead (unsigned char *p_u_c_data, inti_length)"
+
+.PP
+'p_u_c_data' verisini spi'ya yazar ve dönen cevabı yine aynı değişkene kaydeder\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIp_u_c_data\fP 
+.br
+\fIi_length\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMSPI\&.cpp dosyasının 97 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMADC::ReadChannel()\&.
+.SH "Üye Veri Dokümantasyonu"
+.PP 
+.SS "int IMSPI::i_spifd\fC [private]\fP"
+
+.PP
+IMSPI\&.h dosyasının 106 numaralı satırında tanımlanmıştır\&.
+.SS "unsigned char IMSPI::u_c_bits_per_word\fC [private]\fP"
+
+.PP
+IMSPI\&.h dosyasının 104 numaralı satırında tanımlanmıştır\&.
+.SS "unsigned char IMSPI::u_c_mode\fC [private]\fP"
+
+.PP
+IMSPI\&.h dosyasının 103 numaralı satırında tanımlanmıştır\&.
+.SS "unsigned int IMSPI::u_i_speed\fC [private]\fP"
+
+.PP
+IMSPI\&.h dosyasının 105 numaralı satırında tanımlanmıştır\&.
+
+.SH "Yazar"
+.PP 
+Doxygen tarafındanevarobot library için kaynak koddan otomatik üretilmiştir\&.

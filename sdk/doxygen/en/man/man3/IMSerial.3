@@ -1,0 +1,537 @@
+.TH "IMSerial" 3 "Thu Jul 9 2015" "evarobot library" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+IMSerial \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <IMSerial\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBIMSerial\fP ()"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "\fBIMSerial\fP (string str_device_name, speed_t \fBbaudrate\fP, tcflag_t \fBdata_bits\fP, tcflag_t \fBparity\fP, tcflag_t \fBparity_on\fP, tcflag_t \fBstop_bits\fP)"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "int \fBSetBaudrate\fP (speed_t \fBbaudrate\fP)"
+.br
+.RI "\fISets Baudrate\&. \fP"
+.ti -1c
+.RI "int \fBSetDataBits\fP (tcflag_t \fBdata_bits\fP)"
+.br
+.RI "\fISets DataBits\&. \fP"
+.ti -1c
+.RI "int \fBSetParity\fP (tcflag_t \fBparity\fP, tcflag_t \fBparity_on\fP)"
+.br
+.RI "\fISets Parity\&. \fP"
+.ti -1c
+.RI "int \fBSetStopBits\fP (tcflag_t \fBstop_bits\fP)"
+.br
+.RI "\fISets Stop Bits\&. \fP"
+.ti -1c
+.RI "speed_t \fBGetBaudrate\fP () const "
+.br
+.RI "\fIReturns Baudrate\&. \fP"
+.ti -1c
+.RI "tcflag_t \fBGetDataBits\fP () const "
+.br
+.RI "\fIReturns DataBits\&. \fP"
+.ti -1c
+.RI "tcflag_t \fBGetParity\fP () const "
+.br
+.RI "\fIReturns Parity\&. \fP"
+.ti -1c
+.RI "tcflag_t \fBGetStopBits\fP () const "
+.br
+.RI "\fIReturns StopBits\&. \fP"
+.ti -1c
+.RI "int \fBReadData\fP (char *p_c_data, unsigned int u_i_size)"
+.br
+.RI "\fIReads serial data\&. \fP"
+.ti -1c
+.RI "int \fBReadDataAsync\fP (char *p_c_data, unsigned int u_i_size)"
+.br
+.RI "\fIBrief\&. \fP"
+.ti -1c
+.RI "int \fBWriteData\fP (const void *p_data, size_t size)"
+.br
+.RI "\fIWrites serial data\&. \fP"
+.ti -1c
+.RI "bool \fBisReadyRead\fP () const "
+.br
+.RI "\fIBrief\&. \fP"
+.in -1c
+.SS "Private Member Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBSerialOpen\fP (std::string _str_name)"
+.br
+.RI "\fIOpens serial port\&. \fP"
+.ti -1c
+.RI "int \fBSerialClose\fP ()"
+.br
+.RI "\fICloses serial port\&. \fP"
+.ti -1c
+.RI "int \fBSerialConfig\fP ()"
+.br
+.RI "\fIFunction to configurate and initialize Serial Communication Peripheral\&. \fP"
+.in -1c
+.SS "Static Private Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static void \fBSignalHandlerIO\fP (int i_status)"
+.br
+.RI "\fISignal handler\&. \fP"
+.in -1c
+.SS "Private Attributes"
+
+.in +1c
+.ti -1c
+.RI "std::string \fBstr_name\fP"
+.br
+.ti -1c
+.RI "speed_t \fBbaudrate\fP"
+.br
+.ti -1c
+.RI "tcflag_t \fBdata_bits\fP"
+.br
+.ti -1c
+.RI "tcflag_t \fBparity\fP"
+.br
+.ti -1c
+.RI "tcflag_t \fBparity_on\fP"
+.br
+.ti -1c
+.RI "tcflag_t \fBstop_bits\fP"
+.br
+.ti -1c
+.RI "int \fBi_serial_fd\fP"
+.br
+.ti -1c
+.RI "bool \fBb_read_data_available\fP"
+.br
+.ti -1c
+.RI "struct sigaction \fBsignal_action_io\fP"
+.br
+.ti -1c
+.RI "struct termios \fBport_settings\fP"
+.br
+.in -1c
+.SS "Static Private Attributes"
+
+.in +1c
+.ti -1c
+.RI "static bool \fBb_signal_received\fP = false"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line 40 of file IMSerial\&.h\&.
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "IMSerial::IMSerial ()"
+
+.PP
+Constructor\&. 
+.PP
+Definition at line 12 of file IMSerial\&.cpp\&.
+.PP
+References b_read_data_available, baudrate, data_bits, i_serial_fd, parity, parity_on, SerialConfig(), SerialOpen(), stop_bits, and str_name\&.
+.SS "IMSerial::IMSerial (stringstr_device_name, speed_tbaudrate, tcflag_tdata_bits, tcflag_tparity, tcflag_tparity_on, tcflag_tstop_bits)"
+
+.PP
+Constructor\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIstr_device_name\fP 
+.br
+\fIbaudrate\fP i\&.e\&. B115200 
+.br
+\fIdata_bits\fP i\&.e\&. CS8 
+.br
+\fIparity\fP i\&.e\&. PARODD 
+.br
+\fIparity_on\fP i\&.e\&. PARENB 
+.br
+\fIstop_bits\fP i\&.e\&. 0 
+.RE
+.PP
+
+.PP
+Definition at line 27 of file IMSerial\&.cpp\&.
+.PP
+References b_read_data_available, baudrate, data_bits, i_serial_fd, parity, parity_on, SerialConfig(), SerialOpen(), stop_bits, and str_name\&.
+.SH "Member Function Documentation"
+.PP 
+.SS "speed_t IMSerial::GetBaudrate () const"
+
+.PP
+Returns Baudrate\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+
+.RE
+.PP
+
+.PP
+Definition at line 152 of file IMSerial\&.cpp\&.
+.PP
+References baudrate\&.
+.SS "tcflag_t IMSerial::GetDataBits () const"
+
+.PP
+Returns DataBits\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+
+.RE
+.PP
+
+.PP
+Definition at line 157 of file IMSerial\&.cpp\&.
+.PP
+References data_bits\&.
+.SS "tcflag_t IMSerial::GetParity () const"
+
+.PP
+Returns Parity\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+
+.RE
+.PP
+
+.PP
+Definition at line 162 of file IMSerial\&.cpp\&.
+.PP
+References parity\&.
+.SS "tcflag_t IMSerial::GetStopBits () const"
+
+.PP
+Returns StopBits\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+
+.RE
+.PP
+
+.PP
+Definition at line 167 of file IMSerial\&.cpp\&.
+.PP
+References stop_bits\&.
+.SS "bool IMSerial::isReadyRead () const"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 243 of file IMSerial\&.cpp\&.
+.PP
+References b_signal_received\&.
+.PP
+Referenced by ReadDataAsync(), and IMUM6::StoreData()\&.
+.SS "int IMSerial::ReadData (char *p_c_data, unsigned intu_i_size)"
+
+.PP
+Reads serial data\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI*\fP p_c_data 
+.br
+\fIu_i_size\fP 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+Definition at line 172 of file IMSerial\&.cpp\&.
+.PP
+References b_signal_received, and i_serial_fd\&.
+.PP
+Referenced by ReadDataAsync(), and IMUM6::StoreData()\&.
+.SS "int IMSerial::ReadDataAsync (char *p_c_data, unsigned intu_i_size)"
+
+.PP
+Brief\&. Detailed 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 199 of file IMSerial\&.cpp\&.
+.PP
+References isReadyRead(), and ReadData()\&.
+.SS "int IMSerial::SerialClose ()\fC [private]\fP"
+
+.PP
+Closes serial port\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+
+.RE
+.PP
+
+.PP
+Definition at line 264 of file IMSerial\&.cpp\&.
+.PP
+References i_serial_fd\&.
+.SS "int IMSerial::SerialConfig ()\fC [private]\fP"
+
+.PP
+Function to configurate and initialize Serial Communication Peripheral\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+
+.RE
+.PP
+
+.PP
+Definition at line 282 of file IMSerial\&.cpp\&.
+.PP
+References baudrate, data_bits, i_serial_fd, parity, parity_on, port_settings, signal_action_io, SignalHandlerIO(), and stop_bits\&.
+.PP
+Referenced by IMSerial()\&.
+.SS "int IMSerial::SerialOpen (std::string_str_name)\fC [private]\fP"
+
+.PP
+Opens serial port\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI_str_name\fP serial driver name 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+Definition at line 249 of file IMSerial\&.cpp\&.
+.PP
+References i_serial_fd\&.
+.PP
+Referenced by IMSerial()\&.
+.SS "int IMSerial::SetBaudrate (speed_tbaudrate)"
+
+.PP
+Sets Baudrate\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIbaudrate\fP i\&.e\&. B115200 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+Definition at line 43 of file IMSerial\&.cpp\&.
+.PP
+References i_serial_fd, and port_settings\&.
+.SS "int IMSerial::SetDataBits (tcflag_tdata_bits)"
+
+.PP
+Sets DataBits\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdata_bits\fP i\&.e\&. CS8 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+Definition at line 70 of file IMSerial\&.cpp\&.
+.PP
+References baudrate, data_bits, i_serial_fd, parity, parity_on, port_settings, and stop_bits\&.
+.SS "int IMSerial::SetParity (tcflag_tparity, tcflag_tparity_on)"
+
+.PP
+Sets Parity\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIparity\fP i\&.e\&. PARODD 
+.br
+\fIparity_on\fP i\&.e\&. PARENB 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+Definition at line 97 of file IMSerial\&.cpp\&.
+.PP
+References baudrate, data_bits, i_serial_fd, parity, parity_on, port_settings, and stop_bits\&.
+.SS "int IMSerial::SetStopBits (tcflag_tstop_bits)"
+
+.PP
+Sets Stop Bits\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIstop_bits\fP 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+Definition at line 125 of file IMSerial\&.cpp\&.
+.PP
+References baudrate, data_bits, i_serial_fd, parity, parity_on, port_settings, and stop_bits\&.
+.SS "void IMSerial::SignalHandlerIO (inti_status)\fC [static]\fP, \fC [private]\fP"
+
+.PP
+Signal handler\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIi_status\fP 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+Definition at line 331 of file IMSerial\&.cpp\&.
+.PP
+References b_signal_received\&.
+.PP
+Referenced by SerialConfig()\&.
+.SS "int IMSerial::WriteData (const void *p_data, size_tsize)"
+
+.PP
+Writes serial data\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI*\fP p_c_data 
+.br
+\fIu_i_size\fP 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+Definition at line 228 of file IMSerial\&.cpp\&.
+.PP
+References i_serial_fd\&.
+.PP
+Referenced by IMUM6::SetCommand(), and IMUM6::SetRegister32bitValue()\&.
+.SH "Member Data Documentation"
+.PP 
+.SS "bool IMSerial::b_read_data_available\fC [private]\fP"
+
+.PP
+Definition at line 352 of file IMSerial\&.h\&.
+.PP
+Referenced by IMSerial()\&.
+.SS "bool IMSerial::b_signal_received = false\fC [static]\fP, \fC [private]\fP"
+
+.PP
+Definition at line 357 of file IMSerial\&.h\&.
+.PP
+Referenced by isReadyRead(), ReadData(), and SignalHandlerIO()\&.
+.SS "speed_t IMSerial::baudrate\fC [private]\fP"
+
+.PP
+Definition at line 344 of file IMSerial\&.h\&.
+.PP
+Referenced by GetBaudrate(), IMSerial(), SerialConfig(), SetDataBits(), SetParity(), and SetStopBits()\&.
+.SS "tcflag_t IMSerial::data_bits\fC [private]\fP"
+
+.PP
+Definition at line 345 of file IMSerial\&.h\&.
+.PP
+Referenced by GetDataBits(), IMSerial(), SerialConfig(), SetDataBits(), SetParity(), and SetStopBits()\&.
+.SS "int IMSerial::i_serial_fd\fC [private]\fP"
+
+.PP
+Definition at line 350 of file IMSerial\&.h\&.
+.PP
+Referenced by IMSerial(), ReadData(), SerialClose(), SerialConfig(), SerialOpen(), SetBaudrate(), SetDataBits(), SetParity(), SetStopBits(), and WriteData()\&.
+.SS "tcflag_t IMSerial::parity\fC [private]\fP"
+
+.PP
+Definition at line 346 of file IMSerial\&.h\&.
+.PP
+Referenced by GetParity(), IMSerial(), SerialConfig(), SetDataBits(), SetParity(), and SetStopBits()\&.
+.SS "tcflag_t IMSerial::parity_on\fC [private]\fP"
+
+.PP
+Definition at line 347 of file IMSerial\&.h\&.
+.PP
+Referenced by IMSerial(), SerialConfig(), SetDataBits(), SetParity(), and SetStopBits()\&.
+.SS "struct termios IMSerial::port_settings\fC [private]\fP"
+
+.PP
+Definition at line 355 of file IMSerial\&.h\&.
+.PP
+Referenced by SerialConfig(), SetBaudrate(), SetDataBits(), SetParity(), and SetStopBits()\&.
+.SS "struct sigaction IMSerial::signal_action_io\fC [private]\fP"
+
+.PP
+Definition at line 354 of file IMSerial\&.h\&.
+.PP
+Referenced by SerialConfig()\&.
+.SS "tcflag_t IMSerial::stop_bits\fC [private]\fP"
+
+.PP
+Definition at line 348 of file IMSerial\&.h\&.
+.PP
+Referenced by GetStopBits(), IMSerial(), SerialConfig(), SetDataBits(), SetParity(), and SetStopBits()\&.
+.SS "std::string IMSerial::str_name\fC [private]\fP"
+
+.PP
+Definition at line 343 of file IMSerial\&.h\&.
+.PP
+Referenced by IMSerial()\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evarobot library from the source code\&.

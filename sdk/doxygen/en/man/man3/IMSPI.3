@@ -1,0 +1,160 @@
+.TH "IMSPI" 3 "Thu Jul 9 2015" "evarobot library" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+IMSPI \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <IMSPI\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBIMSPI\fP ()"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "\fBIMSPI\fP (std::string str_devspi, unsigned char u_c_spi_mode, unsigned int u_i_spi_speed, unsigned char u_c_spi_bits_per_word)"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "\fB~IMSPI\fP ()"
+.br
+.ti -1c
+.RI "int \fBSpiWriteRead\fP (unsigned char *p_u_c_data, int i_length)"
+.br
+.RI "\fIWrites data and reads the data returned back spi peripheral\&. \fP"
+.in -1c
+.SS "Private Member Functions"
+
+.in +1c
+.ti -1c
+.RI "int \fBSpiOpen\fP (std::string devspi)"
+.br
+.RI "\fIIt is responsible for opening the spidev device 'devspi' and then setting up the spidev interface\&. \fP"
+.ti -1c
+.RI "int \fBSpiClose\fP ()"
+.br
+.RI "\fIResponsible for closing the spidev interface\&. Called in destructor\&. \fP"
+.in -1c
+.SS "Private Attributes"
+
+.in +1c
+.ti -1c
+.RI "unsigned char \fBu_c_mode\fP"
+.br
+.ti -1c
+.RI "unsigned char \fBu_c_bits_per_word\fP"
+.br
+.ti -1c
+.RI "unsigned int \fBu_i_speed\fP"
+.br
+.ti -1c
+.RI "int \fBi_spifd\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Definition at line 38 of file IMSPI\&.h\&.
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "IMSPI::IMSPI ()"
+
+.PP
+Constructor\&. 
+.PP
+Definition at line 137 of file IMSPI\&.cpp\&.
+.SS "IMSPI::IMSPI (std::stringstr_devspi, unsigned charu_c_spi_mode, unsigned intu_i_spi_speed, unsigned charu_c_spi_bits_per_word)"
+
+.PP
+Constructor\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIstr_devspi\fP SPI driver name 
+.br
+\fIu_c_spi_mode\fP SPI_MODE_0 - SPI_MODE_3 
+.br
+\fIu_i_spi_speed\fP 
+.br
+\fIu_c_spi_bits_per_word\fP 
+.RE
+.PP
+
+.PP
+Definition at line 151 of file IMSPI\&.cpp\&.
+.SS "IMSPI::~IMSPI ()"
+
+.PP
+Definition at line 166 of file IMSPI\&.cpp\&.
+.SH "Member Function Documentation"
+.PP 
+.SS "int IMSPI::SpiClose ()\fC [private]\fP"
+
+.PP
+Responsible for closing the spidev interface\&. Called in destructor\&. 
+.PP
+\fBReturns:\fP
+.RS 4
+
+.RE
+.PP
+
+.PP
+Definition at line 79 of file IMSPI\&.cpp\&.
+.SS "int IMSPI::SpiOpen (std::stringdevspi)\fC [private]\fP"
+
+.PP
+It is responsible for opening the spidev device 'devspi' and then setting up the spidev interface\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fIdevspi\fP SPI Device name 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+Definition at line 19 of file IMSPI\&.cpp\&.
+.SS "int IMSPI::SpiWriteRead (unsigned char *p_u_c_data, inti_length)"
+
+.PP
+Writes data and reads the data returned back spi peripheral\&. This function writes data 'data' of length 'length' to the spidev device\&. Data shifted in from the spidev device is saved back into 'data'\&. 
+.PP
+\fBParameters:\fP
+.RS 4
+\fI\\return\fP 
+.RE
+.PP
+
+.PP
+Definition at line 97 of file IMSPI\&.cpp\&.
+.PP
+Referenced by IMADC::ReadChannel()\&.
+.SH "Member Data Documentation"
+.PP 
+.SS "int IMSPI::i_spifd\fC [private]\fP"
+
+.PP
+Definition at line 106 of file IMSPI\&.h\&.
+.SS "unsigned char IMSPI::u_c_bits_per_word\fC [private]\fP"
+
+.PP
+Definition at line 104 of file IMSPI\&.h\&.
+.SS "unsigned char IMSPI::u_c_mode\fC [private]\fP"
+
+.PP
+Definition at line 103 of file IMSPI\&.h\&.
+.SS "unsigned int IMSPI::u_i_speed\fC [private]\fP"
+
+.PP
+Definition at line 105 of file IMSPI\&.h\&.
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for evarobot library from the source code\&.

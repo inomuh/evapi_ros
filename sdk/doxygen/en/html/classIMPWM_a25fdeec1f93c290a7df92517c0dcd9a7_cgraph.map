@@ -1,0 +1,6 @@
+<map id="IMPWM::IMPWM" name="IMPWM::IMPWM">
+<area shape="rect" id="node2" href="$classIMPWM.html#a05a2041e77d4f7970cefea54be36fb4b" title="IMPWM::ConfigPWM" alt="" coords="204,5,353,32"/>
+<area shape="rect" id="node3" href="$classIMPWM.html#a22528017b7d59761fe56672126396c11" title="This function sets GPIO18 to the alternat function 5 (ALT5) and GPIO13 to ALT0 to enable the pin to o..." alt="" coords="195,56,363,83"/>
+<area shape="rect" id="node4" href="$classIMPWM.html#ab4967bd34c9cae505fcd7a176d89024d" title="Function to map physical memory. " alt="" coords="182,107,375,133"/>
+<area shape="rect" id="node5" href="$classIMPWM.html#acbf9d59aec8a11835f71ee4ecb3eb567" title="Sets Duty Cycle as a count value (Fast) i.e. if counts is 1024 and &#39;duty&#39; is set to 512..." alt="" coords="181,157,376,184"/>
+</map>

@@ -1,0 +1,287 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.6"/>
+<title>evarobot library: src/IMEIO.cpp Kaynak Dosyası</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { searchBox.OnSelectItem(0); });
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">evarobot library
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Oluşturan Doxygen 1.8.6 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search",false,'Ara');
+</script>
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Ana&#160;Sayfa</span></a></li>
+      <li><a href="annotated.html"><span>Sınıflar</span></a></li>
+      <li class="current"><a href="files.html"><span>Dosyalar</span></a></li>
+      <li>
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Ara" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Dosya&#160;Listesi</span></a></li>
+      <li><a href="globals.html"><span>Dosya&#160;Üyeleri</span></a></li>
+    </ul>
+  </div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>Tümü</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Sınıflar</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Dosyalar</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Fonksiyonlar</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Değişkenler</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedef&apos;ler</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enümerasyonlar</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enümeratör</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Makrolar</a></div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle">
+<div class="title">IMEIO.cpp</div>  </div>
+</div><!--header-->
+<div class="contents">
+<a href="IMEIO_8cpp.html">Bu dosyanın dokümantasyonuna git.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * IMEIO.cpp</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *  Created on: Jun 1, 2015</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> *      Author: makcakoca</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;../include/IMEIO.h&quot;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">const</span> <span class="keywordtype">bool</span> <a class="code" href="classIMEIO.html#ab02d0af7ac2e9c4da3f0342b1c62edcb">IMEIO::OUTPUT</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">const</span> <span class="keywordtype">bool</span> <a class="code" href="classIMEIO.html#a05b8485826b585deee2bc319e9712088">IMEIO::INPUT</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">const</span> <span class="keywordtype">bool</span> <a class="code" href="classIMEIO.html#ae8f8785d5add82592f061b89d6dbc195">IMEIO::HIGH</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">const</span> <span class="keywordtype">bool</span> <a class="code" href="classIMEIO.html#ae43807c45dd4d1bbb180963a14faa016">IMEIO::LOW</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">// PORTA</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code" href="classIMEIO.html#acdc683bd8b29e60a287691adfa332ba5">IMEIO::RGB_LED1</a> = 0;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code" href="classIMEIO.html#ae14f0a1f2122b8413c8953aab7f37682">IMEIO::RGB_LED2</a> = 1;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code" href="classIMEIO.html#afa5d3cce85c32a18cf988e893106f0f3">IMEIO::RGB_LED3</a> = 2;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code" href="classIMEIO.html#a57fdc991d67639ebc9818e23fa140bf9">IMEIO::BUZZER</a> = 3;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code" href="classIMEIO.html#a6dd62fb7d4420a246de3d243cea3b1b9">IMEIO::BUMPER0</a> = 4;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code" href="classIMEIO.html#a01afd57ebac97307749b8c2cd4431a89">IMEIO::BUMPER1</a> = 5;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code" href="classIMEIO.html#a196126b879f0b5f4cf7a7819d07a5acd">IMEIO::BUMPER2</a> = 6;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code" href="classIMEIO.html#a72b975778cb2e5943553c0f342efad2d">IMEIO::USER_LED</a> = 7;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">// PORTB</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code" href="classIMEIO.html#a280f5143dca99e793156758db27d7d86">IMEIO::SWR_RESET</a> = 0;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code" href="classIMEIO.html#a508fc8a7b6ab5315262d7c5345f7ec69">IMEIO::EIO0</a> = 1;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code" href="classIMEIO.html#ab242ba26f73895aeab9fe6ca8f25e4ab">IMEIO::EIO1</a> = 2;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code" href="classIMEIO.html#ab50a92b588c75c5751aa9ce17624fa43">IMEIO::EIO2</a> = 3;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code" href="classIMEIO.html#a4ee5e529d6390068b3bb50b7d0d6ae1d">IMEIO::EIO3</a> = 4;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code" href="classIMEIO.html#a3094285aaac5581769dbab064e52682f">IMEIO::EIO4</a> = 5;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code" href="classIMEIO.html#afcb656a01ea430f4265f92030837915a">IMEIO::EIO5</a> = 6;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code" href="classIMEIO.html#a1179a84c8b8c99af01d6a8cc69344a6e">IMEIO::EIO6</a> = 7;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="classIMEIO.html#a21942b0c1bd2d6cf7934701ea2c516b3">   40</a></span>&#160;<a class="code" href="classIMEIO.html#a21942b0c1bd2d6cf7934701ea2c516b3">IMEIO::IMEIO</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> u_c_device_address, <span class="keywordtype">string</span> str_i2c_file_name, sem_t * mutex)</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;{</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    this-&gt;<a class="code" href="classIMEIO.html#a447843840d5c84838b173c5fb3ef8d8f">u_c_pins_directions_A</a> = 0x00;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    this-&gt;<a class="code" href="classIMEIO.html#a91d5984ebbb8e6da7f29203646d5e3ab">u_c_pins_data_A</a> = 0x00;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    this-&gt;<a class="code" href="classIMEIO.html#ae1a9405199e28ee1ba92c1852ca9247c">u_c_pins_directions_B</a> = 0x00;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    this-&gt;<a class="code" href="classIMEIO.html#aa4493ca773ac6b3f91aa43057c8f3844">u_c_pins_data_B</a> = 0x00;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    this-&gt;<a class="code" href="classIMEIO.html#a438f85baededebf400fba51cb8659672">i2c</a> = <span class="keyword">new</span> <a class="code" href="classIMI2C.html">IMI2C</a>(u_c_device_address, str_i2c_file_name, mutex);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;}</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
+<div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="classIMEIO.html#ac6b0b3fdf082531883c654db6ec0cac3">   51</a></span>&#160;<a class="code" href="classIMEIO.html#ac6b0b3fdf082531883c654db6ec0cac3">IMEIO::~IMEIO</a>()</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;{</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keyword">delete</span> this-&gt;<a class="code" href="classIMEIO.html#a438f85baededebf400fba51cb8659672">i2c</a>;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;}</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="classIMEIO.html#a3b38a62f25b8b6e1815526671acd0a2c">   56</a></span>&#160;<span class="keywordtype">int</span> <a class="code" href="classIMEIO.html#a3b38a62f25b8b6e1815526671acd0a2c">IMEIO::SetPinADirection</a>(<span class="keywordtype">int</span> i_pin_number, <span class="keywordtype">bool</span> b_direction)</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;{</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordtype">int</span> i_status = -1;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> u_c_mask = ~(0x01 &lt;&lt; i_pin_number);</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    this-&gt;<a class="code" href="classIMEIO.html#a447843840d5c84838b173c5fb3ef8d8f">u_c_pins_directions_A</a> &amp;= u_c_mask;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    this-&gt;<a class="code" href="classIMEIO.html#a447843840d5c84838b173c5fb3ef8d8f">u_c_pins_directions_A</a> |= (b_direction &lt;&lt; i_pin_number);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    i_status = this-&gt;<a class="code" href="classIMEIO.html#a438f85baededebf400fba51cb8659672">i2c</a>-&gt;<a class="code" href="classIMI2C.html#a2643ea3b7905279e12c956c5b1771d27">WriteDataByte</a>(<a class="code" href="classIMEIO.html#ab4590cbed457f794b829ff038cb050b0">IMEIO::IODIRA</a>, this-&gt;<a class="code" href="classIMEIO.html#a447843840d5c84838b173c5fb3ef8d8f">u_c_pins_directions_A</a>);</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keywordflow">return</span> i_status;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;}</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="classIMEIO.html#a639ecd183480ace34ccd022b96b0acb1">   70</a></span>&#160;<span class="keywordtype">int</span> <a class="code" href="classIMEIO.html#a639ecd183480ace34ccd022b96b0acb1">IMEIO::SetPinBDirection</a>(<span class="keywordtype">int</span> i_pin_number, <span class="keywordtype">bool</span> b_direction)</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;{</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keywordtype">int</span> i_status = -1;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> u_c_mask =  ~(0x01 &lt;&lt; i_pin_number);</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    this-&gt;<a class="code" href="classIMEIO.html#ae1a9405199e28ee1ba92c1852ca9247c">u_c_pins_directions_B</a> &amp;= u_c_mask;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    this-&gt;<a class="code" href="classIMEIO.html#ae1a9405199e28ee1ba92c1852ca9247c">u_c_pins_directions_B</a> |= (b_direction &lt;&lt; i_pin_number);</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    i_status = this-&gt;<a class="code" href="classIMEIO.html#a438f85baededebf400fba51cb8659672">i2c</a>-&gt;<a class="code" href="classIMI2C.html#a2643ea3b7905279e12c956c5b1771d27">WriteDataByte</a>(<a class="code" href="classIMEIO.html#aced376e3fa7be7b17c78acc4d5351a7f">IMEIO::IODIRB</a>, this-&gt;<a class="code" href="classIMEIO.html#ae1a9405199e28ee1ba92c1852ca9247c">u_c_pins_directions_B</a>);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keywordflow">return</span> i_status;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;}</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
+<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="classIMEIO.html#af24e69426582fa0d5fffd090b045d3a1">   84</a></span>&#160;<span class="keywordtype">int</span> <a class="code" href="classIMEIO.html#af24e69426582fa0d5fffd090b045d3a1">IMEIO::SetPinAValue</a>(<span class="keywordtype">int</span> i_pin_number, <span class="keywordtype">bool</span> b_value)</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;{</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keywordtype">int</span> i_status = -1;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    printf(<span class="stringliteral">&quot;pin_number(A): %d \n&quot;</span>, i_pin_number);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> u_c_mask =  ~(0x01 &lt;&lt; i_pin_number);</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    this-&gt;<a class="code" href="classIMEIO.html#a91d5984ebbb8e6da7f29203646d5e3ab">u_c_pins_data_A</a> &amp;= u_c_mask;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    this-&gt;<a class="code" href="classIMEIO.html#a91d5984ebbb8e6da7f29203646d5e3ab">u_c_pins_data_A</a> |= (b_value &lt;&lt; i_pin_number);</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    printf(<span class="stringliteral">&quot;u_c_pins_data(A): %x \n&quot;</span>, this-&gt;<a class="code" href="classIMEIO.html#a91d5984ebbb8e6da7f29203646d5e3ab">u_c_pins_data_A</a>);</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    i_status = this-&gt;<a class="code" href="classIMEIO.html#a438f85baededebf400fba51cb8659672">i2c</a>-&gt;<a class="code" href="classIMI2C.html#a2643ea3b7905279e12c956c5b1771d27">WriteDataByte</a>(<a class="code" href="classIMEIO.html#ac87c9773dd1563ea9674ce511553d332">IMEIO::GPIOA</a>, this-&gt;<a class="code" href="classIMEIO.html#a91d5984ebbb8e6da7f29203646d5e3ab">u_c_pins_data_A</a>);</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="keywordflow">return</span> i_status;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;}</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
+<div class="line"><a name="l00104"></a><span class="lineno"><a class="line" href="classIMEIO.html#a8a0bd5f77330c125ed5e98ad530a3f61">  104</a></span>&#160;<span class="keywordtype">int</span> <a class="code" href="classIMEIO.html#a8a0bd5f77330c125ed5e98ad530a3f61">IMEIO::SetPinBValue</a>(<span class="keywordtype">int</span> i_pin_number, <span class="keywordtype">bool</span> b_value)</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;{</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <span class="keywordtype">int</span> i_status = -1;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    printf(<span class="stringliteral">&quot;pin_number: %d \n&quot;</span>, i_pin_number);</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="keywordtype">unsigned</span> <span class="keywordtype">char</span> u_c_mask =  ~(0x01 &lt;&lt; i_pin_number);</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    this-&gt;<a class="code" href="classIMEIO.html#aa4493ca773ac6b3f91aa43057c8f3844">u_c_pins_data_B</a> &amp;= u_c_mask;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    this-&gt;<a class="code" href="classIMEIO.html#aa4493ca773ac6b3f91aa43057c8f3844">u_c_pins_data_B</a> |= (b_value &lt;&lt; i_pin_number);</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    printf(<span class="stringliteral">&quot;u_c_pins_data(B): %x \n&quot;</span>, <a class="code" href="classIMEIO.html#aa4493ca773ac6b3f91aa43057c8f3844">u_c_pins_data_B</a>);</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    i_status = this-&gt;<a class="code" href="classIMEIO.html#a438f85baededebf400fba51cb8659672">i2c</a>-&gt;<a class="code" href="classIMI2C.html#a2643ea3b7905279e12c956c5b1771d27">WriteDataByte</a>(<a class="code" href="classIMEIO.html#a69299f402e709435ab5ddbf806eee6de">IMEIO::GPIOB</a>, this-&gt;<a class="code" href="classIMEIO.html#aa4493ca773ac6b3f91aa43057c8f3844">u_c_pins_data_B</a>);</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    <span class="keywordflow">return</span> i_status;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;}</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;</div>
+<div class="line"><a name="l00122"></a><span class="lineno"><a class="line" href="classIMEIO.html#ab91e82ab974f4d9569c68c24c79fb2bd">  122</a></span>&#160;<span class="keywordtype">int</span> <a class="code" href="classIMEIO.html#ab91e82ab974f4d9569c68c24c79fb2bd">IMEIO::GetPinAValue</a>(<span class="keywordtype">int</span> i_pin_number, <span class="keywordtype">bool</span> &amp; b_value)</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;{</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    <span class="keywordtype">int</span> i_status = -1;</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    i_status = this-&gt;<a class="code" href="classIMEIO.html#a438f85baededebf400fba51cb8659672">i2c</a>-&gt;<a class="code" href="classIMI2C.html#ac1fab70073b31d3905019c88ba237fbc">ReadDataByte</a>(<a class="code" href="classIMEIO.html#ac87c9773dd1563ea9674ce511553d332">IMEIO::GPIOA</a>, this-&gt;<a class="code" href="classIMEIO.html#a91d5984ebbb8e6da7f29203646d5e3ab">u_c_pins_data_A</a>);</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    b_value = (this-&gt;<a class="code" href="classIMEIO.html#a91d5984ebbb8e6da7f29203646d5e3ab">u_c_pins_data_A</a> &gt;&gt; i_pin_number) &amp; 0x01;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    <span class="keywordflow">return</span> i_status;</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;}</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div>
+<div class="line"><a name="l00134"></a><span class="lineno"><a class="line" href="classIMEIO.html#a5e418ade5174cc69b4f99de1dae261a8">  134</a></span>&#160;<span class="keywordtype">int</span> <a class="code" href="classIMEIO.html#a5e418ade5174cc69b4f99de1dae261a8">IMEIO::GetPinBValue</a>(<span class="keywordtype">int</span> i_pin_number, <span class="keywordtype">bool</span> &amp; b_value)</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;{</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;    <span class="keywordtype">int</span> i_status = -1;</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;    i_status = this-&gt;<a class="code" href="classIMEIO.html#a438f85baededebf400fba51cb8659672">i2c</a>-&gt;<a class="code" href="classIMI2C.html#ac1fab70073b31d3905019c88ba237fbc">ReadDataByte</a>(<a class="code" href="classIMEIO.html#a69299f402e709435ab5ddbf806eee6de">IMEIO::GPIOB</a>, this-&gt;<a class="code" href="classIMEIO.html#aa4493ca773ac6b3f91aa43057c8f3844">u_c_pins_data_B</a>);</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;    b_value = (this-&gt;<a class="code" href="classIMEIO.html#aa4493ca773ac6b3f91aa43057c8f3844">u_c_pins_data_B</a> &gt;&gt; i_pin_number) &amp; 0x01;</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    <span class="keywordflow">return</span> i_status;</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;}</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;</div>
+<div class="ttc" id="classIMEIO_html_a72b975778cb2e5943553c0f342efad2d"><div class="ttname"><a href="classIMEIO.html#a72b975778cb2e5943553c0f342efad2d">IMEIO::USER_LED</a></div><div class="ttdeci">static const int USER_LED</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00197">IMEIO.h:197</a></div></div>
+<div class="ttc" id="classIMEIO_html_afcb656a01ea430f4265f92030837915a"><div class="ttname"><a href="classIMEIO.html#afcb656a01ea430f4265f92030837915a">IMEIO::EIO5</a></div><div class="ttdeci">static const int EIO5</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00209">IMEIO.h:209</a></div></div>
+<div class="ttc" id="classIMEIO_html_a5e418ade5174cc69b4f99de1dae261a8"><div class="ttname"><a href="classIMEIO.html#a5e418ade5174cc69b4f99de1dae261a8">IMEIO::GetPinBValue</a></div><div class="ttdeci">int GetPinBValue(int i_pin_number, bool &amp;b_value)</div><div class="ttdoc">PORTB için pin değerini okuyan fonksiyondur. </div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8cpp_source.html#l00134">IMEIO.cpp:134</a></div></div>
+<div class="ttc" id="classIMEIO_html_a639ecd183480ace34ccd022b96b0acb1"><div class="ttname"><a href="classIMEIO.html#a639ecd183480ace34ccd022b96b0acb1">IMEIO::SetPinBDirection</a></div><div class="ttdeci">int SetPinBDirection(int i_pin_number, bool b_direction)</div><div class="ttdoc">PORTB için pin yönelimini(girdi/çıktı) ayarlayan fonksiyondur. </div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8cpp_source.html#l00070">IMEIO.cpp:70</a></div></div>
+<div class="ttc" id="classIMEIO_html_a05b8485826b585deee2bc319e9712088"><div class="ttname"><a href="classIMEIO.html#a05b8485826b585deee2bc319e9712088">IMEIO::INPUT</a></div><div class="ttdeci">static const bool INPUT</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00182">IMEIO.h:182</a></div></div>
+<div class="ttc" id="classIMEIO_html_ab242ba26f73895aeab9fe6ca8f25e4ab"><div class="ttname"><a href="classIMEIO.html#ab242ba26f73895aeab9fe6ca8f25e4ab">IMEIO::EIO1</a></div><div class="ttdeci">static const int EIO1</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00205">IMEIO.h:205</a></div></div>
+<div class="ttc" id="classIMEIO_html_a438f85baededebf400fba51cb8659672"><div class="ttname"><a href="classIMEIO.html#a438f85baededebf400fba51cb8659672">IMEIO::i2c</a></div><div class="ttdeci">IMI2C * i2c</div><div class="ttdoc">Kısa bilgi. </div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00242">IMEIO.h:242</a></div></div>
+<div class="ttc" id="classIMEIO_html_a69299f402e709435ab5ddbf806eee6de"><div class="ttname"><a href="classIMEIO.html#a69299f402e709435ab5ddbf806eee6de">IMEIO::GPIOB</a></div><div class="ttdeci">static const unsigned char GPIOB</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00248">IMEIO.h:248</a></div></div>
+<div class="ttc" id="classIMEIO_html_ae8f8785d5add82592f061b89d6dbc195"><div class="ttname"><a href="classIMEIO.html#ae8f8785d5add82592f061b89d6dbc195">IMEIO::HIGH</a></div><div class="ttdeci">static const bool HIGH</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00184">IMEIO.h:184</a></div></div>
+<div class="ttc" id="classIMEIO_html_ac6b0b3fdf082531883c654db6ec0cac3"><div class="ttname"><a href="classIMEIO.html#ac6b0b3fdf082531883c654db6ec0cac3">IMEIO::~IMEIO</a></div><div class="ttdeci">~IMEIO()</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8cpp_source.html#l00051">IMEIO.cpp:51</a></div></div>
+<div class="ttc" id="classIMEIO_html_aa4493ca773ac6b3f91aa43057c8f3844"><div class="ttname"><a href="classIMEIO.html#aa4493ca773ac6b3f91aa43057c8f3844">IMEIO::u_c_pins_data_B</a></div><div class="ttdeci">unsigned char u_c_pins_data_B</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00219">IMEIO.h:219</a></div></div>
+<div class="ttc" id="classIMI2C_html_a2643ea3b7905279e12c956c5b1771d27"><div class="ttname"><a href="classIMI2C.html#a2643ea3b7905279e12c956c5b1771d27">IMI2C::WriteDataByte</a></div><div class="ttdeci">int WriteDataByte(unsigned char u_c_register_address, unsigned char u_c_data)</div><div class="ttdoc">I2C aygıtının ilgili registerına veri yazan fonksiyondur. </div><div class="ttdef"><b>Definition:</b> <a href="IMI2C_8cpp_source.html#l00102">IMI2C.cpp:102</a></div></div>
+<div class="ttc" id="classIMEIO_html_ae1a9405199e28ee1ba92c1852ca9247c"><div class="ttname"><a href="classIMEIO.html#ae1a9405199e28ee1ba92c1852ca9247c">IMEIO::u_c_pins_directions_B</a></div><div class="ttdeci">unsigned char u_c_pins_directions_B</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00218">IMEIO.h:218</a></div></div>
+<div class="ttc" id="classIMEIO_html_a508fc8a7b6ab5315262d7c5345f7ec69"><div class="ttname"><a href="classIMEIO.html#a508fc8a7b6ab5315262d7c5345f7ec69">IMEIO::EIO0</a></div><div class="ttdeci">static const int EIO0</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00204">IMEIO.h:204</a></div></div>
+<div class="ttc" id="classIMEIO_html_a6dd62fb7d4420a246de3d243cea3b1b9"><div class="ttname"><a href="classIMEIO.html#a6dd62fb7d4420a246de3d243cea3b1b9">IMEIO::BUMPER0</a></div><div class="ttdeci">static const int BUMPER0</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00193">IMEIO.h:193</a></div></div>
+<div class="ttc" id="classIMEIO_html_a3b38a62f25b8b6e1815526671acd0a2c"><div class="ttname"><a href="classIMEIO.html#a3b38a62f25b8b6e1815526671acd0a2c">IMEIO::SetPinADirection</a></div><div class="ttdeci">int SetPinADirection(int i_pin_number, bool b_direction)</div><div class="ttdoc">PORTA için pin yönelimini(girdi/çıktı) ayarlayan fonksiyondur. </div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8cpp_source.html#l00056">IMEIO.cpp:56</a></div></div>
+<div class="ttc" id="classIMEIO_html_a447843840d5c84838b173c5fb3ef8d8f"><div class="ttname"><a href="classIMEIO.html#a447843840d5c84838b173c5fb3ef8d8f">IMEIO::u_c_pins_directions_A</a></div><div class="ttdeci">unsigned char u_c_pins_directions_A</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00215">IMEIO.h:215</a></div></div>
+<div class="ttc" id="classIMEIO_html_a57fdc991d67639ebc9818e23fa140bf9"><div class="ttname"><a href="classIMEIO.html#a57fdc991d67639ebc9818e23fa140bf9">IMEIO::BUZZER</a></div><div class="ttdeci">static const int BUZZER</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00191">IMEIO.h:191</a></div></div>
+<div class="ttc" id="classIMEIO_html_afa5d3cce85c32a18cf988e893106f0f3"><div class="ttname"><a href="classIMEIO.html#afa5d3cce85c32a18cf988e893106f0f3">IMEIO::RGB_LED3</a></div><div class="ttdeci">static const int RGB_LED3</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00190">IMEIO.h:190</a></div></div>
+<div class="ttc" id="classIMI2C_html"><div class="ttname"><a href="classIMI2C.html">IMI2C</a></div><div class="ttdef"><b>Definition:</b> <a href="IMI2C_8h_source.html#l00043">IMI2C.h:43</a></div></div>
+<div class="ttc" id="classIMEIO_html_ab91e82ab974f4d9569c68c24c79fb2bd"><div class="ttname"><a href="classIMEIO.html#ab91e82ab974f4d9569c68c24c79fb2bd">IMEIO::GetPinAValue</a></div><div class="ttdeci">int GetPinAValue(int i_pin_number, bool &amp;b_value)</div><div class="ttdoc">PORTA için pin değerini okuyan fonksiyondur. </div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8cpp_source.html#l00122">IMEIO.cpp:122</a></div></div>
+<div class="ttc" id="classIMEIO_html_ab4590cbed457f794b829ff038cb050b0"><div class="ttname"><a href="classIMEIO.html#ab4590cbed457f794b829ff038cb050b0">IMEIO::IODIRA</a></div><div class="ttdeci">static const unsigned char IODIRA</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00244">IMEIO.h:244</a></div></div>
+<div class="ttc" id="classIMEIO_html_ac87c9773dd1563ea9674ce511553d332"><div class="ttname"><a href="classIMEIO.html#ac87c9773dd1563ea9674ce511553d332">IMEIO::GPIOA</a></div><div class="ttdeci">static const unsigned char GPIOA</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00247">IMEIO.h:247</a></div></div>
+<div class="ttc" id="classIMEIO_html_af24e69426582fa0d5fffd090b045d3a1"><div class="ttname"><a href="classIMEIO.html#af24e69426582fa0d5fffd090b045d3a1">IMEIO::SetPinAValue</a></div><div class="ttdeci">int SetPinAValue(int i_pin_number, bool b_value)</div><div class="ttdoc">PORTA için pin değerini(1/0) ayarlayan fonksiyondur. </div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8cpp_source.html#l00084">IMEIO.cpp:84</a></div></div>
+<div class="ttc" id="classIMEIO_html_a91d5984ebbb8e6da7f29203646d5e3ab"><div class="ttname"><a href="classIMEIO.html#a91d5984ebbb8e6da7f29203646d5e3ab">IMEIO::u_c_pins_data_A</a></div><div class="ttdeci">unsigned char u_c_pins_data_A</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00216">IMEIO.h:216</a></div></div>
+<div class="ttc" id="classIMEIO_html_a4ee5e529d6390068b3bb50b7d0d6ae1d"><div class="ttname"><a href="classIMEIO.html#a4ee5e529d6390068b3bb50b7d0d6ae1d">IMEIO::EIO3</a></div><div class="ttdeci">static const int EIO3</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00207">IMEIO.h:207</a></div></div>
+<div class="ttc" id="classIMEIO_html_ab50a92b588c75c5751aa9ce17624fa43"><div class="ttname"><a href="classIMEIO.html#ab50a92b588c75c5751aa9ce17624fa43">IMEIO::EIO2</a></div><div class="ttdeci">static const int EIO2</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00206">IMEIO.h:206</a></div></div>
+<div class="ttc" id="classIMEIO_html_a3094285aaac5581769dbab064e52682f"><div class="ttname"><a href="classIMEIO.html#a3094285aaac5581769dbab064e52682f">IMEIO::EIO4</a></div><div class="ttdeci">static const int EIO4</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00208">IMEIO.h:208</a></div></div>
+<div class="ttc" id="classIMEIO_html_aced376e3fa7be7b17c78acc4d5351a7f"><div class="ttname"><a href="classIMEIO.html#aced376e3fa7be7b17c78acc4d5351a7f">IMEIO::IODIRB</a></div><div class="ttdeci">static const unsigned char IODIRB</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00245">IMEIO.h:245</a></div></div>
+<div class="ttc" id="classIMEIO_html_a196126b879f0b5f4cf7a7819d07a5acd"><div class="ttname"><a href="classIMEIO.html#a196126b879f0b5f4cf7a7819d07a5acd">IMEIO::BUMPER2</a></div><div class="ttdeci">static const int BUMPER2</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00195">IMEIO.h:195</a></div></div>
+<div class="ttc" id="classIMEIO_html_ae43807c45dd4d1bbb180963a14faa016"><div class="ttname"><a href="classIMEIO.html#ae43807c45dd4d1bbb180963a14faa016">IMEIO::LOW</a></div><div class="ttdeci">static const bool LOW</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00185">IMEIO.h:185</a></div></div>
+<div class="ttc" id="classIMEIO_html_ab02d0af7ac2e9c4da3f0342b1c62edcb"><div class="ttname"><a href="classIMEIO.html#ab02d0af7ac2e9c4da3f0342b1c62edcb">IMEIO::OUTPUT</a></div><div class="ttdeci">static const bool OUTPUT</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00181">IMEIO.h:181</a></div></div>
+<div class="ttc" id="classIMEIO_html_a8a0bd5f77330c125ed5e98ad530a3f61"><div class="ttname"><a href="classIMEIO.html#a8a0bd5f77330c125ed5e98ad530a3f61">IMEIO::SetPinBValue</a></div><div class="ttdeci">int SetPinBValue(int i_pin_number, bool b_value)</div><div class="ttdoc">PORTB için pin değerini(1/0) ayarlayan fonksiyondur. </div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8cpp_source.html#l00104">IMEIO.cpp:104</a></div></div>
+<div class="ttc" id="classIMEIO_html_acdc683bd8b29e60a287691adfa332ba5"><div class="ttname"><a href="classIMEIO.html#acdc683bd8b29e60a287691adfa332ba5">IMEIO::RGB_LED1</a></div><div class="ttdeci">static const int RGB_LED1</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00188">IMEIO.h:188</a></div></div>
+<div class="ttc" id="classIMEIO_html_a01afd57ebac97307749b8c2cd4431a89"><div class="ttname"><a href="classIMEIO.html#a01afd57ebac97307749b8c2cd4431a89">IMEIO::BUMPER1</a></div><div class="ttdeci">static const int BUMPER1</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00194">IMEIO.h:194</a></div></div>
+<div class="ttc" id="classIMEIO_html_a21942b0c1bd2d6cf7934701ea2c516b3"><div class="ttname"><a href="classIMEIO.html#a21942b0c1bd2d6cf7934701ea2c516b3">IMEIO::IMEIO</a></div><div class="ttdeci">IMEIO(unsigned char u_c_device_address, string str_i2c_file_name, sem_t *mutex)</div><div class="ttdoc">Constructor. </div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8cpp_source.html#l00040">IMEIO.cpp:40</a></div></div>
+<div class="ttc" id="classIMEIO_html_ae14f0a1f2122b8413c8953aab7f37682"><div class="ttname"><a href="classIMEIO.html#ae14f0a1f2122b8413c8953aab7f37682">IMEIO::RGB_LED2</a></div><div class="ttdeci">static const int RGB_LED2</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00189">IMEIO.h:189</a></div></div>
+<div class="ttc" id="classIMI2C_html_ac1fab70073b31d3905019c88ba237fbc"><div class="ttname"><a href="classIMI2C.html#ac1fab70073b31d3905019c88ba237fbc">IMI2C::ReadDataByte</a></div><div class="ttdeci">int ReadDataByte(unsigned char u_c_register_address, unsigned char &amp;u_c_data)</div><div class="ttdoc">I2C aygıtının ilgili registerından veri okuyan fonksiyondur. </div><div class="ttdef"><b>Definition:</b> <a href="IMI2C_8cpp_source.html#l00149">IMI2C.cpp:149</a></div></div>
+<div class="ttc" id="classIMEIO_html_a280f5143dca99e793156758db27d7d86"><div class="ttname"><a href="classIMEIO.html#a280f5143dca99e793156758db27d7d86">IMEIO::SWR_RESET</a></div><div class="ttdeci">static const int SWR_RESET</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00202">IMEIO.h:202</a></div></div>
+<div class="ttc" id="classIMEIO_html_a1179a84c8b8c99af01d6a8cc69344a6e"><div class="ttname"><a href="classIMEIO.html#a1179a84c8b8c99af01d6a8cc69344a6e">IMEIO::EIO6</a></div><div class="ttdeci">static const int EIO6</div><div class="ttdef"><b>Definition:</b> <a href="IMEIO_8h_source.html#l00210">IMEIO.h:210</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+evarobot library için Per Tem 9 2015 10:57:40 tarihinde  üreten:  &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.8.6
+</small></address>
+</body>
+</html>

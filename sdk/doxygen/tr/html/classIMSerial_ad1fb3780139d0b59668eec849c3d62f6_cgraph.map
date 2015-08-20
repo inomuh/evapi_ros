@@ -1,0 +1,5 @@
+<map id="IMSerial::IMSerial" name="IMSerial::IMSerial">
+<area shape="rect" id="node2" href="$classIMSerial.html#a080146c5c2753bc6b91076abc3d5427e" title="Seri ahberleşmenin ayarlarını ve ilklendirmesi yapan fpnksiyondur. " alt="" coords="181,5,331,32"/>
+<area shape="rect" id="node4" href="$classIMSerial.html#a10be1c1d26818bd0067d878c9c650e3b" title="Seri bağlantıyı açar. " alt="" coords="185,56,327,83"/>
+<area shape="rect" id="node3" href="$classIMSerial.html#afd3505d4644e71e4a9b42a156d4257fa" title="IMSerial::SignalHandlerIO" alt="" coords="379,5,552,32"/>
+</map>

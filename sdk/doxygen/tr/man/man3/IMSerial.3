@@ -1,0 +1,538 @@
+.TH "IMSerial" 3 "Per Tem 9 2015" "evarobot library" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+IMSerial \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <IMSerial\&.h>\fP
+.SS "Public Üye Fonksiyonlar"
+
+.in +1c
+.ti -1c
+.RI "\fBIMSerial\fP ()"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "\fBIMSerial\fP (string str_device_name, speed_t \fBbaudrate\fP, tcflag_t \fBdata_bits\fP, tcflag_t \fBparity\fP, tcflag_t \fBparity_on\fP, tcflag_t \fBstop_bits\fP)"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "int \fBSetBaudrate\fP (speed_t \fBbaudrate\fP)"
+.br
+.RI "\fIBaudrate değerini atar\&. \fP"
+.ti -1c
+.RI "int \fBSetDataBits\fP (tcflag_t \fBdata_bits\fP)"
+.br
+.RI "\fIDataBits değerini atar\&. \fP"
+.ti -1c
+.RI "int \fBSetParity\fP (tcflag_t \fBparity\fP, tcflag_t \fBparity_on\fP)"
+.br
+.RI "\fIParity değerini atar\&. \fP"
+.ti -1c
+.RI "int \fBSetStopBits\fP (tcflag_t \fBstop_bits\fP)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "speed_t \fBGetBaudrate\fP () const "
+.br
+.RI "\fIBaudrate'i döndürür\&. \fP"
+.ti -1c
+.RI "tcflag_t \fBGetDataBits\fP () const "
+.br
+.RI "\fIDataBits değerini döndürür\&. \fP"
+.ti -1c
+.RI "tcflag_t \fBGetParity\fP () const "
+.br
+.RI "\fIParity değerinin döndürür\&. \fP"
+.ti -1c
+.RI "tcflag_t \fBGetStopBits\fP () const "
+.br
+.RI "\fIStopBit değerini döndürür\&. \fP"
+.ti -1c
+.RI "int \fBReadData\fP (char *p_c_data, unsigned int u_i_size)"
+.br
+.RI "\fISeri porttan gelen veriyi okur\&. \fP"
+.ti -1c
+.RI "int \fBReadDataAsync\fP (char *p_c_data, unsigned int u_i_size)"
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.ti -1c
+.RI "int \fBWriteData\fP (const void *p_data, size_t size)"
+.br
+.RI "\fISeri porta veri yazar\&. \fP"
+.ti -1c
+.RI "bool \fBisReadyRead\fP () const "
+.br
+.RI "\fIKısa bilgi\&. \fP"
+.in -1c
+.SS "Özel Üye Fonksiyonlar"
+
+.in +1c
+.ti -1c
+.RI "int \fBSerialOpen\fP (std::string _str_name)"
+.br
+.RI "\fISeri bağlantıyı açar\&. \fP"
+.ti -1c
+.RI "int \fBSerialClose\fP ()"
+.br
+.RI "\fISeri bağlantıyı kapatır\&. \fP"
+.ti -1c
+.RI "int \fBSerialConfig\fP ()"
+.br
+.RI "\fISeri ahberleşmenin ayarlarını ve ilklendirmesi yapan fpnksiyondur\&. \fP"
+.in -1c
+.SS "Statik Özel Üye Fonksiyonlar"
+
+.in +1c
+.ti -1c
+.RI "static void \fBSignalHandlerIO\fP (int i_status)"
+.br
+.in -1c
+.SS "Özel Özellikler(attribute)"
+
+.in +1c
+.ti -1c
+.RI "std::string \fBstr_name\fP"
+.br
+.ti -1c
+.RI "speed_t \fBbaudrate\fP"
+.br
+.ti -1c
+.RI "tcflag_t \fBdata_bits\fP"
+.br
+.ti -1c
+.RI "tcflag_t \fBparity\fP"
+.br
+.ti -1c
+.RI "tcflag_t \fBparity_on\fP"
+.br
+.ti -1c
+.RI "tcflag_t \fBstop_bits\fP"
+.br
+.ti -1c
+.RI "int \fBi_serial_fd\fP"
+.br
+.ti -1c
+.RI "bool \fBb_read_data_available\fP"
+.br
+.ti -1c
+.RI "struct sigaction \fBsignal_action_io\fP"
+.br
+.ti -1c
+.RI "struct termios \fBport_settings\fP"
+.br
+.in -1c
+.SS "Statik Özel Özellikler(attribute)"
+
+.in +1c
+.ti -1c
+.RI "static bool \fBb_signal_received\fP = false"
+.br
+.in -1c
+.SH "Ayrıntılı tanımlama"
+.PP 
+IMSerial\&.h dosyasının 40 numaralı satırında tanımlanmıştır\&.
+.SH "Constructor & Destructor Dokümantasyonu"
+.PP 
+.SS "IMSerial::IMSerial ()"
+
+.PP
+Constructor\&. 
+.PP
+IMSerial\&.cpp dosyasının 12 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar b_read_data_available, baudrate, data_bits, i_serial_fd, parity, parity_on, SerialConfig(), SerialOpen(), stop_bits ve str_name\&.
+.SS "IMSerial::IMSerial (stringstr_device_name, speed_tbaudrate, tcflag_tdata_bits, tcflag_tparity, tcflag_tparity_on, tcflag_tstop_bits)"
+
+.PP
+Constructor\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIstr_device_name\fP 
+.br
+\fIbaudrate\fP ör\&. B115200 
+.br
+\fIdata_bits\fP ör\&. CS8 
+.br
+\fIparity\fP ör\&. PARODD 
+.br
+\fIparity_on\fP ör\&. PARENB 
+.br
+\fIstop_bits\fP ör\&. 0 
+.RE
+.PP
+
+.PP
+IMSerial\&.cpp dosyasının 27 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar b_read_data_available, baudrate, data_bits, i_serial_fd, parity, parity_on, SerialConfig(), SerialOpen(), stop_bits ve str_name\&.
+.SH "Üye Fonksiyon Dokümantasyonu"
+.PP 
+.SS "speed_t IMSerial::GetBaudrate () const"
+
+.PP
+Baudrate'i döndürür\&. 
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+
+.RE
+.PP
+
+.PP
+IMSerial\&.cpp dosyasının 152 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar baudrate\&.
+.SS "tcflag_t IMSerial::GetDataBits () const"
+
+.PP
+DataBits değerini döndürür\&. 
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+
+.RE
+.PP
+
+.PP
+IMSerial\&.cpp dosyasının 157 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar data_bits\&.
+.SS "tcflag_t IMSerial::GetParity () const"
+
+.PP
+Parity değerinin döndürür\&. 
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+
+.RE
+.PP
+
+.PP
+IMSerial\&.cpp dosyasının 162 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar parity\&.
+.SS "tcflag_t IMSerial::GetStopBits () const"
+
+.PP
+StopBit değerini döndürür\&. 
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+
+.RE
+.PP
+
+.PP
+IMSerial\&.cpp dosyasının 167 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar stop_bits\&.
+.SS "bool IMSerial::isReadyRead () const"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMSerial\&.cpp dosyasının 243 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar b_signal_received\&.
+.PP
+Referans veren ReadDataAsync() ve IMUM6::StoreData()\&.
+.SS "int IMSerial::ReadData (char *p_c_data, unsigned intu_i_size)"
+
+.PP
+Seri porttan gelen veriyi okur\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fI*\fP p_c_data okunan veri 
+.br
+\fIu_i_size\fP okunacak veri boyutu 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMSerial\&.cpp dosyasının 172 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar b_signal_received ve i_serial_fd\&.
+.PP
+Referans veren ReadDataAsync() ve IMUM6::StoreData()\&.
+.SS "int IMSerial::ReadDataAsync (char *p_c_data, unsigned intu_i_size)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMSerial\&.cpp dosyasının 199 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar isReadyRead() ve ReadData()\&.
+.SS "int IMSerial::SerialClose ()\fC [private]\fP"
+
+.PP
+Seri bağlantıyı kapatır\&. 
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+
+.RE
+.PP
+
+.PP
+IMSerial\&.cpp dosyasının 264 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_serial_fd\&.
+.SS "int IMSerial::SerialConfig ()\fC [private]\fP"
+
+.PP
+Seri ahberleşmenin ayarlarını ve ilklendirmesi yapan fpnksiyondur\&. 
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+
+.RE
+.PP
+
+.PP
+IMSerial\&.cpp dosyasının 282 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar baudrate, data_bits, i_serial_fd, parity, parity_on, port_settings, signal_action_io, SignalHandlerIO() ve stop_bits\&.
+.PP
+Referans veren IMSerial()\&.
+.SS "int IMSerial::SerialOpen (std::string_str_name)\fC [private]\fP"
+
+.PP
+Seri bağlantıyı açar\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fI_str_name\fP seri sürücünün adı 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMSerial\&.cpp dosyasının 249 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_serial_fd\&.
+.PP
+Referans veren IMSerial()\&.
+.SS "int IMSerial::SetBaudrate (speed_tbaudrate)"
+
+.PP
+Baudrate değerini atar\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIbaudrate\fP ör\&. B115200 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMSerial\&.cpp dosyasının 43 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_serial_fd ve port_settings\&.
+.SS "int IMSerial::SetDataBits (tcflag_tdata_bits)"
+
+.PP
+DataBits değerini atar\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIdata_bits\fP ör\&. CS8 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMSerial\&.cpp dosyasının 70 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar baudrate, data_bits, i_serial_fd, parity, parity_on, port_settings ve stop_bits\&.
+.SS "int IMSerial::SetParity (tcflag_tparity, tcflag_tparity_on)"
+
+.PP
+Parity değerini atar\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIparity\fP ör\&. PARODD 
+.br
+\fIparity_on\fP ör\&. PARENB 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMSerial\&.cpp dosyasının 97 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar baudrate, data_bits, i_serial_fd, parity, parity_on, port_settings ve stop_bits\&.
+.SS "int IMSerial::SetStopBits (tcflag_tstop_bits)"
+
+.PP
+Kısa bilgi\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMSerial\&.cpp dosyasının 125 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar baudrate, data_bits, i_serial_fd, parity, parity_on, port_settings ve stop_bits\&.
+.SS "void IMSerial::SignalHandlerIO (inti_status)\fC [static]\fP, \fC [private]\fP"
+
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+
+.RE
+.PP
+
+.PP
+IMSerial\&.cpp dosyasının 331 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar b_signal_received\&.
+.PP
+Referans veren SerialConfig()\&.
+.SS "int IMSerial::WriteData (const void *p_data, size_tsize)"
+
+.PP
+Seri porta veri yazar\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fI*\fP p_c_data yazılacak veri 
+.br
+\fIu_i_size\fP yazılacak veri boyutu 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+.RE
+.PP
+
+.PP
+IMSerial\&.cpp dosyasının 228 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_serial_fd\&.
+.PP
+Referans veren IMUM6::SetCommand() ve IMUM6::SetRegister32bitValue()\&.
+.SH "Üye Veri Dokümantasyonu"
+.PP 
+.SS "bool IMSerial::b_read_data_available\fC [private]\fP"
+
+.PP
+IMSerial\&.h dosyasının 352 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMSerial()\&.
+.SS "bool IMSerial::b_signal_received = false\fC [static]\fP, \fC [private]\fP"
+
+.PP
+IMSerial\&.h dosyasının 357 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren isReadyRead(), ReadData() ve SignalHandlerIO()\&.
+.SS "speed_t IMSerial::baudrate\fC [private]\fP"
+
+.PP
+IMSerial\&.h dosyasının 344 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren GetBaudrate(), IMSerial(), SerialConfig(), SetDataBits(), SetParity() ve SetStopBits()\&.
+.SS "tcflag_t IMSerial::data_bits\fC [private]\fP"
+
+.PP
+IMSerial\&.h dosyasının 345 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren GetDataBits(), IMSerial(), SerialConfig(), SetDataBits(), SetParity() ve SetStopBits()\&.
+.SS "int IMSerial::i_serial_fd\fC [private]\fP"
+
+.PP
+IMSerial\&.h dosyasının 350 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMSerial(), ReadData(), SerialClose(), SerialConfig(), SerialOpen(), SetBaudrate(), SetDataBits(), SetParity(), SetStopBits() ve WriteData()\&.
+.SS "tcflag_t IMSerial::parity\fC [private]\fP"
+
+.PP
+IMSerial\&.h dosyasının 346 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren GetParity(), IMSerial(), SerialConfig(), SetDataBits(), SetParity() ve SetStopBits()\&.
+.SS "tcflag_t IMSerial::parity_on\fC [private]\fP"
+
+.PP
+IMSerial\&.h dosyasının 347 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMSerial(), SerialConfig(), SetDataBits(), SetParity() ve SetStopBits()\&.
+.SS "struct termios IMSerial::port_settings\fC [private]\fP"
+
+.PP
+IMSerial\&.h dosyasının 355 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren SerialConfig(), SetBaudrate(), SetDataBits(), SetParity() ve SetStopBits()\&.
+.SS "struct sigaction IMSerial::signal_action_io\fC [private]\fP"
+
+.PP
+IMSerial\&.h dosyasının 354 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren SerialConfig()\&.
+.SS "tcflag_t IMSerial::stop_bits\fC [private]\fP"
+
+.PP
+IMSerial\&.h dosyasının 348 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren GetStopBits(), IMSerial(), SerialConfig(), SetDataBits(), SetParity() ve SetStopBits()\&.
+.SS "std::string IMSerial::str_name\fC [private]\fP"
+
+.PP
+IMSerial\&.h dosyasının 343 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMSerial()\&.
+
+.SH "Yazar"
+.PP 
+Doxygen tarafındanevarobot library için kaynak koddan otomatik üretilmiştir\&.

@@ -1,0 +1,4 @@
+<map id="IMI2C::WriteDataByte" name="IMI2C::WriteDataByte">
+<area shape="rect" id="node2" href="$classIMI2C.html#a20e7ca50e02f1590278e75b4d82e9e1a" title="I2C aygıtını kapatır. " alt="" coords="206,5,327,32"/>
+<area shape="rect" id="node3" href="$classIMI2C.html#ab3f82da464834214b5ba716c1d683d9c" title="I2C aygıtını açar. " alt="" coords="207,56,326,83"/>
+</map>

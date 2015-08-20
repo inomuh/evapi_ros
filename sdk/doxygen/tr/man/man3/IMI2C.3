@@ -1,0 +1,216 @@
+.TH "IMI2C" 3 "Per Tem 9 2015" "evarobot library" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+IMI2C \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <IMI2C\&.h>\fP
+.SS "Public Üye Fonksiyonlar"
+
+.in +1c
+.ti -1c
+.RI "\fBIMI2C\fP ()"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "\fBIMI2C\fP (unsigned char u_c_device_address, string \fBstr_i2c_file_name\fP, sem_t *\fBmutex\fP)"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "\fB~IMI2C\fP (void)"
+.br
+.ti -1c
+.RI "int \fBWriteDataByte\fP (unsigned char u_c_register_address, unsigned char u_c_data)"
+.br
+.RI "\fII2C aygıtının ilgili registerına veri yazan fonksiyondur\&. \fP"
+.ti -1c
+.RI "int \fBReadDataByte\fP (unsigned char u_c_register_address, unsigned char &u_c_data)"
+.br
+.RI "\fII2C aygıtının ilgili registerından veri okuyan fonksiyondur\&. \fP"
+.in -1c
+.SS "Özel Üye Fonksiyonlar"
+
+.in +1c
+.ti -1c
+.RI "int \fBOpenI2C\fP ()"
+.br
+.RI "\fII2C aygıtını açar\&. \fP"
+.ti -1c
+.RI "int \fBCloseI2C\fP (int i_i2cfd)"
+.br
+.RI "\fII2C aygıtını kapatır\&. \fP"
+.in -1c
+.SS "Özel Özellikler(attribute)"
+
+.in +1c
+.ti -1c
+.RI "string \fBstr_i2c_file_name\fP"
+.br
+.RI "\fIi2c device name e\&.g\&.'/dev/i2c-0' or '/dev/i2c-1' \fP"
+.ti -1c
+.RI "unsigned char \fBu_c_device_adress\fP"
+.br
+.ti -1c
+.RI "sem_t * \fBmutex\fP"
+.br
+.in -1c
+.SH "Ayrıntılı tanımlama"
+.PP 
+IMI2C\&.h dosyasının 43 numaralı satırında tanımlanmıştır\&.
+.SH "Constructor & Destructor Dokümantasyonu"
+.PP 
+.SS "IMI2C::IMI2C ()"
+
+.PP
+Constructor\&. 
+.PP
+IMI2C\&.cpp dosyasının 16 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar OpenI2C(), str_i2c_file_name ve u_c_device_adress\&.
+.SS "IMI2C::IMI2C (unsigned charu_c_device_address, stringstr_i2c_file_name, sem_t *mutex)"
+
+.PP
+Constructor\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIu_c_device_address\fP i2c aygıt adresi 
+.br
+\fIstr_i2c_file_name\fP i2c aygıt sürücüsü adı 
+.br
+\fI*\fP mutex i2c sürücüsünün kullanımını senkronlaştırmak için mutex\&. 
+.RE
+.PP
+
+.PP
+IMI2C\&.cpp dosyasının 32 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar mutex, OpenI2C(), str_i2c_file_name ve u_c_device_adress\&.
+.SS "IMI2C::~IMI2C (void)"
+
+.PP
+IMI2C\&.cpp dosyasının 45 numaralı satırında tanımlanmıştır\&.
+.SH "Üye Fonksiyon Dokümantasyonu"
+.PP 
+.SS "int IMI2C::CloseI2C (inti_i2cfd)\fC [private]\fP"
+
+.PP
+I2C aygıtını kapatır\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_i2cfd\fP 
+.RE
+.PP
+\fBDöndürdüğü değerler:\fP
+.RS 4
+\fI<0\fP hata varsa 
+.br
+\fI>=0\fP hata yoksa 
+.RE
+.PP
+
+.PP
+IMI2C\&.cpp dosyasının 80 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren ReadDataByte() ve WriteDataByte()\&.
+.SS "int IMI2C::OpenI2C ()\fC [private]\fP"
+
+.PP
+I2C aygıtını açar\&. 
+.PP
+\fBDöndürdüğü değerler:\fP
+.RS 4
+\fI<0\fP hata varsa 
+.br
+\fI>=0\fP hata yoksa 
+.RE
+.PP
+
+.PP
+IMI2C\&.cpp dosyasının 59 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar str_i2c_file_name\&.
+.PP
+Referans veren IMI2C(), ReadDataByte() ve WriteDataByte()\&.
+.SS "int IMI2C::ReadDataByte (unsigned charu_c_register_address, unsigned char &u_c_data)"
+
+.PP
+I2C aygıtının ilgili registerından veri okuyan fonksiyondur\&. Detaylı bilgi 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIu_c_register_address\fP 
+.br
+\fI&\fP u_c_data Okunan değerdir\&. 
+.RE
+.PP
+\fBDöndürdüğü değerler:\fP
+.RS 4
+\fI<0\fP hata varsa 
+.br
+\fI>=0\fP hata yoksa 
+.RE
+.PP
+
+.PP
+IMI2C\&.cpp dosyasının 149 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar CloseI2C(), OpenI2C() ve u_c_device_adress\&.
+.PP
+Referans veren IMEIO::GetPinAValue() ve IMEIO::GetPinBValue()\&.
+.SS "int IMI2C::WriteDataByte (unsigned charu_c_register_address, unsigned charu_c_data)"
+
+.PP
+I2C aygıtının ilgili registerına veri yazan fonksiyondur\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIu_c_register_address\fP 
+.br
+\fIu_c_data\fP 
+.RE
+.PP
+\fBDöndürdüğü değerler:\fP
+.RS 4
+\fI<0\fP hata varsa 
+.br
+\fI>=0\fP hata yoksa 
+.RE
+.PP
+
+.PP
+IMI2C\&.cpp dosyasının 102 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar CloseI2C(), OpenI2C() ve u_c_device_adress\&.
+.PP
+Referans veren IMEIO::SetPinADirection(), IMEIO::SetPinAValue(), IMEIO::SetPinBDirection() ve IMEIO::SetPinBValue()\&.
+.SH "Üye Veri Dokümantasyonu"
+.PP 
+.SS "sem_t* IMI2C::mutex\fC [private]\fP"
+
+.PP
+IMI2C\&.h dosyasının 169 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMI2C()\&.
+.SS "string IMI2C::str_i2c_file_name\fC [private]\fP"
+
+.PP
+i2c device name e\&.g\&.'/dev/i2c-0' or '/dev/i2c-1' 
+.PP
+IMI2C\&.h dosyasının 164 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMI2C() ve OpenI2C()\&.
+.SS "unsigned char IMI2C::u_c_device_adress\fC [private]\fP"
+
+.PP
+IMI2C\&.h dosyasının 167 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMI2C(), ReadDataByte() ve WriteDataByte()\&.
+
+.SH "Yazar"
+.PP 
+Doxygen tarafındanevarobot library için kaynak koddan otomatik üretilmiştir\&.

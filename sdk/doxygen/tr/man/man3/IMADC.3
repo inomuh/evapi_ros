@@ -1,0 +1,126 @@
+.TH "IMADC" 3 "Per Tem 9 2015" "evarobot library" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+IMADC \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <IMADC\&.h>\fP
+.SS "Public Üye Fonksiyonlar"
+
+.in +1c
+.ti -1c
+.RI "\fBIMADC\fP (\fBIMSPI\fP *\fBp_imspi\fP, int i_adc_bits=12)"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "int \fBReadChannel\fP (int i_channel_no)"
+.br
+.RI "\fIPinleri 5V referans değerine göre okuyan fonksiyondur\&. \fP"
+.ti -1c
+.RI "int \fBReadChannel\fP (int i_channel_plus, int i_channel_negative)"
+.br
+.RI "\fIPinleri diferansiyel olarak okuyan fonksiyondur\&. \fP"
+.in -1c
+.SS "Özel Özellikler(attribute)"
+
+.in +1c
+.ti -1c
+.RI "\fBIMSPI\fP * \fBp_imspi\fP"
+.br
+.RI "\fIADC entegresi ile haberleşebilmek için \fBIMSPI\fP sınıfı kullanılmaktadır\&. \fP"
+.ti -1c
+.RI "int \fBi_mask\fP"
+.br
+.RI "\fIOkunan değeri maskelemek için kullanılanılan değişkendir\&. \fP"
+.in -1c
+.SH "Ayrıntılı tanımlama"
+.PP 
+IMADC\&.h dosyasının 37 numaralı satırında tanımlanmıştır\&.
+.SH "Constructor & Destructor Dokümantasyonu"
+.PP 
+.SS "IMADC::IMADC (\fBIMSPI\fP *p_imspi, inti_adc_bits = \fC12\fP)"
+
+.PP
+Constructor\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIp_imspi\fP \fBIMSPI\fP sınıfı işaretçisi 
+.br
+\fIi_adc_bits\fP ADC bit sayısı\&. ADC entegresine bağlı bir değerdir\&. 
+.RE
+.PP
+
+.PP
+IMADC\&.cpp dosyasının 29 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_mask ve p_imspi\&.
+.SH "Üye Fonksiyon Dokümantasyonu"
+.PP 
+.SS "int IMADC::ReadChannel (inti_channel_no)"
+
+.PP
+Pinleri 5V referans değerine göre okuyan fonksiyondur\&. Sensör Kartında bulunan Analog - Dijital Çevirici (MCP3208) entegresi kanallarını tek taraflı okumaktadır\&.
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_no\fP 0-7 arasında girilen, okunacak kanal numarısıdır\&. 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+kanal üzerinde okunan değerdir\&. 
+.RE
+.PP
+
+.PP
+IMADC\&.cpp dosyasının 41 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_mask, p_imspi ve IMSPI::SpiWriteRead()\&.
+.SS "int IMADC::ReadChannel (inti_channel_plus, inti_channel_negative)"
+
+.PP
+Pinleri diferansiyel olarak okuyan fonksiyondur\&. Sensör kartında bulunan analog giriş bölümündeki iki kanal arasındaki farkı okumak için kullanılmaktadır\&.
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIi_channel_plus\fP 0-7 arasında girilen, differansiyel olarak okunacak kanal numarasıdır\&. 
+.br
+\fIi_channel_negative\fP 0-7 arasında girilen, referans olarak kullanılacak kanaldır\&. 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+iki kanal arasındaki analog değerin dijital değeridir\&. (i_channel_plus - i_channel_negative) 
+.RE
+.PP
+
+.PP
+IMADC\&.cpp dosyasının 73 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_mask, p_imspi ve IMSPI::SpiWriteRead()\&.
+.SH "Üye Veri Dokümantasyonu"
+.PP 
+.SS "int IMADC::i_mask\fC [private]\fP"
+
+.PP
+Okunan değeri maskelemek için kullanılanılan değişkendir\&. 
+.PP
+IMADC\&.h dosyasının 117 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMADC() ve ReadChannel()\&.
+.SS "\fBIMSPI\fP* IMADC::p_imspi\fC [private]\fP"
+
+.PP
+ADC entegresi ile haberleşebilmek için \fBIMSPI\fP sınıfı kullanılmaktadır\&. 
+.PP
+IMADC\&.h dosyasının 108 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren IMADC() ve ReadChannel()\&.
+
+.SH "Yazar"
+.PP 
+Doxygen tarafındanevarobot library için kaynak koddan otomatik üretilmiştir\&.

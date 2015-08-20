@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=9"/>
+<meta name="generator" content="Doxygen 1.8.6"/>
+<title>evarobot library: include/IMGPIO.h Dosya Referansı</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { searchBox.OnSelectItem(0); });
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr style="height: 56px;">
+  <td style="padding-left: 0.5em;">
+   <div id="projectname">evarobot library
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Oluşturan Doxygen 1.8.6 -->
+<script type="text/javascript">
+var searchBox = new SearchBox("searchBox", "search",false,'Ara');
+</script>
+  <div id="navrow1" class="tabs">
+    <ul class="tablist">
+      <li><a href="index.html"><span>Ana&#160;Sayfa</span></a></li>
+      <li><a href="annotated.html"><span>Sınıflar</span></a></li>
+      <li class="current"><a href="files.html"><span>Dosyalar</span></a></li>
+      <li>
+        <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <img id="MSearchSelect" src="search/mag_sel.png"
+               onmouseover="return searchBox.OnSearchSelectShow()"
+               onmouseout="return searchBox.OnSearchSelectHide()"
+               alt=""/>
+          <input type="text" id="MSearchField" value="Ara" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+          </span>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="files.html"><span>Dosya&#160;Listesi</span></a></li>
+      <li><a href="globals.html"><span>Dosya&#160;Üyeleri</span></a></li>
+    </ul>
+  </div>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>Tümü</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Sınıflar</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Dosyalar</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Fonksiyonlar</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Değişkenler</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedef&apos;ler</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enümerasyonlar</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enümeratör</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Makrolar</a></div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<iframe src="javascript:void(0)" frameborder="0" 
+        name="MSearchResults" id="MSearchResults">
+</iframe>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_d44c64559bbebec7f509842c48db8b23.html">include</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">Sınıflar</a> &#124;
+<a href="#define-members">Makrolar</a> &#124;
+<a href="#typedef-members">Typedef'ler</a> &#124;
+<a href="#func-members">Fonksiyonlar</a>  </div>
+  <div class="headertitle">
+<div class="title">IMGPIO.h Dosya Referansı</div>  </div>
+</div><!--header-->
+<div class="contents">
+
+<p>Raspberry Pi üzerindeki GPIO'ları kontrol eden sınıftır.  
+<a href="#details">Ayrıntılar...</a></p>
+<div class="textblock"><code>#include &lt;string&gt;</code><br/>
+<code>#include &lt;iostream&gt;</code><br/>
+<code>#include &lt;sstream&gt;</code><br/>
+<code>#include &lt;unistd.h&gt;</code><br/>
+<code>#include &lt;errno.h&gt;</code><br/>
+<code>#include &lt;stdio.h&gt;</code><br/>
+<code>#include &lt;stdlib.h&gt;</code><br/>
+<code>#include &lt;sys/types.h&gt;</code><br/>
+<code>#include &lt;sys/stat.h&gt;</code><br/>
+<code>#include &lt;fcntl.h&gt;</code><br/>
+<code>#include &lt;sys/poll.h&gt;</code><br/>
+<code>#include &lt;signal.h&gt;</code><br/>
+</div><div class="textblock"><div class="dynheader">
+IMGPIO.h için içerme bağımlılık grafiği:</div>
+<div class="dyncontent">
+<div class="center"><img src="IMGPIO_8h__incl.png" border="0" usemap="#include_2IMGPIO_8h" alt=""/></div>
+<map name="include_2IMGPIO_8h" id="include_2IMGPIO_8h">
+</map>
+</div>
+</div><div class="textblock"><div class="dynheader">
+Bu şekil hangi dosyaların doğrudan ya da dolaylı olarak bu dosyayı içerdiğini gösterir:</div>
+<div class="dyncontent">
+<div class="center"><img src="IMGPIO_8h__dep__incl.png" border="0" usemap="#include_2IMGPIO_8hdep" alt=""/></div>
+<map name="include_2IMGPIO_8hdep" id="include_2IMGPIO_8hdep">
+<area shape="rect" id="node2" href="IMGPIO_8cpp.html" title="src/IMGPIO.cpp" alt="" coords="9,80,125,107"/></map>
+</div>
+</div>
+<p><a href="IMGPIO_8h_source.html">Bu dosyanın kaynak koduna git.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
+Sınıflar</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classIMGPIO.html">IMGPIO</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Makrolar</h2></td></tr>
+<tr class="memitem:a3dfd5dfc509e2256d76d20201511f09c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="IMGPIO_8h.html#a3dfd5dfc509e2256d76d20201511f09c">INCLUDE_IMGPIO_H_</a></td></tr>
+<tr class="separator:a3dfd5dfc509e2256d76d20201511f09c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedef'ler</h2></td></tr>
+<tr class="memitem:a8c4b934d145f22d794684984563d11a1"><td class="memItemLeft" align="right" valign="top">typedef void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="IMGPIO_8h.html#a8c4b934d145f22d794684984563d11a1">CallbackFunctionPtr</a> )(void *, int)</td></tr>
+<tr class="separator:a8c4b934d145f22d794684984563d11a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
+Fonksiyonlar</h2></td></tr>
+<tr class="memitem:aa40d8428b773a3bfbee273afb83a5fba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="IMGPIO_8h.html#aa40d8428b773a3bfbee273afb83a5fba">CatchSignal</a> (int i_sig)</td></tr>
+<tr class="separator:aa40d8428b773a3bfbee273afb83a5fba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Ayrıntılı tanımlama</h2>
+<div class="textblock"><p>Raspberry Pi üzerindeki GPIO'ları kontrol eden sınıftır. </p>
+<dl class="section author"><dt>Yazar</dt><dd>Mehmet Akcakoca (<a href="#" onclick="location.href='mai'+'lto:'+'meh'+'me'+'t.a'+'kc'+'ako'+'ca'+'@in'+'ov'+'asy'+'on'+'muh'+'en'+'dis'+'li'+'k.c'+'om'; return false;">mehme<span style="display: none;">.nosp@m.</span>t.ak<span style="display: none;">.nosp@m.</span>cakoc<span style="display: none;">.nosp@m.</span>a@in<span style="display: none;">.nosp@m.</span>ovasy<span style="display: none;">.nosp@m.</span>onmu<span style="display: none;">.nosp@m.</span>hendi<span style="display: none;">.nosp@m.</span>slik<span style="display: none;">.nosp@m.</span>.com</a>) </dd></dl>
+<dl class="section date"><dt>Tarih</dt><dd>Mar, 2015</dd></dl>
+<p>Bu sınıf "Linux yaklaşımı" adı verilen yöntem kullanılmaktadır. Linux'te GPIO'lara güvenli erişebilmek için driver yazılmıştır. Her bir GPIO için birer dosya üzerinden kontrol edilebilmektedir. Bu yöntemin dezavantjı, GPIO seviye değiştirme hızının düşük olmasıdır. </p>
+
+<p><a class="el" href="IMGPIO_8h_source.html">IMGPIO.h</a> dosyasında tanımlanmıştır.</p>
+</div><h2 class="groupheader">Makro Dokümantasyonu</h2>
+<a class="anchor" id="a3dfd5dfc509e2256d76d20201511f09c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define INCLUDE_IMGPIO_H_</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="IMGPIO_8h_source.html">IMGPIO.h</a> dosyasının <a class="el" href="IMGPIO_8h_source.html#l00034">34</a> numaralı satırında tanımlanmıştır.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Typedef Dokümantasyonu</h2>
+<a class="anchor" id="a8c4b934d145f22d794684984563d11a1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef void(* CallbackFunctionPtr)(void *, int)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p><a class="el" href="IMGPIO_8h_source.html">IMGPIO.h</a> dosyasının <a class="el" href="IMGPIO_8h_source.html#l00057">57</a> numaralı satırında tanımlanmıştır.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Fonksiyon Dokümantasyonu</h2>
+<a class="anchor" id="aa40d8428b773a3bfbee273afb83a5fba"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CatchSignal </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>i_sig</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+evarobot library için Per Tem 9 2015 10:57:40 tarihinde  üreten:  &#160;<a href="http://www.doxygen.org/index.html">
+<img class="footer" src="doxygen.png" alt="doxygen"/>
+</a> 1.8.6
+</small></address>
+</body>
+</html>

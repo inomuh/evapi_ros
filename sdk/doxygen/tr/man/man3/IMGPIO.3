@@ -1,0 +1,474 @@
+.TH "IMGPIO" 3 "Per Tem 9 2015" "evarobot library" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+IMGPIO \- 
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <IMGPIO\&.h>\fP
+.SS "Public Üye Fonksiyonlar"
+
+.in +1c
+.ti -1c
+.RI "\fBIMGPIO\fP ()"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "\fBIMGPIO\fP (string \fBstr_pin_number\fP)"
+.br
+.RI "\fIConstructor\&. \fP"
+.ti -1c
+.RI "\fB~IMGPIO\fP ()"
+.br
+.ti -1c
+.RI "int \fBSetPinDirection\fP (string str_direction)"
+.br
+.RI "\fICostructor'da girilen pin girdi yada çıktı olarak ayarlayan fonksiyondur\&. \fP"
+.ti -1c
+.RI "int \fBSetPinValue\fP (string str_value)"
+.br
+.RI "\fIPin değeri atayan fonksiyondur\&. \fP"
+.ti -1c
+.RI "int \fBGetPinValue\fP (string &str_value)"
+.br
+.RI "\fIPin değerini okuyan fonksiyondur\&. \fP"
+.ti -1c
+.RI "string \fBGetPinNumber\fP () const "
+.br
+.RI "\fIConstructor'da girilen pin numarasını döndüren fonksiyondur\&. \fP"
+.in -1c
+.SS "Statik Public Özellikler(attribute)"
+
+.in +1c
+.ti -1c
+.RI "static const string \fBRISING\fP = 'rising'"
+.br
+.RI "\fIConstant Değişkenler\&. \fP"
+.ti -1c
+.RI "static const string \fBFALLING\fP = 'falling'"
+.br
+.ti -1c
+.RI "static const string \fBBOTH\fP = 'both'"
+.br
+.ti -1c
+.RI "static const string \fBOUTPUT\fP = 'out'"
+.br
+.ti -1c
+.RI "static const string \fBINPUT\fP = 'in'"
+.br
+.ti -1c
+.RI "static const string \fBHIGH\fP = '1'"
+.br
+.ti -1c
+.RI "static const string \fBLOW\fP = '0'"
+.br
+.ti -1c
+.RI "static const string \fBGPIO0\fP = '23'"
+.br
+.ti -1c
+.RI "static const string \fBGPIO1\fP = '24'"
+.br
+.ti -1c
+.RI "static const string \fBGPIO2\fP = '25'"
+.br
+.ti -1c
+.RI "static const string \fBGPIO3\fP = '7'"
+.br
+.ti -1c
+.RI "static const string \fBGPIO4\fP = '1'"
+.br
+.ti -1c
+.RI "static const string \fBGPIO5\fP = '16'"
+.br
+.ti -1c
+.RI "static const string \fBGPIO6\fP = '20'"
+.br
+.ti -1c
+.RI "static const string \fBGPIO7\fP = '21'"
+.br
+.ti -1c
+.RI "static const string \fBGPIO8\fP = '26'"
+.br
+.ti -1c
+.RI "static const string \fBGPIO9\fP = '6'"
+.br
+.ti -1c
+.RI "static const string \fBGPIO10\fP = '5'"
+.br
+.ti -1c
+.RI "static const string \fBGPIO11\fP = '0'"
+.br
+.ti -1c
+.RI "static const string \fBGPIO12\fP = '12'"
+.br
+.ti -1c
+.RI "static const string \fBGPIO13\fP = '19'"
+.br
+.in -1c
+.SS "Özel Üye Fonksiyonlar"
+
+.in +1c
+.ti -1c
+.RI "int \fBExportGpio\fP ()"
+.br
+.RI "\fIGPIO pinini kullanıma açar\&. \fP"
+.ti -1c
+.RI "int \fBUnexportGpio\fP ()"
+.br
+.RI "\fIGPIO pinini kullanıma kapatır\&. \fP"
+.in -1c
+.SS "Özel Özellikler(attribute)"
+
+.in +1c
+.ti -1c
+.RI "int \fBi_value_fd\fP"
+.br
+.ti -1c
+.RI "int \fBi_direction_fd\fP"
+.br
+.ti -1c
+.RI "int \fBi_export_fd\fP"
+.br
+.ti -1c
+.RI "int \fBi_unexport_fd\fP"
+.br
+.ti -1c
+.RI "int \fBi_edge_fd\fP"
+.br
+.ti -1c
+.RI "string \fBstr_pin_number\fP"
+.br
+.in -1c
+.SH "Ayrıntılı tanımlama"
+.PP 
+IMGPIO\&.h dosyasının 60 numaralı satırında tanımlanmıştır\&.
+.SH "Constructor & Destructor Dokümantasyonu"
+.PP 
+.SS "IMGPIO::IMGPIO ()"
+
+.PP
+Constructor\&. 
+.PP
+IMGPIO\&.cpp dosyasının 45 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar ExportGpio()\&.
+.SS "IMGPIO::IMGPIO (string_str_pin_number)"
+
+.PP
+Constructor\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIstr_pin_number\fP 
+.br
+\fI_str_pin_number\fP GPIO pin numarasi\&. 
+.RE
+.PP
+
+.PP
+IMGPIO\&.cpp dosyasının 57 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar ExportGpio()\&.
+.SS "IMGPIO::~IMGPIO ()"
+
+.PP
+IMGPIO\&.cpp dosyasının 68 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar UnexportGpio()\&.
+.SH "Üye Fonksiyon Dokümantasyonu"
+.PP 
+.SS "int IMGPIO::ExportGpio ()\fC [private]\fP"
+
+.PP
+GPIO pinini kullanıma açar\&. 
+.PP
+\fBDöndürdüğü değerler:\fP
+.RS 4
+\fI<0\fP hata varsa 
+.br
+\fI>=0\fP hata yoksa
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+Fonksiyon durum bilgisi donmektedir\&. Negatif donusler islem sirasinda hata gerlestigini gostermektedir\&. 
+.RE
+.PP
+
+.PP
+IMGPIO\&.cpp dosyasının 78 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_export_fd ve str_pin_number\&.
+.PP
+Referans veren IMGPIO()\&.
+.SS "string IMGPIO::GetPinNumber () const"
+
+.PP
+Constructor'da girilen pin numarasını döndüren fonksiyondur\&. 
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+pin değeridir\&.
+.PP
+Pin numarasi donmektedir\&. 
+.RE
+.PP
+
+.PP
+IMGPIO\&.cpp dosyasının 301 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar str_pin_number\&.
+.SS "int IMGPIO::GetPinValue (string &str_value)"
+
+.PP
+Pin değerini okuyan fonksiyondur\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fI&\fP str_value Okunan pin değeridir\&. (\fBIMGPIO::HIGH\fP ya da \fBIMGPIO::LOW\fP) 
+.RE
+.PP
+\fBDöndürdüğü değerler:\fP
+.RS 4
+\fI<0\fP hata varsa 
+.br
+\fI>=0\fP hata yoksa
+.RE
+.PP
+\fBParametreler:\fP
+.RS 4
+\fI&str_value\fP pinin degeri bu arguman uzerinden donecektir\&. 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+Fonksiyon durum bilgisi donmektedir\&. Negatif donusler islem sirasinda hata gerlestigini gostermektedir\&. 
+.RE
+.PP
+
+.PP
+IMGPIO\&.cpp dosyasının 256 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar HIGH, i_value_fd, LOW ve str_pin_number\&.
+.SS "int IMGPIO::SetPinDirection (stringstr_direction)"
+
+.PP
+Costructor'da girilen pin girdi yada çıktı olarak ayarlayan fonksiyondur\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIstr_direction\fP Giriş için; \fBIMGPIO::INPUT\fP ya da Çıkış için; \fBIMGPIO::OUTPUT\fP 
+.RE
+.PP
+\fBDöndürdüğü değerler:\fP
+.RS 4
+\fI<0\fP hata varsa 
+.br
+\fI>=0\fP hata yoksa
+.RE
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIstr_direction\fP Pin icin atanacak mod tipidir\&. Pini girdi olarak kullanmak icin INPUT, cikti olarak kullanmak icin ise OUTPUT argumani girilmelidir\&. 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+Fonksiyon durum bilgisi donmektedir\&. Negatif donusler islem sirasinda hata gerlestigini gostermektedir\&. 
+.RE
+.PP
+
+.PP
+IMGPIO\&.cpp dosyasının 162 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_direction_fd, INPUT, OUTPUT ve str_pin_number\&.
+.SS "int IMGPIO::SetPinValue (stringstr_value)"
+
+.PP
+Pin değeri atayan fonksiyondur\&. 
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIstr_value\fP \fBIMGPIO::HIGH\fP ya da \fBIMGPIO::LOW\fP 
+.RE
+.PP
+\fBDöndürdüğü değerler:\fP
+.RS 4
+\fI<0\fP hata varsa 
+.br
+\fI>=0\fP hata yoksa
+.RE
+.PP
+\fBParametreler:\fP
+.RS 4
+\fIstr_value\fP Pin icin atanacak degerdir\&. 1 icin HIGH, 0 icin LOW girdisi verilmelidir\&. 
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+Fonksiyon durum bilgisi donmektedir\&. Negatif donusler islem sirasinda hata gerlestigini gostermektedir\&. 
+.RE
+.PP
+
+.PP
+IMGPIO\&.cpp dosyasının 210 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar HIGH, i_value_fd, LOW ve str_pin_number\&.
+.SS "int IMGPIO::UnexportGpio ()\fC [private]\fP"
+
+.PP
+GPIO pinini kullanıma kapatır\&. 
+.PP
+\fBDöndürdüğü değerler:\fP
+.RS 4
+\fI<0\fP hata varsa 
+.br
+\fI>=0\fP hata yoksa
+.RE
+.PP
+\fBDöndürdüğü değer:\fP
+.RS 4
+Fonksiyon durum bilgisi donmektedir\&. Negatif donusler islem sirasinda hata gerlestigini gostermektedir\&. 
+.RE
+.PP
+
+.PP
+IMGPIO\&.cpp dosyasının 118 numaralı satırında tanımlanmıştır\&.
+.PP
+Referanslar i_export_fd ve str_pin_number\&.
+.PP
+Referans veren ~IMGPIO()\&.
+.SH "Üye Veri Dokümantasyonu"
+.PP 
+.SS "const string IMGPIO::BOTH = 'both'\fC [static]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 176 numaralı satırında tanımlanmıştır\&.
+.SS "const string IMGPIO::FALLING = 'falling'\fC [static]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 175 numaralı satırında tanımlanmıştır\&.
+.SS "const string IMGPIO::GPIO0 = '23'\fC [static]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 184 numaralı satırında tanımlanmıştır\&.
+.SS "const string IMGPIO::GPIO1 = '24'\fC [static]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 185 numaralı satırında tanımlanmıştır\&.
+.SS "const string IMGPIO::GPIO10 = '5'\fC [static]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 194 numaralı satırında tanımlanmıştır\&.
+.SS "const string IMGPIO::GPIO11 = '0'\fC [static]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 195 numaralı satırında tanımlanmıştır\&.
+.SS "const string IMGPIO::GPIO12 = '12'\fC [static]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 196 numaralı satırında tanımlanmıştır\&.
+.SS "const string IMGPIO::GPIO13 = '19'\fC [static]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 197 numaralı satırında tanımlanmıştır\&.
+.SS "const string IMGPIO::GPIO2 = '25'\fC [static]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 186 numaralı satırında tanımlanmıştır\&.
+.SS "const string IMGPIO::GPIO3 = '7'\fC [static]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 187 numaralı satırında tanımlanmıştır\&.
+.SS "const string IMGPIO::GPIO4 = '1'\fC [static]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 188 numaralı satırında tanımlanmıştır\&.
+.SS "const string IMGPIO::GPIO5 = '16'\fC [static]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 189 numaralı satırında tanımlanmıştır\&.
+.SS "const string IMGPIO::GPIO6 = '20'\fC [static]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 190 numaralı satırında tanımlanmıştır\&.
+.SS "const string IMGPIO::GPIO7 = '21'\fC [static]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 191 numaralı satırında tanımlanmıştır\&.
+.SS "const string IMGPIO::GPIO8 = '26'\fC [static]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 192 numaralı satırında tanımlanmıştır\&.
+.SS "const string IMGPIO::GPIO9 = '6'\fC [static]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 193 numaralı satırında tanımlanmıştır\&.
+.SS "const string IMGPIO::HIGH = '1'\fC [static]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 181 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren GetPinValue() ve SetPinValue()\&.
+.SS "int IMGPIO::i_direction_fd\fC [private]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 236 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren SetPinDirection()\&.
+.SS "int IMGPIO::i_edge_fd\fC [private]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 239 numaralı satırında tanımlanmıştır\&.
+.SS "int IMGPIO::i_export_fd\fC [private]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 237 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren ExportGpio() ve UnexportGpio()\&.
+.SS "int IMGPIO::i_unexport_fd\fC [private]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 238 numaralı satırında tanımlanmıştır\&.
+.SS "int IMGPIO::i_value_fd\fC [private]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 235 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren GetPinValue() ve SetPinValue()\&.
+.SS "const string IMGPIO::INPUT = 'in'\fC [static]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 179 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren SetPinDirection()\&.
+.SS "const string IMGPIO::LOW = '0'\fC [static]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 182 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren GetPinValue() ve SetPinValue()\&.
+.SS "const string IMGPIO::OUTPUT = 'out'\fC [static]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 178 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren SetPinDirection()\&.
+.SS "const string IMGPIO::RISING = 'rising'\fC [static]\fP"
+
+.PP
+Constant Değişkenler\&. 
+.PP
+IMGPIO\&.h dosyasının 174 numaralı satırında tanımlanmıştır\&.
+.SS "string IMGPIO::str_pin_number\fC [private]\fP"
+
+.PP
+IMGPIO\&.h dosyasının 240 numaralı satırında tanımlanmıştır\&.
+.PP
+Referans veren ExportGpio(), GetPinNumber(), GetPinValue(), SetPinDirection(), SetPinValue() ve UnexportGpio()\&.
+
+.SH "Yazar"
+.PP 
+Doxygen tarafındanevarobot library için kaynak koddan otomatik üretilmiştir\&.

@@ -1,0 +1,9 @@
+<launch>
+	<master auto="start"/>
+	
+	<!-- Run evarobot_bumper -->
+	<node pkg="evarobot_bumper" type="evarobot_bumper" respawn="false" name="evarobot_bumper" output="screen">
+		<rosparam file="$(find evarobot_bumper)/params/evarobot_bumper_params.yaml" command="load"/>
+	</node>
+	
+</launch>
