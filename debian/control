@@ -1,0 +1,12 @@
+Source: ros-indigo-evarobot-bumper
+Section: misc
+Priority: extra
+Maintainer: Mehmet Akcakoca <akcakocamehmet@gmail.com>
+Build-Depends: debhelper (>= 9.0.0), ros-indigo-catkin, ros-indigo-im-msgs, ros-indigo-roscpp, ros-indigo-rospy
+Homepage: http://evarobot.com
+Standards-Version: 3.9.2
+
+Package: ros-indigo-evarobot-bumper
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-indigo-im-msgs, ros-indigo-roscpp, ros-indigo-rospy
+Description: The evarobot_bumper package
