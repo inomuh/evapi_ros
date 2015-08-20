@@ -1,0 +1,12 @@
+Source: ros-indigo-evarobot-orientation
+Section: misc
+Priority: extra
+Maintainer: Mehmet Akcakoca <akcakocamehmet@gmail.com>
+Build-Depends: debhelper (>= 9.0.0), ros-indigo-catkin, ros-indigo-roscpp, ros-indigo-rospy, ros-indigo-sensor-msgs
+Homepage: http://evarobot.com
+Standards-Version: 3.9.2
+
+Package: ros-indigo-evarobot-orientation
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-indigo-roscpp, ros-indigo-rospy, ros-indigo-sensor-msgs
+Description: The evarobot_orientation package
