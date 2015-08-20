@@ -1,1 +1,0 @@
-bool bumper_state
