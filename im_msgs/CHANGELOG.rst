@@ -2,8 +2,8 @@
 Changelog for package im_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.1.2 (2015-08-20)
+------------------
 * add im_msgs
 * Contributors: Mehmet Akcakoca
 
