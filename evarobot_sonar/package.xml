@@ -2,12 +2,14 @@
 <package>
   <name>evarobot_sonar</name>
   <version>0.1.2</version>
-  <description>The evarobot_sonar package</description>
+  <description>evarobot_sonar provides nearest distance information read by sonar sensors.</description>
 
+  <author>Mehmet Akcakoca</author>
   <maintainer email="akcakocamehmet@gmail.com">Mehmet Akcakoca</maintainer>
   <license>BSD</license>
-  <url type="website">http://evarobot.com</url>
+  <url type="website">http://ros.org/wiki/evarobot_sonar</url>
   <url type="repository">https://github.com/inomuh/evapi_ros</url>
+  <url type="bugtracker">https://github.com/inomuh/evapi_ros/issues</url>
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>

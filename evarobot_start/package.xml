@@ -2,12 +2,14 @@
 <package>
   <name>evarobot_start</name>
   <version>0.1.2</version>
-  <description>The evarobot_start package</description>
+  <description>evarobot_start provides roslaunch scripts for starting the Evarobot base functionality.</description>
 
+  <author>Mehmet Akcakoca</author>
   <maintainer email="akcakocamehmet@gmail.com">Mehmet Akcakoca</maintainer>
   <license>BSD</license>
-  <url type="website">http://evarobot.com</url>
+  <url type="website">http://ros.org/wiki/evarobot_start</url>
   <url type="repository">https://github.com/inomuh/evapi_ros</url>
+  <url type="bugtracker">https://github.com/inomuh/evapi_ros/issues</url>
   
   <buildtool_depend>catkin</buildtool_depend>
 

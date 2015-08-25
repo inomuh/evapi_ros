@@ -2,7 +2,7 @@
 <package>
   <name>evarobot_bumper</name>
   <version>0.1.2</version>
-  <description>The evarobot_bumper package</description>
+  <description>evarobot_bumper provides an information about bumper sensors.</description>
   
   <author>Mehmet Akcakoca</author>
   <maintainer email="akcakocamehmet@gmail.com">Mehmet Akcakoca</maintainer>
