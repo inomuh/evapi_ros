@@ -1,0 +1,30 @@
+<package>
+  <name>evari_ros</name>
+  <version>0.1.2</version>
+  <description>
+    The evarobot meta package provides all the basic drivers for running and using a Evarobot.
+  </description>
+  <author>Mehmet Akcakoca</author>
+  <maintainer email="akcakocamehmet@gmail.com">Mehmet Akcakoca</maintainer>
+  <license>BSD</license>
+  <url type="website">http://ros.org/wiki/evapi_ros</url>
+  <url type="repository">https://github.com/inomuh/evapi_ros</url>
+  <url type="bugtracker">https://github.com/inomuh/evapi_ros/issues</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>evarobot_bumper</run_depend>
+  <run_depend>evarobot_controller</run_depend>
+  <run_depend>evarobot_driver</run_depend>
+  <run_depend>evarobot_eio</run_depend>
+  <run_depend>evarobot_infrared</run_depend>
+  <run_depend>evarobot_minimu9</run_depend>
+  <run_depend>evarobot_odometry</run_depend>
+  <run_depend>evarobot_orientation</run_depend>
+  <run_depend>evarobot_sonar</run_depend>
+  <run_depend>evarobot_start</run_depend>
+  <run_depend>im_msgs</run_depend>
+  <export>
+    <metapackage/>
+  </export>
+</package>
