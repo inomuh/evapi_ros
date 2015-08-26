@@ -1,5 +1,5 @@
 <package>
-  <name>evari_ros</name>
+  <name>evapi_ros</name>
   <version>0.1.2</version>
   <description>
     The evarobot meta package provides all the basic drivers for running and using a Evarobot.
