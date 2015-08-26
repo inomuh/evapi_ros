@@ -102,7 +102,7 @@ int IMI2C::CloseI2C(int i_i2cfd)
 int IMI2C::WriteDataByte(unsigned char u_c_register_address, unsigned char u_c_data)
 {
 
-	unsigned char u_c_buffer[2];
+	char c_buffer[2];
 	//unsigned char u_c_buffer[1];
 	int i_status_value = -1;
 	struct i2c_rdwr_ioctl_data packets;
@@ -111,14 +111,14 @@ int IMI2C::WriteDataByte(unsigned char u_c_register_address, unsigned char u_c_d
 
 	i_i2cfd = this->OpenI2C();
 
-	u_c_buffer[0] = u_c_register_address;
-	u_c_buffer[1] = u_c_data;
+	c_buffer[0] = u_c_register_address;
+	c_buffer[1] = u_c_data;
 	//u_c_buffer[0] = u_c_data;
 
 	messages[0].addr = this->u_c_device_adress;
 	messages[0].flags = 0;
-	messages[0].len = sizeof(u_c_buffer);
-	messages[0].buf = (char *)u_c_buffer;
+	messages[0].len = sizeof(c_buffer);
+	messages[0].buf = c_buffer;
 
 	packets.msgs = messages;
 	packets.nmsgs = 1;
@@ -149,7 +149,8 @@ int IMI2C::WriteDataByte(unsigned char u_c_register_address, unsigned char u_c_d
 int IMI2C::ReadDataByte(unsigned char u_c_register_address, unsigned char & u_c_data)
 {
 
-    unsigned char *p_u_c_inbuff, u_c_outbuff;
+    char *p_c_inbuff, c_outbuff;
+    //unsigned char *p_u_c_inbuff, u_c_outbuff;
 	int i_status_value = -1;
 	struct i2c_rdwr_ioctl_data packets;
 	struct i2c_msg messages[2];
@@ -158,17 +159,17 @@ int IMI2C::ReadDataByte(unsigned char u_c_register_address, unsigned char & u_c_
 
 	i_i2cfd = this->OpenI2C();
 
-	u_c_outbuff = u_c_register_address;
+	c_outbuff = u_c_register_address;
 	messages[0].addr = this->u_c_device_adress;
 	messages[0].flags= 0;
-	messages[0].len = sizeof(u_c_outbuff);
-	messages[0].buf = (char*)&u_c_outbuff;
+	messages[0].len = sizeof(c_outbuff);
+	messages[0].buf = (char*)&c_outbuff;
 
-	p_u_c_inbuff = &u_c_data;
+	p_c_inbuff = &u_c_data;
 	messages[1].addr = this->u_c_device_adress;
 	messages[1].flags = I2C_M_RD;
-	messages[1].len = sizeof(*p_u_c_inbuff); // size of value pointed to by inbuff to size of pointer inbuff
-	messages[1].buf = (char*)p_u_c_inbuff;
+	messages[1].len = sizeof(*p_c_inbuff); // size of value pointed to by inbuff to size of pointer inbuff
+	messages[1].buf = p_c_inbuff;
 
 /*	p_u_c_inbuff = &u_c_data;
 	messages[0].addr = this->u_c_device_adress;
