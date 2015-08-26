@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(evarobot_driver)
 
-set(EVAPI_LIB_SDK_PATH "./../sdk/")
+set(EVAPI_LIB_SDK_PATH "./sdk/")
 
 FILE(GLOB EVAPI_LIB_SDK_SRC 
   "${EVAPI_LIB_SDK_PATH}/src/*.cpp"
