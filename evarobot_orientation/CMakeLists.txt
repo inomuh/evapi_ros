@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(evarobot_orientation)
 
-set(orientation_PATH "./sdk/")
+set(orientation_PATH "sdk/")
 set(orientation_INCLUDE_DIRS "${orientation_PATH}/include")
-FILE(GLOB orientation_LIBRARIES "${orientation_PATH}")
+set(orientation_LIBRARIES "${orientation_PATH}")
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -25,8 +25,11 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${orientation_INCLUDE_DIRS}
-  ${orientation_LIBRARIES}
   include
+)
+
+link_directories(
+  ${orientation_LIBRARIES}
 )
 
  add_executable(evarobot_orientation src/evarobot_orientation.cpp)

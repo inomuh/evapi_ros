@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(evarobot_bumper)
 
-set(bumper_PATH "./sdk/")
-set(bumper_INCLUDE_DIRS "${bumper_PATH}/include")
-FILE(GLOB bumper_LIBRARIES "${bumper_PATH}/")
+set(bumper_PATH "sdk/")
+set(bumper_INCLUDE_DIRS "${bumper_PATH}/include/")
+set(bumper_LIBRARIES "${bumper_PATH}")
 
 find_package(catkin REQUIRED COMPONENTS
   im_msgs
@@ -17,7 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES evarobot_bumper
-#  CATKIN_DEPENDS im_msgs roscpp rospy
+  CATKIN_DEPENDS im_msgs #roscpp rospy
 #  DEPENDS system_lib
 )
 
@@ -29,8 +29,11 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${bumper_INCLUDE_DIRS}
-  ${bumper_LIBRARIES}
   include
+)
+
+link_directories(
+  ${bumper_LIBRARIES}
 )
 
  add_executable(evarobot_bumper src/evarobot_bumper.cpp)

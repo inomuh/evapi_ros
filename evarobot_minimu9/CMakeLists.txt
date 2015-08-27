@@ -3,9 +3,9 @@ project(evarobot_minimu9)
 
 set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
 
-set(minimu_PATH "./sdk/")
-set(minimu_INCLUDE_DIRS "${minimu_PATH}/include")
-FILE(GLOB minimu_LIBRARIES "${minimu_PATH}")
+set(minimu_PATH "sdk/")
+set(minimu_INCLUDE_DIRS "${minimu_PATH}/include/")
+set(minimu_LIBRARIES "${minimu_PATH}")
 
 
 find_package(catkin REQUIRED COMPONENTS
@@ -27,8 +27,10 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${minimu_INCLUDE_DIRS}
-  ${minimu_LIBRARIES}
   include
+)
+link_directories(
+  ${minimu_LIBRARIES}
 )
 
 add_executable(evarobot_minimu9 src/evarobot_minimu9.cpp)
