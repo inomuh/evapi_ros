@@ -34,7 +34,5 @@ include_directories(
   include
 )
 
-include_directories
-
  add_executable(evarobot_driver src/evarobot_driver.cpp)
  target_link_libraries(evarobot_driver ${catkin_LIBRARIES} driver)
