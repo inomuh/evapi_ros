@@ -3,7 +3,7 @@ project(evarobot_bumper)
 
 set(bumper_PATH "./sdk/")
 set(bumper_INCLUDE_DIRS "${bumper_PATH}/include")
-FILE(GLOB bumper_LIBRARIES "${bumper_PATH}/*.so")
+FILE(GLOB bumper_LIBRARIES "${bumper_PATH}/")
 
 find_package(catkin REQUIRED COMPONENTS
   im_msgs
@@ -29,6 +29,7 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${bumper_INCLUDE_DIRS}
+  ${bumper_LIBRARIES}
   include
 )
 
@@ -36,5 +37,5 @@ include_directories(
  target_link_libraries(evarobot_bumper
    ${catkin_LIBRARIES}
    pthread
-   ${bumper_LIBRARIES}
+   eio
  )

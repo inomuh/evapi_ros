@@ -3,7 +3,7 @@ project(evarobot_infrared)
 
 set(adc_PATH "./sdk/")
 set(adc_INCLUDE_DIRS "${adc_PATH}/include")
-FILE(GLOB adc_LIBRARIES "${adc_PATH}/*.so")
+FILE(GLOB adc_LIBRARIES "${adc_PATH}")
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -26,10 +26,11 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${adc_INCLUDE_DIRS}
+  ${adc_LIBRARIES}
   include
 )
 
 
 add_executable(evarobot_infrared src/evarobot_infrared.cpp)
-target_link_libraries(evarobot_infrared ${catkin_LIBRARIES} ${adc_LIBRARIES})
+target_link_libraries(evarobot_infrared ${catkin_LIBRARIES} adc)
 

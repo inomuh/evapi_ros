@@ -3,7 +3,7 @@ project(evarobot_eio)
 
 set(eio_PATH "./sdk/")
 set(eio_INCLUDE_DIRS "${eio_PATH}/include")
-FILE(GLOB eio_LIBRARIES "${eio_PATH}/*.so")
+FILE(GLOB eio_LIBRARIES "${eio_PATH}/")
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -26,6 +26,7 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${eio_INCLUDE_DIRS}
+  ${eio_LIBRARIES}
   include
 )
 
@@ -33,5 +34,5 @@ include_directories(
  target_link_libraries(evarobot_eio 
    ${catkin_LIBRARIES}
    pthread
-   ${eio_LIBRARIES}
+   eio
  )

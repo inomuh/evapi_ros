@@ -3,7 +3,7 @@ project(evarobot_orientation)
 
 set(orientation_PATH "./sdk/")
 set(orientation_INCLUDE_DIRS "${orientation_PATH}/include")
-FILE(GLOB orientation_LIBRARIES "${orientation_PATH}/*.so")
+FILE(GLOB orientation_LIBRARIES "${orientation_PATH}")
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -25,9 +25,10 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${orientation_INCLUDE_DIRS}
+  ${orientation_LIBRARIES}
   include
 )
 
  add_executable(evarobot_orientation src/evarobot_orientation.cpp)
- target_link_libraries(evarobot_orientation ${catkin_LIBRARIES} ${orientation_LIBRARIES})
+ target_link_libraries(evarobot_orientation ${catkin_LIBRARIES} um6)
 
