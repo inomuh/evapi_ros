@@ -1,11 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(evarobot_infrared)
 
-set(EVAPI_LIB_SDK_PATH "./../sdk/")
-
-FILE(GLOB EVAPI_LIB_SDK_SRC 
-  "${EVAPI_LIB_SDK_PATH}/src/*.cpp"
-)
+set(adc_PATH "./sdk/")
+set(adc_INCLUDE_DIRS "${adc_PATH}/include")
+FILE(GLOB adc_LIBRARIES "${adc_PATH}/*.so")
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -27,12 +25,11 @@ catkin_package(
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  ${EVAPI_LIB_SDK_PATH}/include
-  ${EVAPI_LIB_SDK_PATH}/src
+  ${adc_INCLUDE_DIRS}
   include
 )
 
 
-add_executable(evarobot_infrared src/evarobot_infrared.cpp ${EVAPI_LIB_SDK_SRC})
-target_link_libraries(evarobot_infrared ${catkin_LIBRARIES})
+add_executable(evarobot_infrared src/evarobot_infrared.cpp)
+target_link_libraries(evarobot_infrared ${catkin_LIBRARIES} ${adc_LIBRARIES})
 

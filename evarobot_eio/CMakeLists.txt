@@ -1,12 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(evarobot_eio)
 
-set(EVAPI_LIB_SDK_PATH "./../sdk/")
-
-FILE(GLOB EVAPI_LIB_SDK_SRC 
-  "${EVAPI_LIB_SDK_PATH}/src/*.cpp"
-)
-
+set(eio_PATH "./sdk/")
+set(eio_INCLUDE_DIRS "${eio_PATH}/include")
+FILE(GLOB eio_LIBRARIES "${eio_PATH}/*.so")
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -28,13 +25,13 @@ catkin_package(
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  ${EVAPI_LIB_SDK_PATH}/include
-  ${EVAPI_LIB_SDK_PATH}/src
+  ${eio_INCLUDE_DIRS}
   include
 )
 
- add_executable(evarobot_eio src/evarobot_eio.cpp ${EVAPI_LIB_SDK_SRC})
+ add_executable(evarobot_eio src/evarobot_eio.cpp)
  target_link_libraries(evarobot_eio 
    ${catkin_LIBRARIES}
    pthread
+   ${eio_LIBRARIES}
  )
