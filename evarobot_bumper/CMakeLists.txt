@@ -1,9 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(evarobot_bumper)
 
-set(bumper_PATH "sdk/")
-set(bumper_INCLUDE_DIRS "${bumper_PATH}/include/")
-set(bumper_LIBRARIES "${bumper_PATH}")
+set(EVAPI_LIB_SDK_PATH "../sdk/")
+FILE(GLOB EVAPI_LIB_SDK_SRC "${EVAPI_LIB_SDK_PATH}/src/*.cpp")
 
 find_package(catkin REQUIRED COMPONENTS
   im_msgs
@@ -28,17 +27,13 @@ catkin_package(
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  ${bumper_INCLUDE_DIRS}
+  ${EVAPI_LIB_SDK_PATH}/include
+  ${EVAPI_LIB_SDK_PATH}/src  
   include
 )
 
-link_directories(
-  ${bumper_LIBRARIES}
-)
-
- add_executable(evarobot_bumper src/evarobot_bumper.cpp)
+ add_executable(evarobot_bumper src/evarobot_bumper.cpp ${EVAPI_LIB_SDK_SRC})
  target_link_libraries(evarobot_bumper
    ${catkin_LIBRARIES}
    pthread
-   eio
  )

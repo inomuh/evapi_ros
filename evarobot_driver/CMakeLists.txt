@@ -1,9 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(evarobot_driver)
 
-set(driver_PATH "sdk/")
-set(driver_INCLUDE_DIRS "${driver_PATH}/include")
-set(driver_LIBRARIES "${driver_PATH}")
+set(EVAPI_LIB_SDK_PATH "../sdk/")
+FILE(GLOB EVAPI_LIB_SDK_SRC "${EVAPI_LIB_SDK_PATH}/src/*.cpp")
 
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
@@ -29,11 +28,10 @@ catkin_package(
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
-	${driver_INCLUDE_DIRS}
+  ${EVAPI_LIB_SDK_PATH}/include
+  ${EVAPI_LIB_SDK_PATH}/src  
   include
 )
 
-link_directories(${driver_LIBRARIES})
-
- add_executable(evarobot_driver src/evarobot_driver.cpp)
- target_link_libraries(evarobot_driver ${catkin_LIBRARIES} driver)
+ add_executable(evarobot_driver src/evarobot_driver.cpp ${EVAPI_LIB_SDK_SRC})
+ target_link_libraries(evarobot_driver ${catkin_LIBRARIES})
