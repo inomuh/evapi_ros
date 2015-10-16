@@ -1,7 +1,21 @@
 #include "evarobot_bumper/evarobot_bumper.h"
 
+#include <dynamic_reconfigure/server.h>
+#include <evarobot_bumper/ParamsConfig.h>
+
+
 using namespace std;
 
+bool b_always_on;
+bool b_is_received_params = false;
+
+void CallbackReconfigure(evarobot_bumper::ParamsConfig &config, uint32_t level)
+{
+   ROS_INFO("Bumper Param Callback Function...");
+   b_is_received_params = true;        
+   
+   b_always_on = config.alwaysOn;
+}
 
 int main(int argc, char **argv)
 {
@@ -29,7 +43,6 @@ int main(int argc, char **argv)
 	string str_i2c_device_address;
 	string str_i2c_path;
 	
-	bool b_always_on;
 	// rosparams end
 	
 	ros::Publisher pub_bumper;
@@ -54,6 +67,13 @@ int main(int argc, char **argv)
 	// Set publisher
 	pub_bumper = n.advertise<im_msgs::Bumper>(str_topic_name.c_str(), 10);
 	
+	// Dynamic Reconfigure
+    dynamic_reconfigure::Server<evarobot_bumper::ParamsConfig> srv;
+    dynamic_reconfigure::Server<evarobot_bumper::ParamsConfig>::CallbackType f;
+    f = boost::bind(&CallbackReconfigure, _1, _2);
+    srv.setCallback(f);
+    ///////////////
+	
 	// Define frequency
 	ros::Rate loop_rate(d_frequency);
 	
@@ -72,7 +92,13 @@ int main(int argc, char **argv)
 	T_i_bumper_no[2] = IMEIO::BUMPER2;
 
 	while(ros::ok())
-	{		
+	{
+		if(b_is_received_params)
+		{
+			ROS_INFO("Updating Bumper Params...");
+		
+			b_is_received_params = false;
+		}		
 		
 		for(uint i = 0; i < T_i_bumper_no.size(); i++)
 		{
@@ -95,6 +121,8 @@ int main(int argc, char **argv)
 		}
 		
 		bumpers.state.clear();
+		
+		ros::spinOnce();
 		loop_rate.sleep();	
 	
 	}

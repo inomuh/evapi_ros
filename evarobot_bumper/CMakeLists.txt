@@ -8,7 +8,10 @@ find_package(catkin REQUIRED COMPONENTS
   im_msgs
   roscpp
   rospy
+  dynamic_reconfigure
 )
+
+generate_dynamic_reconfigure_options(cfg/evarobot_bumper.cfg)
 
 ###################################
 ## catkin specific configuration ##
@@ -33,6 +36,8 @@ include_directories(
 )
 
  add_executable(evarobot_bumper src/evarobot_bumper.cpp ${EVAPI_LIB_SDK_SRC})
+ add_dependencies(evarobot_bumper evarobot_bumper_gencfg)
+ add_dependencies(evarobot_bumper im_msgs_generate_messages_cpp)
  target_link_libraries(evarobot_bumper
    ${catkin_LIBRARIES}
    pthread
