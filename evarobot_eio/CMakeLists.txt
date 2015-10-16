@@ -7,13 +7,14 @@ FILE(GLOB EVAPI_LIB_SDK_SRC "${EVAPI_LIB_SDK_PATH}/src/*.cpp")
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
+  im_msgs
 )
 
 
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES evarobot_bumper
-#  CATKIN_DEPENDS im_msgs roscpp rospy
+   CATKIN_DEPENDS im_msgs #roscpp rospy
 #  DEPENDS system_lib
 )
 
@@ -31,6 +32,13 @@ include_directories(
 
 add_executable(evarobot_eio src/evarobot_eio.cpp ${EVAPI_LIB_SDK_SRC})
  target_link_libraries(evarobot_eio 
+   ${catkin_LIBRARIES}
+   pthread
+ )
+
+add_executable(evarobot_rgb src/evarobot_rgb.cpp ${EVAPI_LIB_SDK_SRC})
+add_dependencies(evarobot_rgb im_msgs_generate_messages_cpp)
+ target_link_libraries(evarobot_rgb 
    ${catkin_LIBRARIES}
    pthread
  )
