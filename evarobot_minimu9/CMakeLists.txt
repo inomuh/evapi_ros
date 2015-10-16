@@ -10,8 +10,10 @@ FILE(GLOB MINIMU9_LIB_SDK_SRC "${MINIMU9_LIB_SDK_PATH}/src/*.cpp")
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
+  dynamic_reconfigure
 )
 
+generate_dynamic_reconfigure_options(cfg/evarobot_minimu9.cfg)
 
 catkin_package(
  INCLUDE_DIRS include
@@ -32,6 +34,7 @@ include_directories(
 
 
 add_executable(evarobot_minimu9 src/evarobot_minimu9.cpp ${MINIMU9_LIB_SDK_SRC})
+add_dependencies(evarobot_minimu9 evarobot_minimu9_gencfg)
 target_link_libraries(evarobot_minimu9
    ${catkin_LIBRARIES}
    boost_program_options

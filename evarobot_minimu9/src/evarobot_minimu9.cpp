@@ -1,5 +1,8 @@
 #include "evarobot_minimu9/evarobot_minimu9.h"
 
+#include <dynamic_reconfigure/server.h>
+#include <evarobot_minimu9/ParamsConfig.h>
+
 std::ostream & operator << (std::ostream & os, const vector & vector)
 {
     return os << FLOAT_FORMAT << vector(0) << ' '
@@ -171,6 +174,17 @@ void ahrs(IMU & imu, fuse_function * fuse, rotation_output_function * output)
     }
 }
 
+bool b_always_on;
+bool b_is_received_params = false;
+
+void CallbackReconfigure(evarobot_minimu9::ParamsConfig &config, uint32_t level)
+{
+   b_is_received_params = true;        
+   
+   b_always_on = config.alwaysOn;
+}
+
+
 int main(int argc, char *argv[])
 {
 	// Semaphore
@@ -182,7 +196,7 @@ int main(int argc, char *argv[])
 	// ROS PARAMS
 	double d_frequency;
 	std::string str_topic, str_frame_id;
-	bool b_always_on;
+	
 	
 	//name the shared memory segment
 	key = 1005;
@@ -235,6 +249,12 @@ int main(int argc, char *argv[])
 	
 	ros::Publisher imu_pub = n.advertise<sensor_msgs::Imu>(str_topic.c_str(), 10);
 	
+	// Dynamic Reconfigure
+    dynamic_reconfigure::Server<evarobot_minimu9::ParamsConfig> srv;
+    dynamic_reconfigure::Server<evarobot_minimu9::ParamsConfig>::CallbackType f;
+    f = boost::bind(&CallbackReconfigure, _1, _2);
+    srv.setCallback(f);
+    ///////////////
 	
 	output_mode = "matrix";
 	mode = "normal";
@@ -257,6 +277,14 @@ int main(int argc, char *argv[])
 		int start = millis(); // truncate 64-bit return value
 		while(ros::ok())
 		{
+			
+			if(b_is_received_params)
+			{
+				ROS_INFO("Updating IMU Params...");
+			
+				b_is_received_params = false;
+			}	
+			
 			int last_start = start;
 			start = millis();
 			float dt = (start-last_start)/1000.0;
