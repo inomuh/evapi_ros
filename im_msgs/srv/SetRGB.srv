@@ -1,0 +1,29 @@
+# COLORS
+int8 LEDOFF    = 0
+int8 RED       = 1
+int8 GREEN     = 2
+int8 YELLOW    = 3
+int8 BLUE      = 4
+int8 PINK      = 5
+int8 TURQUOISE = 6
+int8 WHITE     = 7
+
+# MODES
+int8 MANUAL      = 0
+int8 ON          = 1
+int8 AUTONOMOUS  = 2
+int8 TELEOP      = 3
+int8 WANDER      = 4
+int8 LOW_BATTERY = 5
+int8 CHARGING    = 6
+int8 CHARGED     = 7
+int8 ERROR       = 8
+
+int8 mode
+# if frequency is -1, continuous
+float32 frequency
+# if time is -1, infite
+int8 times
+int8 color
+---
+int8 ret
