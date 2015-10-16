@@ -1,0 +1,20 @@
+driverPath: /dev/spidev0.0
+namespace: sensor
+frameNamespace: sensor
+alwaysOn: true
+spiMode: 0
+spiSpeed: 1000000
+spiBits: 8
+frequency: 10.0
+field_of_view: [0.01] #, 0.01, 0.01, 0.01]
+minRange: [0.0] #, 0.0, 0.0, 0.0]
+maxRange: [0.80] #, 0.80, 0.80, 0.80]
+channelNo: [0] #, 1, 2, 3]
+posX: [0.0] #, 0.0, 0.0, 0.0]
+posY: [0.0] #, 0.0, 0.0, 0.0]
+posZ: [0.0] #, 0.0, 0.0, 0.0]
+angleYaw: [0.0] #, 0.0, 0.0, 0.0]
+parK: [0.42] #, 0.42, 0.42, 0.42]
+parA: [0.0000473] #, 0.0000473, 0.0000473, 0.0000473]
+parB: [-0.0013461] #, -0.0013461, -0.0013461, -0.0013461]
+

@@ -1,4 +1,4 @@
-devicePath: /dev/spidev0.0
+driverPath: /dev/spidev0.0
 namespace: sensor
 frameNamespace: sensor
 alwaysOn: true

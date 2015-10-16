@@ -1,5 +1,32 @@
 #include "evarobot_infrared/evarobot_infrared.h"
 
+#include <dynamic_reconfigure/server.h>
+#include <evarobot_infrared/ParamsConfig.h>
+
+bool b_is_received_params = false;
+bool b_always_on;
+
+double g_d_fov;
+double g_d_min_range;
+double g_d_max_range;
+double g_d_par_k;
+double g_d_par_a;
+double g_d_par_b;
+
+void CallbackReconfigure(evarobot_infrared::ParamsConfig &config, uint32_t level)
+{
+   b_is_received_params = true;  
+         
+   b_always_on = config.alwaysOn;
+   g_d_fov = config.field_of_view;
+   g_d_min_range = config.minRange;
+   g_d_max_range = config.maxRange;
+   g_d_par_k = config.parK;
+   g_d_par_a = config.parA;
+   g_d_par_a = config.parB;
+   
+}
+
 int main(int argc, char **argv)
 {
 	unsigned char u_c_spi_mode;
@@ -23,7 +50,7 @@ int main(int argc, char **argv)
 	int i_spi_bits;
 	int i_adc_bits;
 	
-	bool b_always_on;
+	
 	// rosparams end
 	
 	vector<ros::Publisher> T_pub_ir;
@@ -68,6 +95,13 @@ int main(int argc, char **argv)
 	n.getParam("evarobot_infrared/posZ", T_d_posZ);
 	n.getParam("evarobot_infrared/angleYaw", T_d_angle_yaw);
 	
+	g_d_fov = T_d_field_of_views[0];
+  g_d_min_range = T_d_min_ranges[0];
+  g_d_max_range = T_d_max_ranges[0];
+  g_d_par_k = T_d_par_k[0];
+  g_d_par_a = T_d_par_a[0];
+  g_d_par_b = T_d_par_b[0];
+	
 	if( !(T_d_par_k.size() == T_d_par_a.size()
 	&& T_d_par_a.size() == T_d_par_b.size()
 	&& T_d_par_b.size() == T_d_field_of_views.size()
@@ -90,7 +124,12 @@ int main(int argc, char **argv)
 		ROS_INFO("Number of ir sensors: %d", T_d_posZ.size());
 	#endif
 	
-	
+	// Dynamic Reconfigure
+	dynamic_reconfigure::Server<evarobot_infrared::ParamsConfig> srv;
+	dynamic_reconfigure::Server<evarobot_infrared::ParamsConfig>::CallbackType f;
+	f = boost::bind(&CallbackReconfigure, _1, _2);
+	srv.setCallback(f);
+	///////////////
 	
 	// Set publishers
 	for(uint i = 0; i < T_i_channels.size(); i++)
@@ -160,15 +199,34 @@ int main(int argc, char **argv)
 	IMSPI * p_im_spi = new IMSPI(str_driver_path, u_c_spi_mode, i_spi_speed, i_spi_bits);
 	IMADC * p_im_adc = new IMADC(p_im_spi, i_adc_bits);
 	
+	
 	while(ros::ok())
-	{		
+	{
+		
+		if(b_is_received_params)
+		{
+			ROS_INFO("Updating Infrared Params...");
+						
+	/*		for(uint i = 0; i < T_i_channels.size(); i++)
+			{
+				T_irs[i].field_of_view = g_d_fov;
+				T_irs[i].min_range = g_d_min_range;
+				T_irs[i].max_range = g_d_max_range;
+				T_d_par_a[i] = g_d_par_a;
+				T_d_par_b[i] = g_d_par_b;
+				T_d_par_k[i] = g_d_par_k;
+			}
+			*/
+			b_is_received_params = false;
+		}
+				
 		for(uint i = 0; i < T_pub_ir.size(); i++)
 		{
 			// Read sensors
 			int i_raw_data = 0;
 			
 			i_raw_data = p_im_adc->ReadChannel(T_i_channels[i]);
-			
+			ROS_DEBUG("raw data: ---- %i", i_raw_data);
 			#ifdef DEBUG
 				ROS_INFO("Raw data %f \n", (double)i_raw_data);
 				ROS_INFO("Par_A %f \n", T_d_par_a[i]);
@@ -191,6 +249,7 @@ int main(int argc, char **argv)
 			
 		}
 		
+		ros::spinOnce();
 		loop_rate.sleep();	
 	
 	}

@@ -8,8 +8,10 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   sensor_msgs
+  dynamic_reconfigure
 )
 
+generate_dynamic_reconfigure_options(cfg/evarobot_infrared.cfg)
 
 catkin_package(
  INCLUDE_DIRS include
@@ -30,5 +32,6 @@ include_directories(
 )
 
 add_executable(evarobot_infrared src/evarobot_infrared.cpp ${EVAPI_LIB_SDK_SRC})
+add_dependencies(evarobot_infrared evarobot_infrared_gencfg)
 target_link_libraries(evarobot_infrared ${catkin_LIBRARIES})
 
