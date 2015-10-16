@@ -1,5 +1,19 @@
 #include "evarobot_sonar/evarobot_sonar.h"
 
+#include <dynamic_reconfigure/server.h>
+#include <evarobot_sonar/SonarParamsConfig.h>
+
+void CallbackReconfigure(evarobot_sonar::SonarParamsConfig &config, uint32_t level)
+{
+   b_is_received_params = true;        
+   
+   g_d_field_of_view = config.field_of_view;
+   g_d_min_range = config.minRange;
+   g_d_max_range = config.maxRange;
+   g_b_always_on = config.alwaysOn;
+     
+}
+
 int main(int argc, char **argv)
 {
 	int i_fd;
@@ -69,6 +83,13 @@ int main(int argc, char **argv)
 	{
 		ROS_ERROR("Number of sonar devices mustn't be greater than %d", MAX_SONAR);
 	}
+	
+	  // Dynamic Reconfigure
+	  dynamic_reconfigure::Server<evarobot_sonar::SonarParamsConfig> srv;
+	  dynamic_reconfigure::Server<evarobot_sonar::SonarParamsConfig>::CallbackType f;
+	  f = boost::bind(&CallbackReconfigure, _1, _2);
+	  srv.setCallback(f);
+	  ///////////////
 	
 	#ifdef DEBUG
 		ROS_INFO("Number of sonars: %d", T_d_posZ.size());
@@ -159,7 +180,23 @@ int main(int argc, char **argv)
 	ioctl(i_fd, IOCTL_SET_PARAM, &pins);
 	
 	while(ros::ok())
-	{		
+	{
+		if(b_is_received_params)
+		{
+			ROS_INFO("Updating Sonar Params...");
+			ROS_INFO("%f, %f, %f %d", g_d_field_of_view, g_d_min_range, g_d_max_range, g_b_always_on);
+						
+			for(uint i = 0; i < T_i_sonar_pins.size(); i++)
+			{
+				T_sonars[i].field_of_view = g_d_field_of_view;
+				T_sonars[i].min_range = g_d_min_range;
+				T_sonars[i].max_range = g_d_max_range;
+			}
+			
+			b_always_on = g_b_always_on;
+			b_is_received_params = false;
+		}
+		
 		for(uint i = 0; i < T_pub_sonar.size(); i++)
 		{
 			// Read sensors
@@ -177,6 +214,7 @@ int main(int argc, char **argv)
 			}
 		}
 		
+		ros::spinOnce();
 		loop_rate.sleep();	
 	
 	}

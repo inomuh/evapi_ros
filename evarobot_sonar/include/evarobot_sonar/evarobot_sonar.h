@@ -47,8 +47,13 @@ struct sonar_data
 #define IOCTL_READ_RANGE _IOWR(SNRDRIVER_IOCTL_BASE, 1, struct sonar_data) 
 
 
-int SONAR[] = {23, 24, 25, 7, 16, 20, 21};
+int SONAR[] = {23, 24, 25, 26, 16, 20, 21};
+bool b_is_received_params = false;
 
+double g_d_field_of_view;
+double g_d_min_range;
+double g_d_max_range;
+bool g_b_always_on;
 
 using namespace std;
 

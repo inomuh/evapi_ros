@@ -5,8 +5,10 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   sensor_msgs
+  dynamic_reconfigure
 )
 
+generate_dynamic_reconfigure_options(cfg/evarobot_sonar.cfg)
 
 catkin_package(
   INCLUDE_DIRS include
@@ -25,6 +27,7 @@ include_directories(
 
 
 add_executable(evarobot_sonar src/evarobot_sonar.cpp)
+add_dependencies(evarobot_sonar evarobot_sonar_gencfg)
 target_link_libraries(evarobot_sonar
    ${catkin_LIBRARIES}
 )
