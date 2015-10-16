@@ -1,5 +1,8 @@
 #include "evarobot_controller/evarobot_controller.h"
 
+#include <dynamic_reconfigure/server.h>
+#include <evarobot_controller/ParamsConfig.h>
+
 void PIDController::Reset()
 {
 	this->d_proportional_error = 0.0;
@@ -84,6 +87,15 @@ float PIDController::RunController(float f_desired, float f_measured)
 	
 }
 
+void PIDController::UpdateParams(double d_proportional_constant, 
+								 double d_integral_constant, 
+								 double d_derivative_constant)
+{
+	this->d_integral_constant = d_integral_constant;
+	this->d_derivative_constant = d_derivative_constant;
+	this->d_proportional_constant = d_proportional_constant;
+}
+
 
 
 void CallbackMeasured(const geometry_msgs::PointStamped::ConstPtr & msg)
@@ -114,7 +126,19 @@ void CallbackDesired(const geometry_msgs::Twist::ConstPtr & msg)
 	
 }
 
+void CallbackReconfigure(evarobot_controller::ParamsConfig &config, uint32_t level)
+{
+   b_is_received_params = true;        
+   g_d_wheel_separation = config.wheelSeparation;       
+   
+   g_d_p_left = config.proportionalConstLeft;
+   g_d_i_left = config.integralConstLeft;
+   g_d_d_left = config.derivativeConstLeft;
 
+   g_d_p_right = config.proportionalConstRight;
+   g_d_i_right = config.integralConstRight;
+   g_d_d_right = config.derivativeConstRight;
+}
 
 int main(int argc, char **argv)
 {
@@ -197,7 +221,14 @@ int main(int argc, char **argv)
   ros::Subscriber measured_pub = n.subscribe(str_measured_topic.c_str(), 2, CallbackMeasured);
   ros::Subscriber desired_pub = n.subscribe(str_desired_topic.c_str(), 2, CallbackDesired);
   ros::Publisher ctrl_pub = n.advertise<geometry_msgs::Twist>(str_controller_topic.c_str(), 10);
-
+  
+  // Dynamic Reconfigure
+  dynamic_reconfigure::Server<evarobot_controller::ParamsConfig> srv;
+  dynamic_reconfigure::Server<evarobot_controller::ParamsConfig>::CallbackType f;
+  f = boost::bind(&CallbackReconfigure, _1, _2);
+  srv.setCallback(f);
+  ///////////////
+  
   ros::Rate loop_rate(d_frequency);
 
   geometry_msgs::Twist msg;
@@ -208,8 +239,19 @@ int main(int argc, char **argv)
 	 // {
 		if(b_is_new_desired)
 		{
-			left_controller.Reset();
-			right_controller.Reset();
+			//left_controller.Reset();
+			//right_controller.Reset();
+		}
+		
+		if(b_is_received_params)
+		{
+			ROS_INFO("Updating Controller Params...");
+			ROS_INFO("%f, %f, %f", g_d_p_left, g_d_i_left, g_d_d_left);
+			ROS_INFO("%f, %f, %f", g_d_p_right, g_d_i_right, g_d_d_right);
+			
+			left_controller.UpdateParams(g_d_p_left, g_d_i_left, g_d_d_left);
+			right_controller.UpdateParams(g_d_p_right, g_d_i_right, g_d_d_right);
+			b_is_received_params = false;
 		}
 
 //		printf("left:  ");

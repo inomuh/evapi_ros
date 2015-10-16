@@ -7,8 +7,10 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   sensor_msgs
   std_msgs
+  dynamic_reconfigure
 )
 
+generate_dynamic_reconfigure_options(cfg/evarobot_controller.cfg)
 
 catkin_package(
   INCLUDE_DIRS include
@@ -16,6 +18,7 @@ catkin_package(
 #  CATKIN_DEPENDS nav_msgs roscpp rospy sensor_msgs std_msgs
 #  DEPENDS system_lib
 )
+
 
 ###########
 ## Build ##
@@ -27,8 +30,10 @@ include_directories(
 )
 
 
+
+
  add_executable(evarobot_controller src/evarobot_controller.cpp)
+ add_dependencies(evarobot_controller evarobot_controller_gencfg)
  target_link_libraries(evarobot_controller
    ${catkin_LIBRARIES}
 )
-

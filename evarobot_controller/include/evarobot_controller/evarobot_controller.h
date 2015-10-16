@@ -26,10 +26,17 @@ float g_f_left_measured = 0.0;
 float g_f_right_measured = 0.0;
 
 double g_d_wheel_separation;
-
+bool b_is_received_params = false;
 
 using namespace std;
 
+double g_d_p_left;
+double g_d_i_left;
+double g_d_d_left;
+
+double g_d_p_right;
+double g_d_i_right;
+double g_d_d_right;
 
 class PIDController
 {
@@ -38,6 +45,9 @@ public:
 		PIDController(double d_proportional_constant, 
 					  double d_integral_constant, 
 					  double d_derivative_constant);
+		void UpdateParams(double d_proportional_constant, 
+						  double d_integral_constant, 
+						  double d_derivative_constant);
 		
 		~PIDController();
 		
