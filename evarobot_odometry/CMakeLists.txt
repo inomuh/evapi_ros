@@ -6,7 +6,10 @@ find_package(catkin REQUIRED COMPONENTS
   nav_msgs
   geometry_msgs
   roscpp
+  dynamic_reconfigure
 )
+
+generate_dynamic_reconfigure_options(cfg/evarobot_odometry.cfg)
 
 
 catkin_package(
@@ -26,6 +29,7 @@ include_directories(
 
 
 add_executable(evarobot_odometry src/evarobot_odometry.cpp)
+add_dependencies(evarobot_odometry evarobot_odometry_gencfg)
 target_link_libraries(evarobot_odometry
    ${catkin_LIBRARIES}
  )

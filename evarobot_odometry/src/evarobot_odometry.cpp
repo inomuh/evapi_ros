@@ -1,13 +1,34 @@
 #include "evarobot_odometry/evarobot_odometry.h"
 
+#include <dynamic_reconfigure/server.h>
+#include <evarobot_odometry/ParamsConfig.h>
+
+bool b_is_received_params = false;
+
+bool b_always_on;
+double d_wheel_separation;
+double d_height;
+int i_gear_ratio;
+int i_cpr;
+double d_wheel_diameter;
+	
+void CallbackReconfigure(evarobot_odometry::ParamsConfig &config, uint32_t level)
+{
+   b_is_received_params = true;        
+   
+   b_always_on = config.alwaysOn;
+   d_wheel_separation = config.wheelSeparation;
+   d_height = config.height;
+   i_gear_ratio = config.gearRatio;
+   i_cpr = config.CPR;
+   d_wheel_diameter = config.wheelDiameter;
+}
+
 int main(int argc, char **argv)
 {
-	double d_wheel_separation;
-	double d_height;
+	
 	double d_frequency;
-	double d_wheel_diameter;
-	int i_gear_ratio;
-	int i_cpr;
+	
 	
 	string str_device_path;
 	string str_frame_id;
@@ -15,7 +36,6 @@ int main(int argc, char **argv)
 	string str_vel_frame_id;
 	string str_vel_topic;
 	
-	bool b_always_on;
 	
 	ros::init(argc, argv, "evarobot_odometry");
 	ros::NodeHandle n;
@@ -71,7 +91,13 @@ int main(int argc, char **argv)
 	ros::Time read_time = ros::Time::now();
 	ros::Duration dur_time;
 
-
+    // Dynamic Reconfigure
+    dynamic_reconfigure::Server<evarobot_odometry::ParamsConfig> srv;
+    dynamic_reconfigure::Server<evarobot_odometry::ParamsConfig>::CallbackType f;
+    f = boost::bind(&CallbackReconfigure, _1, _2);
+    srv.setCallback(f);
+    ///////////////
+    
 	char c_read_buf[100], c_write_buf[100];
 	int i_fd;
 
@@ -115,6 +141,12 @@ int main(int argc, char **argv)
 
 	while (ros::ok())
 	{
+		if(b_is_received_params)
+		{
+			ROS_INFO("Updating Controller Params...");
+			b_is_received_params = false;
+		}
+		
 		// Reading encoder.
 		read(i_fd, c_read_buf, sizeof(c_read_buf));
 		str_data = c_read_buf; 
