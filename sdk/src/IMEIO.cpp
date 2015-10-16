@@ -85,7 +85,7 @@ int IMEIO::SetPinAValue(int i_pin_number, bool b_value)
 {
 	int i_status = -1;
 
-	printf("pin_number(A): %d \n", i_pin_number);
+	//printf("pin_number(A): %d \n", i_pin_number);
 
 	unsigned char u_c_mask =  ~(0x01 << i_pin_number);
 
@@ -93,7 +93,7 @@ int IMEIO::SetPinAValue(int i_pin_number, bool b_value)
 
 	this->u_c_pins_data_A |= (b_value << i_pin_number);
 
-	printf("u_c_pins_data(A): %x \n", this->u_c_pins_data_A);
+	//printf("u_c_pins_data(A): %x \n", this->u_c_pins_data_A);
 
 	i_status = this->i2c->WriteDataByte(IMEIO::GPIOA, this->u_c_pins_data_A);
 
@@ -105,14 +105,14 @@ int IMEIO::SetPinBValue(int i_pin_number, bool b_value)
 {
 	int i_status = -1;
 
-	printf("pin_number: %d \n", i_pin_number);
+	//printf("pin_number: %d \n", i_pin_number);
 
 	unsigned char u_c_mask =  ~(0x01 << i_pin_number);
 
 	this->u_c_pins_data_B &= u_c_mask;
 	this->u_c_pins_data_B |= (b_value << i_pin_number);
 
-	printf("u_c_pins_data(B): %x \n", u_c_pins_data_B);
+	//printf("u_c_pins_data(B): %x \n", u_c_pins_data_B);
 
 	i_status = this->i2c->WriteDataByte(IMEIO::GPIOB, this->u_c_pins_data_B);
 
