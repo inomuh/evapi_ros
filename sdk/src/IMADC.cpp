@@ -48,10 +48,11 @@ int IMADC::ReadChannel(int i_channel_no)
 
 	u_c_dummy = i_channel_no & 0x07;
 
+	// FIGURE 6-1: SPI Communication using 8-bit segments (Mode 0,0: SCLK idles low).
 	u_c_data[0] = 0x06 | (u_c_dummy >> 2);
 	u_c_data[1] = (u_c_dummy << 6);
 	u_c_data[2] = 0x00;
-
+	
 
 /*
 	u_c_data[0] = 1;  //  first byte transmitted -> start bit
@@ -60,8 +61,39 @@ int IMADC::ReadChannel(int i_channel_no)
 */
     this->p_imspi->SpiWriteRead(u_c_data, sizeof(u_c_data));
 
-
 	//sleep(1);
+
+    i_value = (u_c_data[1]<< 8) & this->i_mask; //0b111100000000; //0b1100000000;  //merge data[1] & data[2] to get result
+    i_value |=  (u_c_data[2] & 0xff);
+
+	return i_value;
+}
+
+int IMADC::ReadMotorChannel(int i_channel_no)
+{
+	int i_value = 0;
+	unsigned char u_c_data[3];
+
+	// FIGURE 6-1: SPI Communication using 8-bit segments (Mode 0,0: SCLK idles low).
+	u_c_data[0] = 0x01;
+	if(i_channel_no == 0)
+	{
+		u_c_data[1] = 0xA0;
+	}
+	else if(i_channel_no == 1)
+	{
+		u_c_data[1] = 0xE0;
+	}
+	else
+	{
+		perror("IMADC: Invalid channel number");
+		return 0;
+	}
+	
+	u_c_data[2] = 0x00;
+	
+
+    this->p_imspi->SpiWriteRead(u_c_data, sizeof(u_c_data));
 
 
     i_value = (u_c_data[1]<< 8) & this->i_mask; //0b111100000000; //0b1100000000;  //merge data[1] & data[2] to get result

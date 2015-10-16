@@ -74,6 +74,25 @@ public:
 	 */
 	#endif
 	int ReadChannel(int i_channel_no);
+	
+	#ifdef English_dox
+	//! Reads single-ended Analog to Digital Converter Channel (MCP3202).
+	/**
+	 * \param i_channel_no is channel number to read in range of 0-1
+	 * \return value of data on the channel
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Pinleri 5V referans değerine göre okuyan fonksiyondur.
+	/**
+	 * Sensör Kartında bulunan Analog - Dijital Çevirici (MCP3202)
+	 * entegresi kanallarını tek taraflı okumaktadır.
+	 *
+	 * \param i_channel_no 0-1 arasında girilen, okunacak kanal numarısıdır.
+	 * \return kanal üzerinde okunan değerdir.
+	 */
+	#endif
+	int ReadMotorChannel(int i_channel_no);
 
 
 	#ifdef English_dox
