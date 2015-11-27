@@ -3,45 +3,41 @@
 #include <dynamic_reconfigure/server.h>
 #include <evarobot_controller/ParamsConfig.h>
 
+
 void PIDController::Reset()
 {
 	this->d_proportional_error = 0.0;
 	this->d_derivative_error = 0.0;
 	this->d_integral_error = 0.0;
-
+	this->d_pre_error = 0.0;
 }
 
 PIDController::PIDController()
 {
-	this->d_integral_error = 0.0;
-	this->d_derivative_error = 0.0;
-	this->d_proportional_error = 0.0;
-	this->d_pre_error = 0.0;
+	this->Reset();
 	
 	this->d_integral_constant = 0.0;
 	this->d_derivative_constant = 0.0;
 	this->d_proportional_constant = 0.0;
 	
 	this->read_time = ros::Time::now();
-	this->max_vel = 1.1;
+	this->d_max_vel = 0.9;
 		
 }
 
 PIDController::PIDController(double d_proportional_constant, 
-			  double d_integral_constant, 
-			  double d_derivative_constant)
+														 double d_integral_constant, 
+														 double d_derivative_constant,
+														 double _d_max_vel,
+														 string _str_name):d_max_vel(_d_max_vel), str_name(_str_name)
 {
-	this->d_integral_error = 0.0;
-	this->d_derivative_error = 0.0;
-	this->d_proportional_error = 0.0;
-	this->d_pre_error = 0.0;
+	this->Reset();
 	
 	this->d_integral_constant = d_integral_constant;
 	this->d_derivative_constant = d_derivative_constant;
 	this->d_proportional_constant = d_proportional_constant;
 	
 	this->read_time = ros::Time::now();
-	this->max_vel = 1.1;
 }
 
 PIDController::~PIDController(){}
@@ -55,33 +51,32 @@ float PIDController::RunController(float f_desired, float f_measured)
 	this->dur_time = ros::Time::now() - this->read_time;
 	this->read_time = ros::Time::now();
 
-	if(f_desired >= -0.001 && f_desired <= 0.001)
-	{
-		this->d_proportional_error = 0.0;
-		this->d_derivative_error = 0.0;
-		this->d_integral_error = 0.0;
-
-//		printf("\n");
-
-		f_ret = 0.0;
-		
-		return f_ret;
-	}
-	
 	this->d_proportional_error = d_current_error;
-	this->d_derivative_error = (d_current_error - d_pre_error) / dur_time.toSec();
+	this->d_derivative_error = (d_current_error - this->d_pre_error) / dur_time.toSec();
 	this->d_integral_error += d_current_error * dur_time.toSec();
 	
 	f_ret = this->d_proportional_constant *  this->d_proportional_error 
 			+ this->d_integral_constant *  this->d_integral_error
 			+ this->d_derivative_constant * this->d_derivative_error;
+	
+	this->d_pre_error = d_current_error;
 			
-	if( fabs(f_ret) > max_vel )
+//	if(f_desired >= -0.001 && f_desired <= 0.001)
+//	{
+//		f_ret = 0.0;
+//		return f_ret;
+//	}
+
+	if( fabs(f_ret) > this->d_max_vel )
 	{
-		f_ret = (f_ret * this->max_vel) / fabs(f_ret);
+		ROS_INFO("MAX VEL: %f", this->d_max_vel);
+		f_ret = (f_ret * this->d_max_vel) / fabs(f_ret);
 	}
 			
 //	printf("%lf, %lf, %lf, %f \n", this->d_proportional_error, this->d_integral_error, this->d_derivative_error, f_ret);
+
+
+//	printf("%s: p:%f, i:%f, d:%f, dur_time:%f\n", this->str_name.c_str(), this->d_proportional_constant, this->d_integral_constant, this->d_derivative_constant, dur_time.toSec());
 	
 	return f_ret;
 	
@@ -96,7 +91,18 @@ void PIDController::UpdateParams(double d_proportional_constant,
 	this->d_proportional_constant = d_proportional_constant;
 }
 
-
+void PIDController::ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
+{
+	stat.summaryf(diagnostic_msgs::DiagnosticStatus::OK, "%s is OK!", this->str_name.c_str());
+	
+	stat.add("Proportional Constant", this->d_proportional_constant);
+	stat.add("Integral Constant", this->d_integral_constant);
+	stat.add("Derivative Constant", this->d_derivative_constant);
+	
+	stat.add("Proportional Error", this->d_proportional_error);
+	stat.add("Integral Error", this->d_integral_error);
+	stat.add("Derivative Error", this->d_derivative_error);
+}
 
 void CallbackMeasured(const geometry_msgs::PointStamped::ConstPtr & msg)
 {
@@ -140,17 +146,16 @@ void CallbackReconfigure(evarobot_controller::ParamsConfig &config, uint32_t lev
    g_d_d_right = config.derivativeConstRight;
 }
 
+bool CallbackResetController(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response)
+{
+	ROS_INFO("Reset Controller");
+	b_reset_controller = true;
+	return true;
+}
+
 int main(int argc, char **argv)
 {
-
-  ros::init(argc, argv, "evarobot_controller");
-  ros::NodeHandle n;
-  
   // ROS PARAMS
-  string str_desired_topic;
-  string str_measured_topic;
-  string str_controller_topic;
-  
   double d_integral_constant_left;
   double d_derivative_constant_left;
   double d_proportional_constant_left;
@@ -161,15 +166,20 @@ int main(int argc, char **argv)
   
   bool b_always_on;
   
+  double d_max_vel;
   double d_frequency;
+  double d_max_freq, d_min_freq;
   
   //---------------
   
-  n.param<string>("evarobot_controller/desiredTopic", str_desired_topic, "cmd_vel");  
-  n.param<string>("evarobot_controller/measuredTopic", str_measured_topic, "wheel_vel");
-  n.param<string>("evarobot_controller/controllerTopic", str_controller_topic, "cntr_wheel_vel");
+  ros::init(argc, argv, "/evarobot_controller");
+  ros::NodeHandle n;
+
   
-  n.param("evarobot_odometry/alwaysOn", b_always_on, false);
+  n.param("evarobot_controller/alwaysOn", b_always_on, false);
+  n.param<double>("evarobot_controller/maxVel", d_max_vel, 0.9);
+  n.param("evarobot_controller/minFreq", d_min_freq, 0.2);
+  n.param("evarobot_controller/maxFreq", d_max_freq, 10.0);
   
   if(!n.getParam("evarobot_controller/wheelSeparation", g_d_wheel_separation))
   {
@@ -203,24 +213,29 @@ int main(int argc, char **argv)
   if(!n.getParam("evarobot_controller/proportionalConstRight", d_proportional_constant_right))
   {
 	  ROS_ERROR("Failed to get param 'proportionalConstRight'");
-  } 
-
-   
+  }   
   
   if(!n.getParam("evarobot_controller/Frequency", d_frequency))
   {
 	  ROS_ERROR("Failed to get param 'Frequency'");
   }  
+    
+  PIDController left_controller = PIDController(d_proportional_constant_left, 
+																								d_integral_constant_left, 
+																								d_derivative_constant_left,
+																								d_max_vel,
+																								"LeftController");
+																								
+  PIDController right_controller = PIDController(d_proportional_constant_right, 
+																								 d_integral_constant_right, 
+																								 d_derivative_constant_right,
+																								 d_max_vel,
+																								 "RightController");
   
-  
-  
-  PIDController left_controller = PIDController(d_proportional_constant_left, d_integral_constant_left, d_derivative_constant_left);
-  PIDController right_controller = PIDController(d_proportional_constant_right, d_integral_constant_right, d_derivative_constant_right);
-     
-  
-  ros::Subscriber measured_pub = n.subscribe(str_measured_topic.c_str(), 2, CallbackMeasured);
-  ros::Subscriber desired_pub = n.subscribe(str_desired_topic.c_str(), 2, CallbackDesired);
-  ros::Publisher ctrl_pub = n.advertise<geometry_msgs::Twist>(str_controller_topic.c_str(), 10);
+  ros::Subscriber measured_pub = n.subscribe("wheel_vel", 1, CallbackMeasured);
+  ros::Subscriber desired_pub = n.subscribe("cmd_vel", 1, CallbackDesired);
+  ros::Publisher ctrl_pub = n.advertise<geometry_msgs::Twist>("cntr_wheel_vel", 10);
+  ros::ServiceServer service = n.advertiseService("evarobot_controller/reset_controller", CallbackResetController);
   
   // Dynamic Reconfigure
   dynamic_reconfigure::Server<evarobot_controller::ParamsConfig> srv;
@@ -228,6 +243,16 @@ int main(int argc, char **argv)
   f = boost::bind(&CallbackReconfigure, _1, _2);
   srv.setCallback(f);
   ///////////////
+  
+  // Diagnostics
+  diagnostic_updater::Updater updater;
+	updater.setHardwareID("None");
+	updater.add("LeftController", &left_controller, &PIDController::ProduceDiagnostics);
+	updater.add("RightController", &right_controller, &PIDController::ProduceDiagnostics);
+		
+	diagnostic_updater::HeaderlessTopicDiagnostic pub_freq("cntr_wheel_vel", updater,
+											diagnostic_updater::FrequencyStatusParam(&d_min_freq, &d_max_freq, 0.1, 10));
+  		
   
   ros::Rate loop_rate(d_frequency);
 
@@ -254,14 +279,18 @@ int main(int argc, char **argv)
 			b_is_received_params = false;
 		}
 
-//		printf("left:  ");
-//		printf("left_desired: %f\n", g_f_left_desired);
-//		printf("left_measured: %f\n", g_f_left_measured);
+		if(b_reset_controller)
+		{
+			left_controller.Reset();
+			right_controller.Reset();
+			b_reset_controller = false;
+		}
+
+
+//		printf("LEFT: Desired: %f, Measured: %f\n", g_f_left_desired, g_f_left_measured);
+//		printf("RIGHT: Desired: %f, Measured: %f\n", g_f_right_desired, g_f_right_measured);
+
 		msg.linear.x = left_controller.RunController(g_f_left_desired, g_f_left_measured);
-		
-//		printf("right:  ");
-//		printf("right_desired: %f\n", g_f_right_desired);
-//		printf("right_measured: %f\n", g_f_right_measured);
 		msg.linear.y = right_controller.RunController(g_f_right_desired, g_f_right_measured);
 		
 		b_is_new_desired = false;
@@ -270,10 +299,11 @@ int main(int argc, char **argv)
 		if(ctrl_pub.getNumSubscribers() > 0 || b_always_on)
 		{
 			ctrl_pub.publish(msg);
+			pub_freq.tick();
 		}
 		
 	 // }
-	  
+	  updater.update();
 	  ros::spinOnce();
 	  loop_rate.sleep();
   }

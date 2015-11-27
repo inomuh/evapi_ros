@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
   dynamic_reconfigure
+  diagnostic_updater
 )
 
 generate_dynamic_reconfigure_options(cfg/evarobot_controller.cfg)

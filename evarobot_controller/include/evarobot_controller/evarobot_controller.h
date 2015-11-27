@@ -6,6 +6,11 @@
 #include "geometry_msgs/PointStamped.h"
 #include "geometry_msgs/Twist.h"
 
+#include <diagnostic_updater/diagnostic_updater.h>
+#include <diagnostic_updater/publisher.h>
+
+#include "std_srvs/Empty.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -28,6 +33,8 @@ float g_f_right_measured = 0.0;
 double g_d_wheel_separation;
 bool b_is_received_params = false;
 
+bool b_reset_controller = false;
+
 using namespace std;
 
 double g_d_p_left;
@@ -43,11 +50,16 @@ class PIDController
 public:
 		PIDController();
 		PIDController(double d_proportional_constant, 
-					  double d_integral_constant, 
-					  double d_derivative_constant);
+									double d_integral_constant, 
+									double d_derivative_constant,
+									double _d_max_vel,
+									string _str_name);
+									
 		void UpdateParams(double d_proportional_constant, 
-						  double d_integral_constant, 
-						  double d_derivative_constant);
+											double d_integral_constant, 
+											double d_derivative_constant);
+											
+		void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat);
 		
 		~PIDController();
 		
@@ -64,7 +76,9 @@ private:
 	double d_derivative_constant;
 	double d_proportional_constant;
 	
-	float max_vel;
+	string str_name;
+	
+	double d_max_vel;
 	
 	ros::Time read_time;
 	ros::Duration dur_time;

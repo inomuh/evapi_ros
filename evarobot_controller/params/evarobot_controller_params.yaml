@@ -1,37 +1,16 @@
-desiredTopic: cmd_vel
-measuredTopic: wheel_vel
-controllerTopic: cntr_wheel_vel
 alwaysOn: true
-
-wheelSeparation: 0.32
-
+wheelSeparation: 0.35
 Frequency: 10.0
 
-# hcrrobot controller parameters
-#integralConstLeft: 0.5
-#derivativeConstLeft: 0.05
-#proportionalConstLeft: 0.3
-
-#integralConstRight: 0.5
-#derivativeConstRight: 0.05
-#proportionalConstRight: 0.3
-
-# evarobot0 controller parameters
-#integralConstLeft: 0.5 
-#derivativeConstLeft: 0.05 
-#proportionalConstLeft: 0.3
-
-#integralConstRight: 0.5
-#derivativeConstRight: 0.05
-#proportionalConstRight: 0.30
+maxVel: 1.2
+minFreq: 0.2
+maxFreq: 10.0
 
 # evarobot50 controller parameters
-integralConstLeft: 0.05
-derivativeConstLeft: 0.005
-proportionalConstLeft: 0.03
+integralConstLeft: 0.8
+derivativeConstLeft: 0.01
+proportionalConstLeft: 0.3
 
-integralConstRight: 0.5
-derivativeConstRight: 0.05
-proportionalConstRight: 0.30
-
-
+integralConstRight: 0.8
+derivativeConstRight: 0.01
+proportionalConstRight: 0.3
