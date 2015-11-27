@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   sensor_msgs
   dynamic_reconfigure
+  diagnostic_updater
 )
 
 generate_dynamic_reconfigure_options(cfg/evarobot_infrared.cfg)
