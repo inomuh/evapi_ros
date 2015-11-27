@@ -15,11 +15,16 @@
 
 #include <stdio.h> 
 #include <math.h> 
+#include <sstream>
 
 #include <dynamic_reconfigure/server.h>
 #include <evarobot_driver/ParamsConfig.h>
 
+#include <diagnostic_updater/diagnostic_updater.h>
+#include <diagnostic_updater/publisher.h>
+
 #include "im_msgs/SetRGB.h"
+#include "im_msgs/Voltage.h"
 
 using namespace std;
 
@@ -52,14 +57,27 @@ public:
 			 
 	~IMDRIVER()
 	{
+		im_msgs::SetRGB srv;
+		
+		srv.request.times = -1;
+		srv.request.mode = 0;
+		srv.request.frequency = 1.0;
+		srv.request.color = 0;
+		
+		if(this->client.call(srv) == 0)
+		{
+			ROS_ERROR("Failed to call service evarobot_rgb/SetRGB");
+		}
+		
 		printf("driver kapatiliyor\n");
 		this->Disable();
 		delete pwm;
 	}
 			 
-	void CallbackVel(const geometry_msgs::Twist::ConstPtr & msg);
 	void CallbackWheelVel(const geometry_msgs::Twist::ConstPtr & msg);
-	
+	void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat);
+	im_msgs::Voltage GetMotorVoltage() const;
+
 	bool CheckMotorCurrent();
 	void Enable()
 	{
@@ -121,11 +139,14 @@ private:
 	float f_wheel_separation; 
 	float f_wheel_diameter;
 
+	float f_left_motor_voltage;
+	float f_right_motor_voltage;
+
 	double d_frequency;
 	double d_duty;
 	double d_limit_voltage;
 	
-	bool b_motor_error;
+	bool b_motor_error, b_left_motor_error, b_right_motor_error;
 
 	unsigned int u_i_counts;
 	int i_mode;    
@@ -146,12 +167,15 @@ IMDRIVER::IMDRIVER(double d_limit_voltage,
 				   IMGPIO * m1_en,
 				   IMGPIO * m2_en,
 					 IMADC * adc,
-					 ros::ServiceClient & client)
+					 ros::ServiceClient & client):b_left_motor_error(false), b_right_motor_error(false)
 {
 	this->b_motor_error = false;
 	this->client = client;
 	this->adc = adc;
 	this->d_limit_voltage = d_limit_voltage;
+
+	this->f_left_motor_voltage = 0.0;
+	this->f_right_motor_voltage = 0.0;
 	
 	this->f_max_lin_vel = f_max_lin_vel; 
 	this->f_max_ang_vel = f_max_ang_vel; 
@@ -191,31 +215,39 @@ IMDRIVER::IMDRIVER(double d_limit_voltage,
 	
 }
 
+im_msgs::Voltage IMDRIVER::GetMotorVoltage() const
+{
+	im_msgs::Voltage ret;
+	ret.left_motor = this->f_left_motor_voltage;
+	ret.right_motor = this->f_right_motor_voltage;
+	
+	return ret;
+}
+
 bool IMDRIVER::CheckMotorCurrent()
 {
 	bool b_ret = true;
-	double d_left_motor_voltage, d_right_motor_voltage;
-	
 
+	this->f_left_motor_voltage = (float)(this->adc->ReadMotorChannel(0)*5.0/4096.0);
+	this->f_right_motor_voltage = (float)(this->adc->ReadMotorChannel(1)*5.0/4096.0);
 	
-	d_left_motor_voltage = (double)(this->adc->ReadMotorChannel(0)*5.0/4096.0);
-	d_right_motor_voltage = (double)(this->adc->ReadMotorChannel(1)*5.0/4096.0);
+	ROS_DEBUG("LEFT MOTOR: -- %f", this->f_left_motor_voltage);
+	ROS_DEBUG("RIGHT MOTOR: -- %f", this->f_right_motor_voltage);
 	
-	ROS_DEBUG("LEFT MOTOR: -- %f", d_left_motor_voltage);
-	ROS_DEBUG("RIGHT MOTOR: -- %f", d_right_motor_voltage);
-	
-	if(d_left_motor_voltage >= this->d_limit_voltage)
+	if(this->f_left_motor_voltage >= this->d_limit_voltage)
 	{
 		ROS_ERROR("HIGH CURRENT SENSE IN LEFT MOTOR");
 		b_ret = false;
 		this->b_motor_error = true;
+		this->b_left_motor_error = true;
 	}
 	
-	if(d_right_motor_voltage >= this->d_limit_voltage)
+	if(this->f_right_motor_voltage >= this->d_limit_voltage)
 	{
 		ROS_ERROR("HIGH CURRENT SENSE IN RIGHT MOTOR");
 		b_ret = false;
 		this->b_motor_error = true;
+		this->b_right_motor_error = true;
 	}
 	
 	if(!b_ret)
@@ -256,79 +288,28 @@ bool IMDRIVER::CheckMotorCurrent()
 	return b_ret;
 }
 
-void IMDRIVER::CallbackVel(const geometry_msgs::Twist::ConstPtr & msg)
+void IMDRIVER::ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
 {
-	
-	float f_linear_vel = msg->linear.x;
-	float f_angular_vel = msg->angular.z;
-
-	float f_left_wheel_velocity = ((2 * f_linear_vel) - f_angular_vel * f_wheel_separation) / 2; // m/s
-	float f_right_wheel_velocity = ((2 * f_linear_vel) + f_angular_vel * f_wheel_separation) / 2; // m/s
-	
-	if(b_is_received_params)
+	if(this->b_left_motor_error && this->b_right_motor_error)
 	{
-		ROS_INFO("Updating Driver Params...");
-		ROS_INFO("%f, %f", g_d_max_lin, g_d_max_ang);
-		ROS_INFO("%f, %f", g_d_wheel_separation, g_d_wheel_diameter);
-
-		this->f_max_lin_vel = g_d_max_lin; 
-		this->f_max_ang_vel = g_d_max_ang; 
-		this->f_wheel_separation = g_d_wheel_separation; 
-		this->f_wheel_diameter = g_d_wheel_diameter;
-
-		b_is_received_params = false;
+		stat.summary(diagnostic_msgs::DiagnosticStatus::ERROR, "High Current on BOTH Motors!");
 	}
-
-	if(f_left_wheel_velocity < 0)
+	else if(this->b_left_motor_error)
 	{
-		this->m1_in[0].SetPinValue(IMGPIO::LOW);
-		this->m1_in[1].SetPinValue(IMGPIO::HIGH);
+		stat.summary(diagnostic_msgs::DiagnosticStatus::ERROR, "High Current on LEFT Motor!");
 	}
-	else if(f_left_wheel_velocity > 0)
+	else if(this->b_right_motor_error)
 	{
-		this->m1_in[0].SetPinValue(IMGPIO::HIGH);
-		this->m1_in[1].SetPinValue(IMGPIO::LOW);
+		stat.summary(diagnostic_msgs::DiagnosticStatus::ERROR, "High Current on RIGHT Motor!");
 	}
 	else
 	{
-		this->m1_in[0].SetPinValue(IMGPIO::LOW);
-		this->m1_in[1].SetPinValue(IMGPIO::LOW);
+		stat.summary(diagnostic_msgs::DiagnosticStatus::OK, "Motors are OK!");
 	}
 	
-	if(f_right_wheel_velocity < 0)
-	{
-		this->m2_in[0].SetPinValue(IMGPIO::LOW);
-		this->m2_in[1].SetPinValue(IMGPIO::HIGH);
-	}
-	else if(f_right_wheel_velocity > 0)
-	{
-		this->m2_in[0].SetPinValue(IMGPIO::HIGH);
-		this->m2_in[1].SetPinValue(IMGPIO::LOW);
-	}
-	else
-	{
-		this->m2_in[0].SetPinValue(IMGPIO::LOW);
-		this->m2_in[1].SetPinValue(IMGPIO::LOW);
-	}
-	
-	
-	int i_left_wheel_duty = int(fabs(f_left_wheel_velocity) * this->i_const_count);
-	int i_right_wheel_duty = int(fabs(f_right_wheel_velocity) * this->i_const_count); 
-
-	i_left_wheel_duty = i_left_wheel_duty>=this->u_i_counts ? this->u_i_counts - 1:i_left_wheel_duty;
-	
-	i_right_wheel_duty = i_right_wheel_duty>=this->u_i_counts ? this->u_i_counts - 1:i_right_wheel_duty;
-
-//	cout << "left_duty: " << i_left_wheel_duty << " right duty: " << i_right_wheel_duty << endl;
-
-	if(i_left_wheel_duty != 0)
-		pwm->SetDutyCycleCount(i_left_wheel_duty, 0);
-	
-	if(i_right_wheel_duty != 0)
-		pwm->SetDutyCycleCount(i_right_wheel_duty, 1);
+	stat.add("Right Motor Voltage", this->f_right_motor_voltage);
+	stat.add("Left Motor Voltage", this->f_left_motor_voltage);
 }
-
-
 
 void IMDRIVER::CallbackWheelVel(const geometry_msgs::Twist::ConstPtr & msg)
 {
@@ -349,12 +330,12 @@ void IMDRIVER::CallbackWheelVel(const geometry_msgs::Twist::ConstPtr & msg)
 		b_is_received_params = false;
 	}
 	
-	if(f_left_wheel_velocity < 0)
+	if(f_left_wheel_velocity > 0)
 	{
 		this->m1_in[0].SetPinValue(IMGPIO::LOW);
 		this->m1_in[1].SetPinValue(IMGPIO::HIGH);
 	}
-	else if(f_left_wheel_velocity > 0)
+	else if(f_left_wheel_velocity < 0)
 	{
 		this->m1_in[0].SetPinValue(IMGPIO::HIGH);
 		this->m1_in[1].SetPinValue(IMGPIO::LOW);
@@ -365,12 +346,12 @@ void IMDRIVER::CallbackWheelVel(const geometry_msgs::Twist::ConstPtr & msg)
 		this->m1_in[1].SetPinValue(IMGPIO::LOW);
 	}
 	
-	if(f_right_wheel_velocity < 0)
+	if(f_right_wheel_velocity > 0)
 	{
 		this->m2_in[0].SetPinValue(IMGPIO::HIGH);
 		this->m2_in[1].SetPinValue(IMGPIO::LOW);
 	}
-	else if(f_right_wheel_velocity > 0)
+	else if(f_right_wheel_velocity < 0)
 	{
 		this->m2_in[0].SetPinValue(IMGPIO::LOW);
 		this->m2_in[1].SetPinValue(IMGPIO::HIGH);
@@ -382,28 +363,25 @@ void IMDRIVER::CallbackWheelVel(const geometry_msgs::Twist::ConstPtr & msg)
 	}
 	
 
-	int i_left_wheel_duty = int(fabs(f_left_wheel_velocity) * this->i_const_count);
-	int i_right_wheel_duty = int(fabs(f_right_wheel_velocity) * this->i_const_count); 
+//	int i_left_wheel_duty = int(fabs(f_left_wheel_velocity) * this->i_const_count);
+//	int i_right_wheel_duty = int(fabs(f_right_wheel_velocity) * this->i_const_count); 
 
-//	cout << "left_duty----: " << i_left_wheel_duty << " right duty-----: " << i_right_wheel_duty << endl;
+
+        int i_left_wheel_duty = int(fabs(f_left_wheel_velocity) * 255 / this->f_max_lin_vel);
+        int i_right_wheel_duty = int(fabs(f_right_wheel_velocity) * 255 / this->f_max_lin_vel); 
+
 
 	i_left_wheel_duty = i_left_wheel_duty>=this->u_i_counts ? this->u_i_counts - 1:i_left_wheel_duty;
-	
 	i_right_wheel_duty = i_right_wheel_duty>=this->u_i_counts ? this->u_i_counts - 1:i_right_wheel_duty;
-	
-//	cout << "u_i_counts " << this->u_i_counts << endl;
-
-//	cout << "left_duty: " << i_left_wheel_duty << " right duty: " << i_right_wheel_duty << endl;
-
 
 	if(i_left_wheel_duty != 0)
 		pwm->SetDutyCycleCount(i_left_wheel_duty, 0);
-//		pwm->SetDutyCycleCount(102, 0);
+//		pwm->SetDutyCycleCount(150, 0);
 
 	if(i_right_wheel_duty != 0)
 		pwm->SetDutyCycleCount(i_right_wheel_duty, 1);
-
-	if(this->CheckError() == -1)
+//		pwm->SetDutyCycleCount(150, 1);
+/*	if(this->CheckError() == -1)
 	{
 		ROS_ERROR("Failure at Left Motor.");
 	}
@@ -414,7 +392,7 @@ void IMDRIVER::CallbackWheelVel(const geometry_msgs::Twist::ConstPtr & msg)
 	else if(this->CheckError() == -3)
 	{
 		ROS_ERROR("Failure at Both of Motors.");
-	}
+	}*/
 
 }
 
@@ -432,11 +410,11 @@ void CallbackReconfigure(evarobot_driver::ParamsConfig &config, uint32_t level)
 int main(int argc, char **argv)
 {
 	unsigned char u_c_spi_mode;
-
-  ros::init(argc, argv, "evarobot_driver");
+	
+  ros::init(argc, argv, "/evarobot_driver");
   ros::NodeHandle n;
   
-  string str_topic, str_driver_path;
+  string str_driver_path;
   
   double d_max_lin_vel;
   double d_max_ang_vel;
@@ -475,8 +453,6 @@ int main(int argc, char **argv)
   n.param<int>("evarobot_driver/M2_EN", i_m2_en, 6);
 
   n.param<double>("evarobot_driver/limitVoltage", d_limit_voltage, 0.63);
-  
-  n.param<string>("evarobot_driver/commandTopic", str_topic, "cntr_wheel_vel");
   
   if(!n.getParam("evarobot_driver/maxLinearVel", d_max_lin_vel))
   {
@@ -566,9 +542,7 @@ int main(int argc, char **argv)
 	// Creating spi and adc objects.
 	IMSPI * p_im_spi = new IMSPI(str_driver_path, u_c_spi_mode, i_spi_speed, i_spi_bits);
 	IMADC * p_im_adc = new IMADC(p_im_spi, i_adc_bits);
-  
-  
-  
+    
   stringstream ss1, ss2;
   
   ss1 << i_m1_in1;
@@ -597,9 +571,13 @@ int main(int argc, char **argv)
 					d_frequency, i_counts, d_duty, i_mode, 
 					gpio_m1_in, gpio_m2_in, &gpio_m1_en, &gpio_m2_en, p_im_adc, client);
   
-  //ros::Subscriber sub = n.subscribe(str_topic.c_str(), 2, &IMDRIVER::CallbackVel, &imdriver);
-  ros::Subscriber sub = n.subscribe(str_topic.c_str(), 2, &IMDRIVER::CallbackWheelVel, &imdriver);
+	ros::Subscriber sub = n.subscribe("cntr_wheel_vel", 2, &IMDRIVER::CallbackWheelVel, &imdriver);
+	ros::Publisher pub = n.advertise<im_msgs::Voltage>("motor_voltages", 1);
   
+  // Diagnostics
+  diagnostic_updater::Updater updater;
+	updater.setHardwareID("None");
+	updater.add("MotorVoltages", &imdriver, &IMDRIVER::ProduceDiagnostics);
   
   if(sub.getNumPublishers() < 1)
   {
@@ -613,13 +591,12 @@ int main(int argc, char **argv)
 	{
 		
 		imdriver.CheckMotorCurrent();
+		pub.publish(imdriver.GetMotorVoltage());
 		
+		updater.update();
 		ros::spinOnce();
 		loop_rate.sleep();
 	}
   
-
- 
-
   return 0;
 }
