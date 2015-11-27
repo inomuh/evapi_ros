@@ -1,0 +1,9 @@
+<launch>
+	<master auto="start"/>
+	
+	<!-- Run evarobot_battery -->
+	<node pkg="evarobot_battery" type="evarobot_battery" respawn="false" name="evarobot_battery" output="screen">
+		<rosparam file="$(find evarobot_battery)/params/evarobot_battery_params.yaml" command="load"/>
+	</node>
+	
+</launch>
