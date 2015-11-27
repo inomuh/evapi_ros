@@ -288,7 +288,7 @@ int main(int argc, char **argv)
 	key_t key;
 	sem_t *mutex;
 	FILE * fd;
-
+	
 	key = 1005;
 
 	mutex = sem_open(SEM_NAME,O_CREAT,0644,1);
@@ -304,7 +304,7 @@ int main(int argc, char **argv)
 	string str_i2c_path;
 	// rosparams end
 	
-	ros::init(argc, argv, "evarobot_rgb");
+	ros::init(argc, argv, "/evarobot_rgb");
 	ros::NodeHandle n;
 	
 	n.param<string>("evarobot_eio/i2c_path", str_i2c_path, "/dev/i2c-1");

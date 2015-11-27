@@ -7,6 +7,7 @@
 #include <sys/ioctl.h>		/* ioctl */
 #include "IMEIO.h"
 #include <vector>
+#include <sstream>
 
 #include "im_msgs/SetRGB.h"
 
