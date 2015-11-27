@@ -7,6 +7,10 @@
 #include "geometry_msgs/Pose2D.h"
 
 #include "geometry_msgs/PointStamped.h"
+#include "std_srvs/Empty.h"
+
+#include <diagnostic_updater/diagnostic_updater.h>
+#include <diagnostic_updater/publisher.h>
 
 #include <string>    
 #include <sstream>

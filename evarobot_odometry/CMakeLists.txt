@@ -7,6 +7,8 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   roscpp
   dynamic_reconfigure
+  std_msgs
+  diagnostic_updater
 )
 
 generate_dynamic_reconfigure_options(cfg/evarobot_odometry.cfg)

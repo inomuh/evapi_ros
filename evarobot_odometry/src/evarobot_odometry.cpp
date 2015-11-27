@@ -6,11 +6,14 @@
 bool b_is_received_params = false;
 
 bool b_always_on;
+bool b_reset_odom = false;
 double d_wheel_separation;
 double d_height;
 int i_gear_ratio;
 int i_cpr;
 double d_wheel_diameter;
+
+
 	
 void CallbackReconfigure(evarobot_odometry::ParamsConfig &config, uint32_t level)
 {
@@ -24,31 +27,29 @@ void CallbackReconfigure(evarobot_odometry::ParamsConfig &config, uint32_t level
    d_wheel_diameter = config.wheelDiameter;
 }
 
+bool CallbackResetOdom(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response)
+{
+	ROS_INFO("Reset Odometry");
+	b_reset_odom = true;
+	return true;
+}
+
 int main(int argc, char **argv)
 {
-	
+	int i_fd;
 	double d_frequency;
-	
+	double d_min_freq, d_max_freq;
+  stringstream ss;
 	
 	string str_device_path;
-	string str_frame_id;
-	string str_topic;
-	string str_vel_frame_id;
-	string str_vel_topic;
 	
-	
-	ros::init(argc, argv, "evarobot_odometry");
+	ros::init(argc, argv, "/evarobot_odometry");
 	ros::NodeHandle n;
 
 	n.param<string>("evarobot_odometry/devicePath", str_device_path, "/dev/evarobotEncoder");
-	n.param<string>("evarobot_odometry/odomTopic", str_topic, "odom");
-	n.param<string>("evarobot_odometry/odomFrame", str_frame_id, "odom");
-	
-	n.param<string>("evarobot_odometry/wheelTopic", str_vel_topic, "wheel_vel");
-	n.param<string>("evarobot_odometry/wheelFrame", str_vel_frame_id, "wheel");
-	
 	n.param("evarobot_odometry/alwaysOn", b_always_on, false);
-
+	n.param("evarobot_odometry/minFreq", d_min_freq, 0.2);
+	n.param("evarobot_odometry/maxFreq", d_max_freq, 10.0);
 	
 	if(!n.getParam("evarobot_odometry/wheelSeparation", d_wheel_separation))
 	{
@@ -78,28 +79,34 @@ int main(int argc, char **argv)
 	if(!n.getParam("evarobot_odometry/wheelDiameter", d_wheel_diameter))
 	{
 	  ROS_ERROR("Failed to get param 'wheelDiameter'");
-	} 	
+	}
+		
+	ros::Publisher pose_pub = n.advertise<nav_msgs::Odometry>("odom", 10);
+	ros::Publisher vel_pub = n.advertise<geometry_msgs::PointStamped>("wheel_vel", 10);
 	
-
+	ros::ServiceServer service = n.advertiseService("evarobot_odometry/reset_odom", CallbackResetOdom);
 	
-
-	ros::Publisher pose_pub = n.advertise<nav_msgs::Odometry>(str_topic.c_str(), 10);
-	ros::Publisher vel_pub = n.advertise<geometry_msgs::PointStamped>(str_vel_topic.c_str(), 10);
-
 	ros::Rate loop_rate(d_frequency);
 
 	ros::Time read_time = ros::Time::now();
 	ros::Duration dur_time;
 
-    // Dynamic Reconfigure
-    dynamic_reconfigure::Server<evarobot_odometry::ParamsConfig> srv;
-    dynamic_reconfigure::Server<evarobot_odometry::ParamsConfig>::CallbackType f;
-    f = boost::bind(&CallbackReconfigure, _1, _2);
-    srv.setCallback(f);
-    ///////////////
+  // Dynamic Reconfigure
+  dynamic_reconfigure::Server<evarobot_odometry::ParamsConfig> srv;
+  dynamic_reconfigure::Server<evarobot_odometry::ParamsConfig>::CallbackType f;
+  f = boost::bind(&CallbackReconfigure, _1, _2);
+  srv.setCallback(f);
+  ///////////////
+  
+  // Diagnostics
+	diagnostic_updater::Updater updater;
+	updater.setHardwareID("None");
+		
+	diagnostic_updater::HeaderlessTopicDiagnostic pub_freq("odom", updater,
+											diagnostic_updater::FrequencyStatusParam(&d_min_freq, &d_max_freq, 0.1, 10));
     
 	char c_read_buf[100], c_write_buf[100];
-	int i_fd;
+	
 
 	nav_msgs::Odometry msg;
 	geometry_msgs::PointStamped wheel_vel;
@@ -131,20 +138,40 @@ int main(int argc, char **argv)
 	write(i_fd, "clean", 5);
 	
 	
-  	if(i_fd < 0)
+	if(i_fd < 0)
 	{
 		ROS_ERROR("File %s either does not exist or has been locked by another process\n", str_device_path.c_str());
 		exit(-1);
 	}
 
-
-
 	while (ros::ok())
 	{
 		if(b_is_received_params)
 		{
-			ROS_INFO("Updating Controller Params...");
+			ROS_INFO("Updating Odometry Params...");
 			b_is_received_params = false;
+		}
+		
+		if(b_reset_odom)
+		{
+			ROS_INFO("Resetting Odometry");
+			
+			write(i_fd, "clean", 5);
+			
+			f_left_read = 0.0;
+			f_right_read = 0.0;
+			f_left_read_last = 0.0;
+			f_right_read_last = 0.0;
+			
+			odom_pose.x = 0.0;
+			odom_pose.y = 0.0;
+			odom_pose.theta = 0.0;
+			
+			delta_odom_pose.x = 0.0;
+			delta_odom_pose.y = 0.0;
+			delta_odom_pose.theta = 0.0;
+			
+			b_reset_odom = false;
 		}
 		
 		// Reading encoder.
@@ -168,7 +195,7 @@ int main(int argc, char **argv)
 
 //		cout << "left_read: " << f_left_read << " right_read: " << f_right_read << endl;
 
-		float f_delta_sr, f_delta_sl, f_delta_s; 
+		float f_delta_sr = 0.0, f_delta_sl = 0.0, f_delta_s = 0.0; 
 
 		// Dönüş sayısı değişimi hesaplanıyor.
 		f_delta_sr =  PI * d_wheel_diameter * (f_right_read - f_right_read_last) / (i_gear_ratio * i_cpr);
@@ -207,10 +234,11 @@ int main(int argc, char **argv)
 
 		msg.pose.pose.orientation.x = 0.0;
 		msg.pose.pose.orientation.y = 0.0;
-		msg.pose.pose.orientation.z = sin(odom_pose.theta); 
-		msg.pose.pose.orientation.w = cos(odom_pose.theta);
+		msg.pose.pose.orientation.z = sin(0.5 * odom_pose.theta); 
+		msg.pose.pose.orientation.w = cos(0.5 * odom_pose.theta);
 		
 													
+		//cout << "Pose.X: " << odom_pose.x << "  Pose.Y: " << odom_pose.y << "  Orientation: " << odom_pose.theta << endl;
 
 		float f_lin_vel = 0, f_ang_vel = 0;
 		float f_lin_vel_right = 0, f_lin_vel_left = 0;
@@ -219,18 +247,28 @@ int main(int argc, char **argv)
 
 		if(dur_time.toSec() > 0)
 		{
-			f_lin_vel = sqrt(pow(delta_odom_pose.x, 2) + pow(delta_odom_pose.y, 2)) / dur_time.toSec();
-			f_ang_vel = delta_odom_pose.theta / dur_time.toSec();
+//			f_lin_vel = sqrt(pow(delta_odom_pose.x, 2) + pow(delta_odom_pose.y, 2)) / dur_time.toSec();
+//			f_ang_vel = delta_odom_pose.theta / dur_time.toSec();
 			
 			f_lin_vel_right = f_delta_sr / dur_time.toSec();
 			f_lin_vel_left = f_delta_sl / dur_time.toSec();
+			
+//			cout << "VEl_LEFT: " << f_lin_vel_left << "  Vel_right: " << f_lin_vel_right << " dur: " << dur_time.toSec() << endl;
+
+			
+			f_lin_vel = (f_lin_vel_right + f_lin_vel_left) / 2.0;
+			f_ang_vel = (f_lin_vel_right - f_lin_vel_left) / d_wheel_separation;
+
 		}
 		else
 		{
 			ROS_ERROR("Division by Zero");
 		}
 		
-		wheel_vel.header.frame_id = str_vel_frame_id;
+		ss.str("");
+		ss << n.resolveName(n.getNamespace(), true) << "/wheel_link";
+		
+		wheel_vel.header.frame_id = ss.str();
 		wheel_vel.header.stamp = ros::Time::now();
 		wheel_vel.point.x = f_lin_vel_left;
 		wheel_vel.point.y = f_lin_vel_right;
@@ -255,16 +293,23 @@ int main(int argc, char **argv)
 		msg.header.stamp = ros::Time::now();
 
 		// Odometry verisinin frame id'si yazılıyor. (string)
-		msg.header.frame_id = str_frame_id;
-		msg.child_frame_id = "base_link";
+		ss.str("");
+		ss << n.resolveName(n.getNamespace(), true) << "/odom";
+		msg.header.frame_id = ss.str();
+		
+		ss.str("");
+		ss << n.resolveName(n.getNamespace(), true) << "/base_link";
+		msg.child_frame_id = ss.str();
+		
 		// Veri topikten basılıyor.
 		if(pose_pub.getNumSubscribers() > 0 || b_always_on)
 		{
 			pose_pub.publish(msg);
+			pub_freq.tick();
 		}
 
 		ros::spinOnce();
-
+		updater.update();
 		// Frekansı tutturmak için uyutuluyor.
 		loop_rate.sleep();
 	}
