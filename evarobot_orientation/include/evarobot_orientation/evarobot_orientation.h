@@ -10,6 +10,8 @@
 
 #include "IMUM6.h"
 
+#include <sstream>
+
 //#ifndef DEBUG
 //#define DEBUG
 //#endif

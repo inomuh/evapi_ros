@@ -36,35 +36,26 @@ int main(int argc, char **argv)
 	// ROS PARAMS
 	
 	double d_frequency;
-	
-	string str_namespace;
-	string str_frame_id;
-	
+		
 	bool b_always_on;
 	// rosparams end
 	
 	ros::Publisher pub_um6;
 	sensor_msgs::Imu imu_packet;
-	
-	ros::init(argc, argv, "evarobot_orientation");
+		
+	ros::init(argc, argv, "/evarobot_orientation");
 	ros::NodeHandle n;
 	
-	n.param<string>("evarobot_orientation/namespace", str_namespace, "gazebo");
-	n.param<string>("evarobot_orientation/frameNamespace", str_frame_id, "imu");
 	n.param("evarobot_orientation/alwaysOn", b_always_on, false);
 			
 	if(!n.getParam("evarobot_orientation/frequency", d_frequency))
 	{
 		ROS_ERROR("Failed to get param 'frequency'");
 	} 
-
-	
 	
 	
 	// Set publisher
-	stringstream ss_topic;
-	ss_topic << str_namespace << "/imu";
-	pub_um6 = n.advertise<sensor_msgs::Imu>(ss_topic.str().c_str(), 1);
+	pub_um6 = n.advertise<sensor_msgs::Imu>("imu", 1);
 	#ifdef TEST
 	ros::Publisher pub_pose_demo = n.advertise<nav_msgs::Odometry>("odom_demo", 1);
 	#endif
@@ -73,8 +64,7 @@ int main(int argc, char **argv)
 	ros::Rate loop_rate(d_frequency);
 
 	stringstream ss_frame;
-	ss_frame << str_frame_id << "/imu";
-
+	ss_frame << n.resolveName(n.getNamespace(), true) << "/imu_link";
 
 	// init imu packets
 	imu_packet.header.frame_id = ss_frame.str();
