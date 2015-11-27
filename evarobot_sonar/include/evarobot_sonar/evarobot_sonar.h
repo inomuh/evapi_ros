@@ -4,6 +4,12 @@
 #include "ros/ros.h"
 #include "sensor_msgs/Range.h"
 
+#include <diagnostic_updater/diagnostic_updater.h>
+#include <diagnostic_updater/publisher.h>
+
+#include <dynamic_reconfigure/server.h>
+#include <evarobot_sonar/SonarParamsConfig.h>
+
 #include <time.h>
 #include <vector>
 #include <sstream>
@@ -11,9 +17,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
+#include <math.h>
 
 #include <unistd.h>		/* exit */
 #include <sys/ioctl.h>		/* ioctl */
+#include <exception>
+
+#include <boost/shared_ptr.hpp>
 
 #ifndef DEBUG
 #define DEBUG
@@ -28,14 +38,13 @@
 
 struct sonar_ioc_transfer 
 {
-	int i_gpio_pins[MAX_SONAR];
-	int i_size; 
-
+	int i_gpio_pin;
+	int i_sonar_id;
 };
 
 struct sonar_data
 {
-	int i_sonar_no;
+	int i_sonar_id;
 	int i_distance;
 };
 
@@ -55,6 +64,61 @@ double g_d_min_range;
 double g_d_max_range;
 bool g_b_always_on;
 
+int g_i_is_alive[MAX_SONAR];
+
 using namespace std;
+
+class IMDynamicReconfig
+{
+	public:
+	IMDynamicReconfig();
+	
+	void CallbackReconfigure(evarobot_sonar::SonarParamsConfig &config, uint32_t level);
+	
+	ros::NodeHandle n_private;
+	
+	double d_min_range, d_max_range, d_fov;
+	double d_max_freq, d_min_freq;
+	bool b_always_on;
+		
+	dynamic_reconfigure::Server<evarobot_sonar::SonarParamsConfig> srv;
+	dynamic_reconfigure::Server<evarobot_sonar::SonarParamsConfig>::CallbackType f;
+};
+
+class IMSONAR
+{
+	public:
+	
+	IMSONAR(int fd, 
+				 int id, 
+				 int pin,
+				 boost::shared_ptr<IMDynamicReconfig> _dynamic_params);
+	~IMSONAR();
+	bool ReadRange();
+	void Publish();
+	void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat);
+	
+	ros::NodeHandle n;
+  ros::Publisher pub_sonar;
+  diagnostic_updater::Updater updater;
+  	
+	private:
+	int i_fd;
+	int i_pin_no, i_id;
+	bool b_is_alive;
+	
+	sensor_msgs::Range sonar_msg;
+	
+	boost::shared_ptr<IMDynamicReconfig> dynamic_params;
+	//IMDynamicReconfig * dynamic_params;
+	
+	double min_freq;
+	double max_freq;
+	diagnostic_updater::HeaderlessTopicDiagnostic * pub_sonar_freq;
+
+	
+	struct sonar_data data;
+};
+
 
 #endif

@@ -1,13 +1,10 @@
 devicePath: /dev/evarobotSonar
-namespace: sensor
-frameNamespace: sensor
 alwaysOn: true
 frequency: 10.0
-field_of_view: [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7]
-minRange: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-maxRange: [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0]
+field_of_view: 0.7
+minRange: 0.0
+maxRange: 5.0
+maxFreq: 10.0
+minFreq: 0.2
 sonarPins: [0, 1, 2, 3, 4, 5, 6]
-posX: [0.0, 0, 0, 0, 0, 0, 0]
-posY: [0.0, 0, 0, 0, 0, 0, 0]
-posZ: [0.0, 0, 0, 0, 0, 0, 0]
-angleYaw: [0.0, 0, 0, 0, 0, 0, 0]
+

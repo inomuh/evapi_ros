@@ -1,98 +1,194 @@
 #include "evarobot_sonar/evarobot_sonar.h"
 
-#include <dynamic_reconfigure/server.h>
-#include <evarobot_sonar/SonarParamsConfig.h>
+/*
+ * 
+ * IMSONAR
+ * 
+ * 
+ * */
 
-void CallbackReconfigure(evarobot_sonar::SonarParamsConfig &config, uint32_t level)
+IMSONAR::IMSONAR(int fd, 
+								 int id, 
+								 int pin,
+								 boost::shared_ptr<IMDynamicReconfig> _dynamic_params):i_fd(fd), i_id(id), i_pin_no(pin), 
+													b_is_alive(false), dynamic_params(_dynamic_params)
 {
-   b_is_received_params = true;        
-   
-   g_d_field_of_view = config.field_of_view;
-   g_d_min_range = config.minRange;
-   g_d_max_range = config.maxRange;
-   g_b_always_on = config.alwaysOn;
-     
+	struct sonar_ioc_transfer set_params;
+	stringstream ss;
+	
+	// Publisher
+	ss << "sonar" << this->i_id;
+	this->pub_sonar = this->n.advertise<sensor_msgs::Range>(ss.str().c_str(), 10);
+	
+	// Diagnostics
+	this->updater.setHardwareID("IM-SMO20");
+	this->updater.add(ss.str().c_str(), this, &IMSONAR::ProduceDiagnostics);
+		
+	this->min_freq = this->dynamic_params->d_min_freq; 
+	this->max_freq = this->dynamic_params->d_max_freq; 
+	this->pub_sonar_freq = new diagnostic_updater::HeaderlessTopicDiagnostic(ss.str().c_str(), this->updater,
+											diagnostic_updater::FrequencyStatusParam(&min_freq, &max_freq, 0.1, 10));
+											
+	
+	// Frame id
+	ss.str("");
+	ss << this->n.resolveName(n.getNamespace(), true) << "/sonar" << this->i_id << "_link";
+			 	
+	this->sonar_msg.header.frame_id = ss.str();
+	this->sonar_msg.radiation_type = 0;
+	
+	// Set params to driver
+	set_params.i_gpio_pin = this->i_pin_no;
+	set_params.i_sonar_id = this->i_id;
+	ioctl(this->i_fd, IOCTL_SET_PARAM, &set_params);
 }
+
+IMSONAR::~IMSONAR()
+{
+	delete pub_sonar_freq;
+}
+
+
+bool IMSONAR::ReadRange()
+{
+	int ret_val = 0;
+	char read_buf[100];
+	stringstream ss;
+	
+	ss << this->i_id;
+	
+	int raw_dist = -1;
+
+	//ioctl(this->i_fd, IOCTL_READ_RANGE, &this->data);
+	
+	double start, stop;
+	
+	start = ros::Time::now().toSec();
+	
+	write(this->i_fd, ss.str().c_str(), sizeof(ss.str().c_str()));
+
+	while(raw_dist < 0)
+	{
+		stop = ros::Time::now().toSec();
+		
+		if(stop - start > 0.5)
+		{
+			ROS_INFO("Sonar[%d] is not ALIVE ", this->i_id);
+			this->b_is_alive = false;
+			return false;
+		}
+		
+		//ROS_INFO("Timeout[%d]: %f ", this->i_id, stop-start);
+		ret_val = read(this->i_fd, read_buf, sizeof(read_buf));
+		usleep(50000);
+		raw_dist = atoi(read_buf);
+		
+	}
+	
+	this->b_is_alive = true;
+	this->sonar_msg.range = (float)(raw_dist * 0.0001);
+	this->sonar_msg.header.stamp = ros::Time::now();
+	this->sonar_msg.field_of_view = this->dynamic_params->d_fov;
+	this->sonar_msg.min_range = this->dynamic_params->d_min_range;
+	this->sonar_msg.max_range = this->dynamic_params->d_max_range;
+	
+	return true;
+}
+
+void IMSONAR::Publish()
+{
+	if(this->pub_sonar.getNumSubscribers() > 0 || this->dynamic_params->b_always_on)
+	{
+		this->pub_sonar.publish(this->sonar_msg);
+		this->pub_sonar_freq->tick();
+	}
+}
+
+void IMSONAR::ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
+{
+	if(this->b_is_alive)
+	{
+		stat.summaryf(diagnostic_msgs::DiagnosticStatus::OK, "Sonar%d is alive!", this->i_id);
+	}
+	else
+	{
+		stat.summaryf(diagnostic_msgs::DiagnosticStatus::ERROR, "Sonar%d is NOT alive!", this->i_id);
+	}
+}
+
+
+/*
+ * 
+ * IMDynamicReconfig
+ * 
+ * 
+ * */
+
+void IMDynamicReconfig::CallbackReconfigure(evarobot_sonar::SonarParamsConfig &config, uint32_t level)
+{
+	ROS_INFO("Updating Sonar Params...");
+		
+	this->d_fov = config.field_of_view;
+	this->d_min_range = config.minRange;
+	this->d_max_range = config.maxRange;
+	this->b_always_on = config.alwaysOn;
+}
+
+IMDynamicReconfig::IMDynamicReconfig():n_private("~")
+{
+		// Get Params
+	n_private.param("alwaysOn", this->b_always_on, false);
+	n_private.param("field_of_view", this->d_fov, 0.7);
+	n_private.param("minRange", this->d_min_range, 0.0);
+	n_private.param("maxRange", this->d_max_range, 5.0);
+	n_private.param("maxFreq", this->d_max_freq, 10.0);
+	n_private.param("minFreq", this->d_min_freq, 0.2);
+		
+	ROS_DEBUG("b_always_on: %d", this->b_always_on);
+	ROS_DEBUG("d_fov: %f", this->d_fov);
+	ROS_DEBUG("d_min_range: %f", this->d_min_range);
+	ROS_DEBUG("d_max_range: %f", this->d_max_range);
+	
+	
+	// Dynamic Reconfigure
+	this->f = boost::bind(&IMDynamicReconfig::CallbackReconfigure, this, _1, _2);
+	this->srv.setCallback(this->f);
+}
+
+
+	
 
 int main(int argc, char **argv)
 {
 	int i_fd;
-	struct sonar_ioc_transfer pins;
-	struct sonar_data data;
-	
-	// ROS PARAMS
+  stringstream ss;
+  
+  vector<IMSONAR *> sonar;
+  
+  // ROS PARAMS
 	vector<int> T_i_sonar_pins;
-	vector<double> T_d_posX, T_d_posY, T_d_posZ, T_d_angle_yaw;
-	vector<double> T_d_min_ranges, T_d_max_ranges;
-	vector<double> T_d_field_of_views;
-		
 	double d_frequency;
-	
 	string str_driver_path;
-	string str_namespace;
-	string str_frame_id;
-	
-	bool b_always_on;
 	// rosparams end
 	
-	vector<ros::Publisher> T_pub_sonar;
-	vector<sensor_msgs::Range> T_sonars;
-	
-	double d_sleep_time;
-	
-
 	unsigned int u_i_delay = 100*1000; // Note: Delay in ns
-	
-	ros::init(argc, argv, "evarobot_sonar");
+		
+	ros::init(argc, argv, "/evarobot_sonar");
 	ros::NodeHandle n;
 	
+	
 	n.param<string>("evarobot_sonar/driverPath", str_driver_path, "/dev/evarobotSonar");
-	n.param<string>("evarobot_sonar/namespace", str_namespace, "gazebo");
-	n.param<string>("evarobot_sonar/frameNamespace", str_frame_id, "sonar");
-	n.param("evarobot_sonar/alwaysOn", b_always_on, false);
-
-	
-	if(!n.getParam("evarobot_sonar/frequency", d_frequency))
-	{
-		ROS_ERROR("Failed to get param 'frequency'");
-	} 
-
-
-	n.getParam("evarobot_sonar/field_of_view", T_d_field_of_views);
-	n.getParam("evarobot_sonar/minRange", T_d_min_ranges);
-	n.getParam("evarobot_sonar/maxRange", T_d_max_ranges);
-
+	n.param<double>("evarobot_sonar/frequency", d_frequency, 10.0);
 	n.getParam("evarobot_sonar/sonarPins", T_i_sonar_pins);
-	
-	n.getParam("evarobot_sonar/posX", T_d_posX);
-	n.getParam("evarobot_sonar/posY", T_d_posY);
-	n.getParam("evarobot_sonar/posZ", T_d_posZ);
-	n.getParam("evarobot_sonar/angleYaw", T_d_angle_yaw);
-	
-	if( !(T_d_field_of_views.size() == T_d_min_ranges.size()
-	&& T_d_min_ranges.size() == T_d_max_ranges.size()
-	&& T_d_min_ranges.size() == T_i_sonar_pins.size()
-	&& T_i_sonar_pins.size() == T_d_posX.size()
-	&& T_d_posX.size() == T_d_posY.size()
-	&& T_d_posY.size() == T_d_posZ.size()
-	&& T_d_posZ.size() == T_d_angle_yaw.size())	)
-	{
-		ROS_ERROR("Size of params are not same.");
-	}
-	else if(T_i_sonar_pins.size() > MAX_SONAR)
+		
+	if(T_i_sonar_pins.size() > MAX_SONAR)
 	{
 		ROS_ERROR("Number of sonar devices mustn't be greater than %d", MAX_SONAR);
 	}
 	
-	  // Dynamic Reconfigure
-	  dynamic_reconfigure::Server<evarobot_sonar::SonarParamsConfig> srv;
-	  dynamic_reconfigure::Server<evarobot_sonar::SonarParamsConfig>::CallbackType f;
-	  f = boost::bind(&CallbackReconfigure, _1, _2);
-	  srv.setCallback(f);
-	  ///////////////
 	
 	#ifdef DEBUG
-		ROS_INFO("Number of sonars: %d", T_d_posZ.size());
+		ROS_INFO("Number of sonars: %d", T_i_sonar_pins.size());
 	#endif
 	
 	/******************************************************************/
@@ -119,6 +215,7 @@ int main(int argc, char **argv)
 	}
 	*/
 
+
 	i_fd = open(str_driver_path.c_str(), O_RDWR);
 	
 	if(i_fd < 0)
@@ -128,90 +225,41 @@ int main(int argc, char **argv)
 	}
 		
 	/*****************************************************************/
-	
-	
-	
-	
-	
-	// Set publishers
-	for(uint i = 0; i < T_i_sonar_pins.size(); i++)
-	{
-		stringstream ss_topic;
-		ss_topic << str_namespace << "/sonar" << i;
-		ros::Publisher dummy_publisher = n.advertise<sensor_msgs::Range>(ss_topic.str().c_str(), 10);
-		T_pub_sonar.push_back(dummy_publisher);
-	}
-
+			
 	// Define frequency
 	ros::Rate loop_rate(d_frequency);
+	
 
-	d_sleep_time = 1 / d_frequency / T_i_sonar_pins.size();
+	// create objects
+	boost::shared_ptr<IMDynamicReconfig> dyn_params(new IMDynamicReconfig);
 	
-/*	
-	if(d_sleep_time < CRITIC_TRIGGER_TIME)
-	{
-		ROS_ERROR("Critical frequency");
-	}
-*/	
-	
-	
-	pins.i_size = T_i_sonar_pins.size();
-	
-	// init sonar variables
 	for(uint i = 0; i < T_i_sonar_pins.size(); i++)
 	{
-		
-		pins.i_gpio_pins[i] = SONAR[T_i_sonar_pins[i]];
-		
-		stringstream ss_frame;
-		ss_frame << str_frame_id << "/sonar" << i << "_link";
-		
-		sensor_msgs::Range dummy_sonar;
-		
-		dummy_sonar.header.frame_id = ss_frame.str();
-		dummy_sonar.radiation_type = 0;
-		dummy_sonar.field_of_view = T_d_field_of_views[i];
-		dummy_sonar.min_range = T_d_min_ranges[i];
-		dummy_sonar.max_range = T_d_max_ranges[i];
-		
-		T_sonars.push_back(dummy_sonar);
+		if(T_i_sonar_pins[i] < MAX_SONAR)
+		{
+			IMSONAR * dummy_sonar = new IMSONAR(i_fd, T_i_sonar_pins[i], SONAR[T_i_sonar_pins[i]], dyn_params);
+			sonar.push_back(dummy_sonar);
+		}
+		else
+		{
+			ROS_ERROR("Undefined pin value.");
+		}
 	}
-	
-	ioctl(i_fd, IOCTL_SET_PARAM, &pins);
 	
 	while(ros::ok())
 	{
-		if(b_is_received_params)
-		{
-			ROS_INFO("Updating Sonar Params...");
-			ROS_INFO("%f, %f, %f %d", g_d_field_of_view, g_d_min_range, g_d_max_range, g_b_always_on);
-						
-			for(uint i = 0; i < T_i_sonar_pins.size(); i++)
-			{
-				T_sonars[i].field_of_view = g_d_field_of_view;
-				T_sonars[i].min_range = g_d_min_range;
-				T_sonars[i].max_range = g_d_max_range;
-			}
-			
-			b_always_on = g_b_always_on;
-			b_is_received_params = false;
-		}
 		
-		for(uint i = 0; i < T_pub_sonar.size(); i++)
+		for(uint i = 0; i < T_i_sonar_pins.size(); i++)
 		{
-			// Read sensors
-			data.i_sonar_no = i;
-		//	while(ioctl(i_fd, IOCTL_READ_RANGE, &data) != 1);
-			ioctl(i_fd, IOCTL_READ_RANGE, &data);
-			T_sonars[i].range = (float)(data.i_distance * 0.0001);
-			T_sonars[i].header.stamp = ros::Time::now();
-			//printf("Sonar Distance[%d]:  %d \n", i_i, data.i_distance);
-			
-			// Publish Data
-			if(T_pub_sonar[i].getNumSubscribers() > 0 || b_always_on)
+			if(sonar[i]->ReadRange())
 			{
-				T_pub_sonar[i].publish(T_sonars[i]);
-			}
+				sonar[i]->Publish();
+			}	
+			
+			sonar[i]->updater.update();
+			
+			usleep(45000);
+
 		}
 		
 		ros::spinOnce();
@@ -220,6 +268,5 @@ int main(int argc, char **argv)
 	}
 	
 	close(i_fd);
-	
 	return 0;
 }
