@@ -21,6 +21,8 @@ find_package(catkin REQUIRED COMPONENTS
    FILES
    BumperState.msg
    Bumper.msg
+   Voltage.msg
+   Battery.msg
  )
  
 add_service_files(
