@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   dynamic_reconfigure
+  diagnostic_updater
 )
 
 generate_dynamic_reconfigure_options(cfg/evarobot_bumper.cfg)

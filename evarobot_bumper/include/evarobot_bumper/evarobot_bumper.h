@@ -6,7 +6,11 @@
 #include "im_msgs/Bumper.h"
 #include "im_msgs/BumperState.h"
 
+#include <diagnostic_updater/diagnostic_updater.h>
+#include <diagnostic_updater/publisher.h>
+
 #include <vector>
+#include <sstream>
 
 #include <fcntl.h>
 #include <sys/ioctl.h>		/* ioctl */
