@@ -17,6 +17,9 @@
 #include <system_error>
 #include <boost/program_options.hpp>
 
+#include <diagnostic_updater/diagnostic_updater.h>
+#include <diagnostic_updater/publisher.h>
+
 #include "sensor_msgs/Imu.h"
 
 #include <sys/types.h>
@@ -24,6 +27,8 @@
 #include <semaphore.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+
+#include <sstream>
 
 //#include <string.h>
 

@@ -192,11 +192,12 @@ int main(int argc, char *argv[])
 	sem_t *mutex;
 	FILE * fd;
 	
+  std::stringstream ss;
 	
 	// ROS PARAMS
 	double d_frequency;
-	std::string str_topic, str_frame_id;
-	
+	double d_min_freq, d_max_freq;
+	// ROS PARAMS END
 	
 	//name the shared memory segment
 	key = 1005;
@@ -215,10 +216,7 @@ int main(int argc, char *argv[])
 	
 	// Define what all the command-line parameters are.
     std::string mode, output_mode, i2cDevice;
-        
-	
-	// ROS PARAMS END
-	
+  
 	ros::init(argc, argv, "evarobot_minimu9");
 	ros::NodeHandle n;
 	
@@ -235,38 +233,40 @@ int main(int argc, char *argv[])
 	sensor_msgs::Imu msg;
 	
 	n.param<std::string>("evarobot_minimu9/i2cDevice", i2cDevice, "/dev/i2c-1");
-	n.param<std::string>("evarobot_minimu9/topicName", str_topic, "imu_data");
-	n.param<std::string>("evarobot_minimu9/frame_id", str_frame_id, "imu");
-	
 	n.param("evarobot_minimu9/alwaysOn", b_always_on, false);
-
-	
+	n.param("evarobot_odometry/minFreq", d_min_freq, 0.2);
+	n.param("evarobot_odometry/maxFreq", d_max_freq, 10.0);
 	
 	if(!n.getParam("evarobot_minimu9/frequency", d_frequency))
 	{
 	  ROS_ERROR("Failed to get param 'frequency'");
 	} 	
 	
-	ros::Publisher imu_pub = n.advertise<sensor_msgs::Imu>(str_topic.c_str(), 10);
+	
+	ros::Publisher imu_pub = n.advertise<sensor_msgs::Imu>("imu", 10);
 	
 	// Dynamic Reconfigure
-    dynamic_reconfigure::Server<evarobot_minimu9::ParamsConfig> srv;
-    dynamic_reconfigure::Server<evarobot_minimu9::ParamsConfig>::CallbackType f;
-    f = boost::bind(&CallbackReconfigure, _1, _2);
-    srv.setCallback(f);
-    ///////////////
+	dynamic_reconfigure::Server<evarobot_minimu9::ParamsConfig> srv;
+	dynamic_reconfigure::Server<evarobot_minimu9::ParamsConfig>::CallbackType f;
+	f = boost::bind(&CallbackReconfigure, _1, _2);
+	srv.setCallback(f);
+	///////////////
+	
+	// Diagnostics
+	diagnostic_updater::Updater updater;
+	updater.setHardwareID("None");
+		
+	diagnostic_updater::HeaderlessTopicDiagnostic pub_freq("imu", updater,
+											diagnostic_updater::FrequencyStatusParam(&d_min_freq, &d_max_freq, 0.1, 10));
 	
 	output_mode = "matrix";
 	mode = "normal";
-    try
-    {
-
-
-        MinIMU9 imu(i2cDevice.c_str());
-
-
-      // void ahrs(IMU & imu, fuse_function * fuse, rotation_output_function * output)
-        imu.loadCalibration();
+	try
+	{
+		MinIMU9 imu(i2cDevice.c_str());
+		
+		// void ahrs(IMU & imu, fuse_function * fuse, rotation_output_function * output)
+    imu.loadCalibration();
 		imu.enable();
 		imu.measureOffsets();
 
@@ -297,20 +297,46 @@ int main(int argc, char *argv[])
 			sem_wait(mutex);
 			fuse_default(rotation, dt, angular_velocity, acceleration, magnetic_field);
 			sem_post(mutex);
+
+			double roll, pitch, yaw;
+			double qx, qy, qz, qw;
+			vector euler_angles;
 			
-			msg.header.frame_id = str_frame_id;
+			euler_angles = (vector)(rotation.toRotationMatrix().eulerAngles(2, 1, 0));
+			
+			roll = euler_angles(2);
+			pitch = -euler_angles(1);
+			yaw = -euler_angles(0);
+			
+			qx = sin(roll*0.5) * cos(pitch*0.5) * cos(yaw*0.5) - cos(roll*0.5) * sin(pitch*0.5) * sin(yaw*0.5);
+			qy = cos(roll*0.5) * sin(pitch*0.5) * cos(yaw*0.5) + sin(roll*0.5) * cos(pitch*0.5) * sin(yaw*0.5);
+			qz = cos(roll*0.5) * cos(pitch*0.5) * sin(yaw*0.5) - sin(roll*0.5) * sin(pitch*0.5) * cos(yaw*0.5);
+			qw = cos(roll*0.5) * cos(pitch*0.5) * cos(yaw*0.5) + sin(roll*0.5) * sin(pitch*0.5) * sin(yaw*0.5);
+		
+			
+//			std::cout << "Roll: " << -roll * (180 / M_PI);
+//			std::cout << "  Pitch: " << pitch * (180 / M_PI) << std::endl;
+
+
+//			output_euler(rotation);
+//			std::cout << std::endl;
+			
+			ss.str("");
+			ss << n.resolveName(n.getNamespace(), true) << "/imu_link";
+			msg.header.frame_id = ss.str();
 			msg.header.stamp = ros::Time::now();
 						
-			msg.orientation.x = rotation.x();
-			msg.orientation.y = rotation.y();
-			msg.orientation.z = rotation.z();
-			msg.orientation.w = rotation.w();
+			msg.orientation.x = qx; //rotation.x();
+			msg.orientation.y = qy; //rotation.y();
+			msg.orientation.z = qz; //rotation.z();
+			msg.orientation.w = qw; //rotation.w();
 			
 			if(imu_pub.getNumSubscribers() > 0 || b_always_on)
 			{
 				imu_pub.publish(msg);
+				pub_freq.tick();
 			}
-
+			updater.update();
 			ros::spinOnce();
 
 
