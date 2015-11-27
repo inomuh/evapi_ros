@@ -136,6 +136,84 @@ int IMI2C::WriteDataByte(unsigned char u_c_register_address, unsigned char u_c_d
 }
 
 /********************************************************************
+ *This function writes only one byte.
+ ********************************************************************/
+int IMI2C::WriteByte(unsigned char u_c_byte)
+{
+	int i_i2cfd = -1;
+
+	i_i2cfd = this->OpenI2C();
+
+	if (ioctl(i_i2cfd, I2C_SLAVE, u_c_byte) < 0)
+	{
+	    /* ERROR HANDLING; you can check errno to see what went wrong */
+		perror("Read from I2C Device failed");
+	    exit(1);
+	}
+
+	int returnval = i2c_smbus_read_byte(i_i2cfd);
+
+	this->CloseI2C(i_i2cfd);
+
+	return returnval;
+}
+
+/********************************************************************
+ *This function writes two bytes of data "data" to a specific register
+ *"reg_addr" in the I2C device This involves sending these two bytes
+ *in order to the i2C device by means of the ioctl() command. Since
+ *both bytes are written (no read/write switch), both pieces
+ *of information can be sent in a single message (i2c_msg structure)
+ * register -> low byte -> high byte
+ ********************************************************************/
+int IMI2C::WriteTwoDataByte(unsigned char u_c_register_address, unsigned char u_c_msb_data, unsigned char u_c_lsb_data)
+{
+
+	unsigned char u_c_buffer[2];
+	//unsigned char u_c_buf[1];
+	//unsigned char u_c_buffer[1];
+	int i_status_value = -1;
+	struct i2c_rdwr_ioctl_data packets;
+	struct i2c_msg messages[2];
+	int i_i2cfd = -1;
+
+	i_i2cfd = this->OpenI2C();
+
+	u_c_buffer[0] = u_c_register_address;
+	u_c_buffer[1] = u_c_lsb_data;
+	//u_c_buffer[2] = u_c_lsb_data;
+
+	messages[0].addr = this->u_c_device_adress;
+	messages[0].flags = 0;
+	messages[0].len = sizeof(u_c_buffer);
+	messages[0].buf = (char *)u_c_buffer;
+
+	u_c_buffer[0] = u_c_register_address;
+	u_c_buffer[1] = u_c_msb_data;
+
+	//u_c_buf[0] = u_c_lsb_data;
+
+	messages[1].addr = this->u_c_device_adress;
+	messages[1].flags = 0;
+	messages[1].len = sizeof(u_c_buffer);
+	messages[1].buf = (char *)u_c_buffer;
+
+	packets.msgs = messages;
+	packets.nmsgs = 2;
+
+	i_status_value = ioctl(i_i2cfd, I2C_RDWR, &packets);
+	if(i_status_value < 0)
+	{
+		perror("Write to I2C Device failed");
+		exit(1);
+	}
+
+	this->CloseI2C(i_i2cfd);
+
+	return i_status_value;
+}
+
+/********************************************************************
  *This function reads a byte of data "data" from a specific register
  *"reg_addr" in the I2C device. This involves sending the register
  *byte "reg_Addr" with "write" asserted and then instructing the
@@ -187,9 +265,62 @@ int IMI2C::ReadDataByte(unsigned char u_c_register_address, unsigned char & u_c_
 		perror("Read from I2C Device failed");
 		exit(1);
 	}
-
+	
 	this->CloseI2C(i_i2cfd);
 
 	return i_status_value;
 }
 
+int IMI2C::ReadTwoDataByte(unsigned char u_c_register_address, unsigned char & u_c_msb_data, unsigned char & u_c_lsb_data)
+{
+    unsigned char u_c_outbuff;
+    unsigned char *p_u_c_inbuff;
+
+	int i_status_value = -1;
+	struct i2c_rdwr_ioctl_data packets;
+	struct i2c_msg messages[3];
+	int i_i2cfd = -1;
+
+	i_i2cfd = this->OpenI2C();
+
+	u_c_outbuff = u_c_register_address;
+	messages[0].addr = this->u_c_device_adress;
+	messages[0].flags= 0;
+	messages[0].len = sizeof(u_c_outbuff);
+	messages[0].buf = (char*)&u_c_outbuff;
+
+	p_u_c_inbuff = &u_c_msb_data;
+	messages[1].addr = this->u_c_device_adress;
+	messages[1].flags = I2C_M_RD;
+	messages[1].len = sizeof(*p_u_c_inbuff); // size of value pointed to by inbuff to size of pointer inbuff
+	messages[1].buf = (char*)p_u_c_inbuff;
+
+	p_u_c_inbuff = &u_c_lsb_data;
+	messages[2].addr = this->u_c_device_adress;
+	messages[2].flags = I2C_M_RD;
+	messages[2].len = sizeof(*p_u_c_inbuff);
+	messages[2].buf = (char*)p_u_c_inbuff;
+
+/*	p_u_c_inbuff = &u_c_data;
+	messages[0].addr = this->u_c_device_adress;
+	messages[0].flags = I2C_M_RD;
+	messages[0].len = sizeof(*p_u_c_inbuff); // size of value pointed to by inbuff to size of pointer inbuff
+	messages[0].buf = p_u_c_inbuff;
+*/
+
+	packets.msgs = messages;
+//	packets.nmsgs = 1;
+	packets.nmsgs = 3;
+
+	i_status_value = ioctl(i_i2cfd, I2C_RDWR, &packets);
+	if(i_status_value < 0)
+	{
+		perror("Read from I2C Device failed");
+		exit(1);
+	}
+
+	this->CloseI2C(i_i2cfd);
+
+	return i_status_value;
+
+}

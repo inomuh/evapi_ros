@@ -36,7 +36,8 @@
 #include <sys/ipc.h>
 #include <semaphore.h>
 #include <sys/stat.h>
-
+#include <inttypes.h>
+#include <stdint.h>
 
 using namespace std;
 
@@ -100,8 +101,9 @@ public:
 	 */
 	#endif
 	int WriteDataByte(unsigned char u_c_register_address, unsigned char u_c_data);
-
-
+	int WriteTwoDataByte(unsigned char u_c_register_address, unsigned char u_c_msb_data, unsigned char u_c_lsb_data);
+	int WriteByte(unsigned char u_c_register_address);
+	
 	#ifdef English_dox
 	//! Function to read byte data from a register of an I2C device
 	/**
@@ -123,7 +125,7 @@ public:
 	 */
 	#endif
 	int ReadDataByte(unsigned char u_c_register_address, unsigned char & u_c_data);
-
+	int ReadTwoDataByte(unsigned char u_c_register_address, unsigned char & u_c_msb_data, unsigned char & u_c_lsb_data);
 private:
 
 	#ifdef English_dox
