@@ -1,0 +1,40 @@
+#include "ros/ros.h"
+#include "sensor_msgs/Joy.h"
+#include "geometry_msgs/Twist.h"
+#include "im_msgs/SetRGB.h"
+
+using namespace std;
+
+class IMJoystick
+{
+	public:
+	ros::NodeHandle n;
+	geometry_msgs::Twist cmd;
+	
+	double max_lin, max_ang;
+	double max_x, max_z;
+	bool deadman;
+	
+	ros::Publisher vel_pub;
+	ros::Subscriber joy_sub_;
+	ros::ServiceClient client;
+
+	IMJoystick();
+	void init();
+	void CallbackJoy(const sensor_msgs::Joy::ConstPtr& joy_msg);
+	void PublishVel();
+	void CallRGBService();
+		
+	private:
+	int deadman_button;
+	int axr_leftwards;
+	int axr_upwards;
+	
+	int axl_leftwards;
+	int axl_upwards;
+
+  int triangle_button, cross_button, square_button, circle_button;
+
+
+	geometry_msgs::Twist vel_msg;
+};
