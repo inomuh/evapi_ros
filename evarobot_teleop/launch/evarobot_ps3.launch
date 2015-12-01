@@ -1,0 +1,10 @@
+<launch>
+	<!-- Run ps3_joy -->
+	<include file="$(find ps3joy)/launch/ps3.launch" />
+	
+	<!-- Run evarobot_ps3 -->
+	<node pkg="evarobot_teleop" type="evarobot_ps3" respawn="false" name="evarobot_ps3" output="screen">
+		<rosparam file="$(find evarobot_teleop)/params/evarobot_teleop_params.yaml" command="load"/>
+	</node>
+	
+</launch>

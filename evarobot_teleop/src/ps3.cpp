@@ -26,15 +26,22 @@ void IMJoystick::init()
 	this->vel_msg.linear.x = 0.0;
 	this->vel_msg.angular.z = 0.0;
 	
-	this->client = n.serviceClient<im_msgs::SetRGB>("evarobot_rgb/SetRGB");
+	this->client = this->n.serviceClient<im_msgs::SetRGB>("evarobot_rgb/SetRGB");
 		
-	this->vel_pub = n.advertise<geometry_msgs::Twist>("cmd_vel", 1);
-	this->joy_sub_ = n.subscribe("joy", 10, &IMJoystick::CallbackJoy, this);	
+	this->vel_pub = this->n.advertise<geometry_msgs::Twist>("cmd_vel", 1);
+	this->joy_sub_ = this->n.subscribe("joy", 10, &IMJoystick::CallbackJoy, this);
+	
+	this->n.param("evarobot_ps3/timeout", this->d_timeout, 1.0);
+	ROS_INFO("timeout: %f", this->d_timeout);
+		
+	this->last_time = ros::Time::now();	
 }
 
 void IMJoystick::CallbackJoy(const sensor_msgs::Joy::ConstPtr& joy_msg)
 {
 	deadman = (((unsigned int)deadman_button < joy_msg->buttons.size()) && joy_msg->buttons[deadman_button]);
+
+	this->last_time = ros::Time::now();	
 
 	ROS_DEBUG("DEADMAN %d", joy_msg->buttons[deadman_button]);
 	
@@ -82,6 +89,7 @@ void IMJoystick::CallbackJoy(const sensor_msgs::Joy::ConstPtr& joy_msg)
 
 void IMJoystick::PublishVel()
 {
+	this->CheckTimeout();
 	this->vel_pub.publish(this->vel_msg);
 }
 
@@ -100,6 +108,17 @@ void IMJoystick::CallRGBService()
 	}
 }
 
+void IMJoystick::CheckTimeout()
+{
+	ros::Duration duration = ros::Time::now() - this->last_time;
+	if(duration.toSec() > d_timeout)
+	{
+		this->vel_msg.linear.x = 0.0;
+		this->vel_msg.angular.z = 0.0;
+		ROS_ERROR("Timeout Error [%f]", duration.toSec());
+	}
+}
+
 int main(int argc, char **argv)
 {
 	ros::init(argc, argv, "evarobot_ps3");
@@ -109,11 +128,10 @@ int main(int argc, char **argv)
 	ps3.CallRGBService();
 	
 	ros::Rate loop_rate(10.0);
-
   while (ps3.n.ok())
   {
-    ps3.PublishVel();
-    ros::spinOnce();
+		ps3.PublishVel();
+		ros::spinOnce();
     loop_rate.sleep();
   }
   

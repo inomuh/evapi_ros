@@ -15,6 +15,8 @@ class IMJoystick
 	double max_x, max_z;
 	bool deadman;
 	
+	double d_timeout;
+	
 	ros::Publisher vel_pub;
 	ros::Subscriber joy_sub_;
 	ros::ServiceClient client;
@@ -24,7 +26,7 @@ class IMJoystick
 	void CallbackJoy(const sensor_msgs::Joy::ConstPtr& joy_msg);
 	void PublishVel();
 	void CallRGBService();
-		
+			
 	private:
 	int deadman_button;
 	int axr_leftwards;
@@ -35,6 +37,8 @@ class IMJoystick
 
   int triangle_button, cross_button, square_button, circle_button;
 
-
+	ros::Time last_time;
 	geometry_msgs::Twist vel_msg;
+	
+	void CheckTimeout();
 };
