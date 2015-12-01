@@ -15,4 +15,5 @@
   M2_IN2: 19
   M2_EN: 6
   
-  limitVoltage: 0.63
+  limitVoltage: 0.85
+  #The pin voltage is roughly 140 mV per amp of output current
