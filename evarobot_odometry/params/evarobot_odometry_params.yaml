@@ -2,9 +2,9 @@ devicePath: /dev/evarobotEncoder
 alwaysOn: true
 wheelSeparation: 0.35
 height: 0.25
-frequency: 20
-minFreq: 20.0
-maxFreq: 100.0
+frequency: 100
+minFreq: 80.0
+maxFreq: 120.0
 
 gearRatio: 14
 CPR: 44
