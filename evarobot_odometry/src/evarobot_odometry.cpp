@@ -105,7 +105,7 @@ int main(int argc, char **argv)
 	diagnostic_updater::HeaderlessTopicDiagnostic pub_freq("odom", updater,
 											diagnostic_updater::FrequencyStatusParam(&d_min_freq, &d_max_freq, 0.1, 10));
     
-	char c_read_buf[100], c_write_buf[100];
+	char c_read_buf[31], c_write_buf[100];
 	
 
 	nav_msgs::Odometry msg;
@@ -175,9 +175,10 @@ int main(int argc, char **argv)
 		}
 		
 		// Reading encoder.
+//		cout << "Reading Encoder" << endl;
 		read(i_fd, c_read_buf, sizeof(c_read_buf));
 		str_data = c_read_buf; 
-		
+//		cout << "Read Encoder" << endl;
 //		cout << str_data << endl;
 
 		dur_time = ros::Time::now() - read_time;
@@ -200,25 +201,26 @@ int main(int argc, char **argv)
 		// Dönüş sayısı değişimi hesaplanıyor.
 		f_delta_sr =  PI * d_wheel_diameter * (f_right_read - f_right_read_last) / (i_gear_ratio * i_cpr);
 		f_delta_sl =  PI * d_wheel_diameter * (f_left_read - f_left_read_last) / (i_gear_ratio * i_cpr);
-
+//		cout << "donus sayisi hesaplandi" << endl;
 //		cout << "deltaSr: " << f_delta_sr << " deltaSl: " << f_delta_sl << endl;
 
 		// Oryantasyondaki değişim hesaplanıyor.
 		delta_odom_pose.theta = (f_delta_sr - f_delta_sl) / d_wheel_separation;
 		f_delta_s = (f_delta_sr + f_delta_sl) / 2;
-
+//		cout << "oryantasyon degisim hesaplandi" << endl;
 //		cout << "delta_teta: " << delta_odom_pose.theta << " deltaS: " << f_delta_s << endl;
 
 		// x ve y eksenlerindeki yer değiştirme hesaplanıyor.
 		delta_odom_pose.x = f_delta_s * cos(odom_pose.theta + delta_odom_pose.theta * 0.5);
 		delta_odom_pose.y = f_delta_s * sin(odom_pose.theta + delta_odom_pose.theta * 0.5);
-
+//		cout << "x ve y yer degistirme hesaplandi" << endl;
 //		cout << "delta_odom x: " <<  delta_odom_pose.x << " y: " <<  delta_odom_pose.y << endl;
 
 		// Yeni pozisyonlar hesaplanıyor.
 		odom_pose.x += delta_odom_pose.x;
 		odom_pose.y += delta_odom_pose.y;
 		odom_pose.theta += delta_odom_pose.theta;
+//		cout << "yeni pozisyonlar hesaplandi." << endl;
 
 		// Yeni dönüş değerleri son okunan olarak atanıyor.
 		f_right_read_last = f_right_read;
@@ -236,14 +238,14 @@ int main(int argc, char **argv)
 		msg.pose.pose.orientation.y = 0.0;
 		msg.pose.pose.orientation.z = sin(0.5 * odom_pose.theta); 
 		msg.pose.pose.orientation.w = cos(0.5 * odom_pose.theta);
-		
+//		cout << "yayinlanacak pozisyon datasi dolduruldu" << endl;
 													
 		//cout << "Pose.X: " << odom_pose.x << "  Pose.Y: " << odom_pose.y << "  Orientation: " << odom_pose.theta << endl;
 
 		float f_lin_vel = 0, f_ang_vel = 0;
 		float f_lin_vel_right = 0, f_lin_vel_left = 0;
 
-//		cout << "dur_time: " << dur_time.toSec() << endl;
+		cout << "dur_time: " << dur_time.toSec() << endl;
 
 		if(dur_time.toSec() > 0)
 		{
@@ -253,11 +255,12 @@ int main(int argc, char **argv)
 			f_lin_vel_right = f_delta_sr / dur_time.toSec();
 			f_lin_vel_left = f_delta_sl / dur_time.toSec();
 			
-//			cout << "VEl_LEFT: " << f_lin_vel_left << "  Vel_right: " << f_lin_vel_right << " dur: " << dur_time.toSec() << endl;
+			cout << "VEl_LEFT: " << f_lin_vel_left << "  Vel_right: " << f_lin_vel_right << " dur: " << dur_time.toSec() << endl;
 
 			
 			f_lin_vel = (f_lin_vel_right + f_lin_vel_left) / 2.0;
 			f_ang_vel = (f_lin_vel_right - f_lin_vel_left) / d_wheel_separation;
+//			cout << ".....HIZLAR HESAPLANDI......" << endl;
 
 		}
 		else
@@ -272,6 +275,7 @@ int main(int argc, char **argv)
 		wheel_vel.header.stamp = ros::Time::now();
 		wheel_vel.point.x = f_lin_vel_left;
 		wheel_vel.point.y = f_lin_vel_right;
+//		cout << "Tekerlek hizlari dolduruldu." << endl;
 		
 		if(vel_pub.getNumSubscribers() > 0 || b_always_on)
 		{
@@ -287,6 +291,7 @@ int main(int argc, char **argv)
 		msg.twist.twist.angular.y = 0.0;
 		msg.twist.twist.angular.z = f_ang_vel;
 
+//		cout << "hizlar dolduruldu" << endl;
 		//uint32
 		//msg.header.seq
 		// ROS Zaman etiketi topiğe basılıyor. (time)
@@ -308,10 +313,14 @@ int main(int argc, char **argv)
 			pub_freq.tick();
 		}
 
+//		cout << "spinonce cagriliyor..." << endl;
 		ros::spinOnce();
+//		cout << "updater cagriliyot..." << endl;
 		updater.update();
 		// Frekansı tutturmak için uyutuluyor.
+//		cout << "sleep cagriliyor..." << endl;
 		loop_rate.sleep();
+//		cout << "uyandi" << endl;
 	}
 
 	// Enkoder sürücü dosyası kapatılıyor.
