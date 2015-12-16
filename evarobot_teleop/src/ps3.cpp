@@ -1,5 +1,5 @@
 #include "evarobot_teleop/ps3.h"
-
+#include <signal.h>
 IMJoystick::IMJoystick()
 {
 	this->max_lin = 1.0;
@@ -119,6 +119,27 @@ void IMJoystick::CheckTimeout()
 	}
 }
 
+void IMJoystick::TurnOffRGB()
+{
+	im_msgs::SetRGB srv;
+
+	srv.request.times = -1;
+	srv.request.mode = 0;
+	srv.request.frequency = 1;
+	srv.request.color = 0;
+	if(this->client.call(srv) == 0)
+	{
+		ROS_ERROR("Failed to call service evarobot_rgb/SetRGB");
+	}
+}
+
+bool g_b_terminate = false;
+
+void sighandler(int sig)
+{
+	g_b_terminate = true;
+}
+
 int main(int argc, char **argv)
 {
 	ros::init(argc, argv, "evarobot_ps3");
@@ -128,12 +149,15 @@ int main(int argc, char **argv)
 	ps3.CallRGBService();
 	
 	ros::Rate loop_rate(10.0);
-  while (ps3.n.ok())
+	
+	signal(SIGINT, &sighandler);
+	
+  while (!g_b_terminate)
   {
 		ps3.PublishVel();
 		ros::spinOnce();
     loop_rate.sleep();
   }
-  
+  ps3.TurnOffRGB();  
 	return 0;
 }

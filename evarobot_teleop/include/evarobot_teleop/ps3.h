@@ -22,10 +22,12 @@ class IMJoystick
 	ros::ServiceClient client;
 
 	IMJoystick();
+	~IMJoystick(){}
 	void init();
 	void CallbackJoy(const sensor_msgs::Joy::ConstPtr& joy_msg);
 	void PublishVel();
 	void CallRGBService();
+	void TurnOffRGB();
 			
 	private:
 	int deadman_button;
