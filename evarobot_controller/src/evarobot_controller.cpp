@@ -10,6 +10,7 @@ void PIDController::Reset()
 	this->d_derivative_error = 0.0;
 	this->d_integral_error = 0.0;
 	this->d_pre_error = 0.0;
+//	ROS_INFO("Reseting PID Error");
 }
 
 PIDController::PIDController()
@@ -47,6 +48,13 @@ float PIDController::RunController(float f_desired, float f_measured)
 	float f_ret = 0;
 	
 	double d_current_error = (double)(f_desired - f_measured);
+
+	if(fabs(d_current_error) <= 0.05)
+	{
+		d_current_error = 0.0;
+		//ROS_DEBUG("Steady state error is in the boundary.");
+	}
+
 	
 	this->dur_time = ros::Time::now() - this->read_time;
 	this->read_time = ros::Time::now();
@@ -72,10 +80,14 @@ float PIDController::RunController(float f_desired, float f_measured)
 		ROS_INFO("MAX VEL: %f", this->d_max_vel);
 		f_ret = (f_ret * this->d_max_vel) / fabs(f_ret);
 	}
+
+//	if(fabs(f_desired-f_measured) <= 0.1 && f_desired == 0.0)
+//	{
+//					this->Reset();
+//	}
+
 			
 //	printf("%lf, %lf, %lf, %f \n", this->d_proportional_error, this->d_integral_error, this->d_derivative_error, f_ret);
-
-
 //	printf("%s: p:%f, i:%f, d:%f, dur_time:%f\n", this->str_name.c_str(), this->d_proportional_constant, this->d_integral_constant, this->d_derivative_constant, dur_time.toSec());
 	
 	return f_ret;
@@ -125,6 +137,23 @@ void CallbackDesired(const geometry_msgs::Twist::ConstPtr & msg)
 
 	float f_linear_vel = msg->linear.x;
 	float f_angular_vel = msg->angular.z;
+
+//	if(f_linear_vel == 0.0 && f_angular_vel != 0.0)
+	if(f_angular_vel != 0.0)
+	{
+		g_b_only_ang_vel = true;
+//		ROS_INFO("Only Angular");
+	}
+
+	if(f_linear_vel != 0.0 && g_b_only_ang_vel && b_is_new_desired)
+	{
+		// Reset Controller
+		b_is_new_desired = false;
+		b_reset_controller = true;
+		g_b_only_ang_vel = false;
+  //              ROS_INFO("Clear Angular Flag");
+
+	}
 
 	g_f_left_desired = ((2 * f_linear_vel) - f_angular_vel * g_d_wheel_separation) / 2; // m/s
 	g_f_right_desired = ((2 * f_linear_vel) + f_angular_vel * g_d_wheel_separation) / 2; // m/s
@@ -262,11 +291,11 @@ int main(int argc, char **argv)
   {
 	  //if(b_is_new_desired && b_is_new_measured)
 	 // {
-		if(b_is_new_desired)
-		{
-			//left_controller.Reset();
-			//right_controller.Reset();
-		}
+//		if(b_is_new_desired)
+//		{
+//			left_controller.Reset();
+//			right_controller.Reset();
+//		}
 		
 		if(b_is_received_params)
 		{

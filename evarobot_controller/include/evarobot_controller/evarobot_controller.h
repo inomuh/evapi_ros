@@ -27,6 +27,8 @@ float g_f_pre_linear_desired = 0.0;
 bool b_is_new_measured = false;
 bool b_is_new_desired = false;
 
+bool g_b_only_ang_vel = false;
+
 float g_f_left_measured = 0.0;
 float g_f_right_measured = 0.0;
 
