@@ -5,7 +5,6 @@
 
 bool b_is_received_params = false;
 
-bool b_always_on;
 bool b_reset_odom = false;
 double d_wheel_separation;
 double d_height;
@@ -19,7 +18,6 @@ void CallbackReconfigure(evarobot_odometry::ParamsConfig &config, uint32_t level
 {
    b_is_received_params = true;        
    
-   b_always_on = config.alwaysOn;
    d_wheel_separation = config.wheelSeparation;
    d_height = config.height;
    i_gear_ratio = config.gearRatio;
@@ -47,7 +45,6 @@ int main(int argc, char **argv)
 	ros::NodeHandle n;
 
 	n.param<string>("evarobot_odometry/devicePath", str_device_path, "/dev/evarobotEncoder");
-	n.param("evarobot_odometry/alwaysOn", b_always_on, false);
 	n.param("evarobot_odometry/minFreq", d_min_freq, 0.2);
 	n.param("evarobot_odometry/maxFreq", d_max_freq, 10.0);
 	
@@ -81,8 +78,11 @@ int main(int argc, char **argv)
 	  ROS_ERROR("Failed to get param 'wheelDiameter'");
 	}
 		
-	ros::Publisher pose_pub = n.advertise<nav_msgs::Odometry>("odom", 10);
-	ros::Publisher vel_pub = n.advertise<geometry_msgs::PointStamped>("wheel_vel", 10);
+	
+  realtime_tools::RealtimePublisher<nav_msgs::Odometry> * pose_pub = new realtime_tools::RealtimePublisher<nav_msgs::Odometry>(n, "odom", 10);
+  realtime_tools::RealtimePublisher<im_msgs::WheelVel> * vel_pub = new realtime_tools::RealtimePublisher<im_msgs::WheelVel>(n, "wheel_vel", 10);
+
+
 	
 	ros::ServiceServer service = n.advertiseService("evarobot_odometry/reset_odom", CallbackResetOdom);
 	
@@ -108,8 +108,6 @@ int main(int argc, char **argv)
 	char c_read_buf[31], c_write_buf[100];
 	
 
-	nav_msgs::Odometry msg;
-	geometry_msgs::PointStamped wheel_vel;
 	geometry_msgs::Pose2D odom_pose;
 	geometry_msgs::Pose2D delta_odom_pose;
 
@@ -127,7 +125,7 @@ int main(int argc, char **argv)
 										0, 0, 0, 0, 0, 1};  // large covariance on rot z	
 	for(int i = 0; i < 36; i++)
 	{
-		msg.pose.covariance[i] = covariance[i];
+		pose_pub->msg_.pose.covariance[i] = covariance[i];
 	}		
 	
 	// Opening the encoder.
@@ -230,14 +228,14 @@ int main(int argc, char **argv)
 	
 			
 		// Yayınlanacak Posizyon Verisi dolduruluyor.
-		msg.pose.pose.position.x = odom_pose.x;
-		msg.pose.pose.position.y = odom_pose.y;
-		msg.pose.pose.position.z = (float)d_height;
+		pose_pub->msg_.pose.pose.position.x = odom_pose.x;
+		pose_pub->msg_.pose.pose.position.y = odom_pose.y;
+		pose_pub->msg_.pose.pose.position.z = (float)d_height;
 
-		msg.pose.pose.orientation.x = 0.0;
-		msg.pose.pose.orientation.y = 0.0;
-		msg.pose.pose.orientation.z = sin(0.5 * odom_pose.theta); 
-		msg.pose.pose.orientation.w = cos(0.5 * odom_pose.theta);
+		pose_pub->msg_.pose.pose.orientation.x = 0.0;
+		pose_pub->msg_.pose.pose.orientation.y = 0.0;
+		pose_pub->msg_.pose.pose.orientation.z = sin(0.5 * odom_pose.theta); 
+		pose_pub->msg_.pose.pose.orientation.w = cos(0.5 * odom_pose.theta);
 //		cout << "yayinlanacak pozisyon datasi dolduruldu" << endl;
 													
 		//cout << "Pose.X: " << odom_pose.x << "  Pose.Y: " << odom_pose.y << "  Orientation: " << odom_pose.theta << endl;
@@ -271,47 +269,47 @@ int main(int argc, char **argv)
 		ss.str("");
 		ss << n.resolveName(n.getNamespace(), true) << "/wheel_link";
 		
-		wheel_vel.header.frame_id = ss.str();
-		wheel_vel.header.stamp = ros::Time::now();
-		wheel_vel.point.x = f_lin_vel_left;
-		wheel_vel.point.y = f_lin_vel_right;
+		vel_pub->msg_.header.frame_id = ss.str();
+		vel_pub->msg_.header.stamp = ros::Time::now();
+		vel_pub->msg_.left_vel = f_lin_vel_left;
+		vel_pub->msg_.right_vel = f_lin_vel_right;
 //		cout << "Tekerlek hizlari dolduruldu." << endl;
 		
-		if(vel_pub.getNumSubscribers() > 0 || b_always_on)
+		if (vel_pub->trylock())
 		{
-			vel_pub.publish(wheel_vel);
-		}
+			vel_pub->unlockAndPublish();
+		}			
 		
 		// Yayınlacak Hız Verisi dolduruluyor.
-		msg.twist.twist.linear.x = f_lin_vel;
-		msg.twist.twist.linear.y = 0.0;
-		msg.twist.twist.linear.z = 0.0;
+		pose_pub->msg_.twist.twist.linear.x = f_lin_vel;
+		pose_pub->msg_.twist.twist.linear.y = 0.0;
+		pose_pub->msg_.twist.twist.linear.z = 0.0;
 
-		msg.twist.twist.angular.x = 0.0;
-		msg.twist.twist.angular.y = 0.0;
-		msg.twist.twist.angular.z = f_ang_vel;
+		pose_pub->msg_.twist.twist.angular.x = 0.0;
+		pose_pub->msg_.twist.twist.angular.y = 0.0;
+		pose_pub->msg_.twist.twist.angular.z = f_ang_vel;
 
 //		cout << "hizlar dolduruldu" << endl;
 		//uint32
 		//msg.header.seq
 		// ROS Zaman etiketi topiğe basılıyor. (time)
-		msg.header.stamp = ros::Time::now();
+		pose_pub->msg_.header.stamp = ros::Time::now();
 
 		// Odometry verisinin frame id'si yazılıyor. (string)
 		ss.str("");
 		ss << n.resolveName(n.getNamespace(), true) << "/odom";
-		msg.header.frame_id = ss.str();
+		pose_pub->msg_.header.frame_id = ss.str();
 		
 		ss.str("");
 		ss << n.resolveName(n.getNamespace(), true) << "/base_link";
-		msg.child_frame_id = ss.str();
+		pose_pub->msg_.child_frame_id = ss.str();
 		
 		// Veri topikten basılıyor.
-		if(pose_pub.getNumSubscribers() > 0 || b_always_on)
+		if (pose_pub->trylock())
 		{
-			pose_pub.publish(msg);
-			pub_freq.tick();
-		}
+			pose_pub->unlockAndPublish();
+		}			
+		pub_freq.tick();
 
 //		cout << "spinonce cagriliyor..." << endl;
 		ros::spinOnce();

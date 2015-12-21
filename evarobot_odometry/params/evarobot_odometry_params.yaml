@@ -1,5 +1,4 @@
 devicePath: /dev/evarobotEncoder
-alwaysOn: true
 wheelSeparation: 0.35
 height: 0.25
 frequency: 100

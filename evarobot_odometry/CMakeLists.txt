@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   dynamic_reconfigure
   std_msgs
   diagnostic_updater
+  realtime_tools
 )
 
 generate_dynamic_reconfigure_options(cfg/evarobot_odometry.cfg)
@@ -31,6 +32,7 @@ include_directories(
 
 
 add_executable(evarobot_odometry src/evarobot_odometry.cpp)
+add_dependencies(evarobot_odometry im_msgs_generate_messages_cpp)
 add_dependencies(evarobot_odometry evarobot_odometry_gencfg)
 target_link_libraries(evarobot_odometry
    ${catkin_LIBRARIES}
