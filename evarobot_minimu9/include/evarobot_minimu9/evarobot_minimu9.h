@@ -2,6 +2,7 @@
 #define INCLUDE_EVAROBOT_MINIMU_H_
 
 #include "ros/ros.h"
+#include <realtime_tools/realtime_publisher.h>
 
 #include "minimu9/vector.h"
 #include "minimu9/MinIMU9.h"

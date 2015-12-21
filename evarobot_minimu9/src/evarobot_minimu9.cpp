@@ -174,14 +174,11 @@ void ahrs(IMU & imu, fuse_function * fuse, rotation_output_function * output)
     }
 }
 
-bool b_always_on;
 bool b_is_received_params = false;
 
 void CallbackReconfigure(evarobot_minimu9::ParamsConfig &config, uint32_t level)
 {
    b_is_received_params = true;        
-   
-   b_always_on = config.alwaysOn;
 }
 
 
@@ -227,13 +224,8 @@ int main(int argc, char *argv[])
 	}
 	
 	ros::Rate loop_rate(d_frequency);*/
-	
-	
-	
-	sensor_msgs::Imu msg;
-	
+		
 	n.param<std::string>("evarobot_minimu9/i2cDevice", i2cDevice, "/dev/i2c-1");
-	n.param("evarobot_minimu9/alwaysOn", b_always_on, false);
 	n.param("evarobot_odometry/minFreq", d_min_freq, 0.2);
 	n.param("evarobot_odometry/maxFreq", d_max_freq, 10.0);
 	
@@ -242,8 +234,7 @@ int main(int argc, char *argv[])
 	  ROS_ERROR("Failed to get param 'frequency'");
 	} 	
 	
-	
-	ros::Publisher imu_pub = n.advertise<sensor_msgs::Imu>("imu", 10);
+	realtime_tools::RealtimePublisher<sensor_msgs::Imu> * imu_pub = new realtime_tools::RealtimePublisher<sensor_msgs::Imu>(n, "imu", 10);
 	
 	// Dynamic Reconfigure
 	dynamic_reconfigure::Server<evarobot_minimu9::ParamsConfig> srv;
@@ -323,19 +314,20 @@ int main(int argc, char *argv[])
 			
 			ss.str("");
 			ss << n.resolveName(n.getNamespace(), true) << "/imu_link";
-			msg.header.frame_id = ss.str();
-			msg.header.stamp = ros::Time::now();
+			imu_pub->msg_.header.frame_id = ss.str();
+			imu_pub->msg_.header.stamp = ros::Time::now();
 						
-			msg.orientation.x = qx; //rotation.x();
-			msg.orientation.y = qy; //rotation.y();
-			msg.orientation.z = qz; //rotation.z();
-			msg.orientation.w = qw; //rotation.w();
-			
-			if(imu_pub.getNumSubscribers() > 0 || b_always_on)
+			imu_pub->msg_.orientation.x = qx; //rotation.x();
+			imu_pub->msg_.orientation.y = qy; //rotation.y();
+			imu_pub->msg_.orientation.z = qz; //rotation.z();
+			imu_pub->msg_.orientation.w = qw; //rotation.w();
+
+			if (imu_pub->trylock())
 			{
-				imu_pub.publish(msg);
-				pub_freq.tick();
-			}
+				imu_pub->unlockAndPublish();
+			}			
+			pub_freq.tick();
+			
 			updater.update();
 			ros::spinOnce();
 

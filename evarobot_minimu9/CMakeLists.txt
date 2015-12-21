@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   dynamic_reconfigure
   diagnostic_updater
+  realtime_tools
 )
 
 generate_dynamic_reconfigure_options(cfg/evarobot_minimu9.cfg)
