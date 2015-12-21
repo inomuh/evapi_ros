@@ -6,6 +6,7 @@
   pwmDuty: 14
   pwmCounts: 256
   pwmMode: 1
+  timeout: 0.5
 
   M1_IN1: 1
   M1_IN2: 12

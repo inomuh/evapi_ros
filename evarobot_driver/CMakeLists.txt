@@ -36,5 +36,6 @@ include_directories(
 )
 
  add_executable(evarobot_driver src/evarobot_driver.cpp ${EVAPI_LIB_SDK_SRC})
+ add_dependencies(evarobot_driver im_msgs_generate_messages_cpp)
  add_dependencies(evarobot_driver evarobot_driver_gencfg)
  target_link_libraries(evarobot_driver ${catkin_LIBRARIES})

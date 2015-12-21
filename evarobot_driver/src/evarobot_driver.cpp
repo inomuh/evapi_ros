@@ -5,153 +5,7 @@
 *
 */
 
-#include "ros/ros.h"
-#include "geometry_msgs/Twist.h"
-
-
-#include "IMPWM.h"
-#include "IMGPIO.h"
-#include "IMADC.h"
-
-#include <stdio.h> 
-#include <math.h> 
-#include <sstream>
-
-#include <dynamic_reconfigure/server.h>
-#include <evarobot_driver/ParamsConfig.h>
-
-#include <diagnostic_updater/diagnostic_updater.h>
-#include <diagnostic_updater/publisher.h>
-
-#include "im_msgs/SetRGB.h"
-#include "im_msgs/Voltage.h"
-
-using namespace std;
-
-
-bool b_is_received_params = false;
-
-double g_d_max_lin;
-double g_d_max_ang;
-double g_d_wheel_separation;
-double g_d_wheel_diameter;
-
-class IMDRIVER
-{
-public:
-	IMDRIVER(double d_limit_voltage,
-			 float f_max_lin_vel, 
-			 float f_max_ang_vel, 
-			 float f_wheel_separation, 
-			 float f_wheel_diameter,
-			 double d_frequency, 
-			 unsigned int u_i_counts, 
-			 double d_duty, 
-			 int i_mode,
-			 IMGPIO * m1_in, 
-			 IMGPIO * m2_in,
-			 IMGPIO * m1_en,
-			 IMGPIO * m2_en,
-			 IMADC * adc,
-			 ros::ServiceClient & client);
-			 
-	~IMDRIVER()
-	{
-		im_msgs::SetRGB srv;
-		
-		srv.request.times = -1;
-		srv.request.mode = 0;
-		srv.request.frequency = 1.0;
-		srv.request.color = 0;
-		
-		if(this->client.call(srv) == 0)
-		{
-			ROS_ERROR("Failed to call service evarobot_rgb/SetRGB");
-		}
-		
-		printf("driver kapatiliyor\n");
-		this->Disable();
-		delete pwm;
-	}
-			 
-	void CallbackWheelVel(const geometry_msgs::Twist::ConstPtr & msg);
-	void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat);
-	im_msgs::Voltage GetMotorVoltage() const;
-
-	bool CheckMotorCurrent();
-	void Enable()
-	{
-		this->m1_en->SetPinDirection(IMGPIO::OUTPUT);	
-		this->m2_en->SetPinDirection(IMGPIO::OUTPUT);
-		
-		this->m1_en->SetPinValue(IMGPIO::HIGH);
-		this->m2_en->SetPinValue(IMGPIO::HIGH);
-		
-/*		this->m1_en->SetPinDirection(IMGPIO::INPUT);	
-		this->m2_en->SetPinDirection(IMGPIO::INPUT);*/
-	}
-	
-	void Disable()
-	{
-		this->m1_en->SetPinDirection(IMGPIO::OUTPUT);	
-		this->m2_en->SetPinDirection(IMGPIO::OUTPUT);
-		
-		this->m1_en->SetPinValue(IMGPIO::LOW);
-		this->m2_en->SetPinValue(IMGPIO::LOW);
-		
-	}
-	
-	int CheckError()
-	{
-		int i_ret = 0;
-		
-		string str_m1_data;
-		string str_m2_data;
-		
-		this->m1_en->GetPinValue(str_m1_data);
-		this->m2_en->GetPinValue(str_m2_data);
-		
-		if(str_m1_data == IMGPIO::LOW)
-		{
-			--i_ret;
-		}
-		
-		if(str_m2_data == IMGPIO::LOW)
-		{
-			--i_ret;
-		}
-		
-		return i_ret;
-	}
-	
-private:
-	IMPWM * pwm;
-	IMGPIO * m1_in;
-	IMGPIO * m2_in;
-	IMGPIO * m1_en;
-	IMGPIO * m2_en;
-	
-	IMADC * adc;
-	ros::ServiceClient client;
-	
-	float f_max_lin_vel; 
-	float f_max_ang_vel; 
-	float f_wheel_separation; 
-	float f_wheel_diameter;
-
-	float f_left_motor_voltage;
-	float f_right_motor_voltage;
-
-	double d_frequency;
-	double d_duty;
-	double d_limit_voltage;
-	
-	bool b_motor_error, b_left_motor_error, b_right_motor_error;
-
-	unsigned int u_i_counts;
-	int i_mode;    
-	int i_const_count;
-};
+#include "evarobot_driver/evarobot_driver.h"
 
 IMDRIVER::IMDRIVER(double d_limit_voltage,
 					 float f_max_lin_vel, 
@@ -167,16 +21,16 @@ IMDRIVER::IMDRIVER(double d_limit_voltage,
 				   IMGPIO * m1_en,
 				   IMGPIO * m2_en,
 					 IMADC * adc,
-					 ros::ServiceClient & client):b_left_motor_error(false), b_right_motor_error(false)
+					 ros::ServiceClient & client,
+					 double _timeout):b_left_motor_error(false), b_right_motor_error(false), d_timeout(_timeout), b_motor_error(false)
 {
-	this->b_motor_error = false;
 	this->client = client;
 	this->adc = adc;
 	this->d_limit_voltage = d_limit_voltage;
 
 	this->f_left_motor_voltage = 0.0;
 	this->f_right_motor_voltage = 0.0;
-	
+		
 	this->f_max_lin_vel = f_max_lin_vel; 
 	this->f_max_ang_vel = f_max_ang_vel; 
 	this->f_wheel_separation = f_wheel_separation; 
@@ -213,6 +67,148 @@ IMDRIVER::IMDRIVER(double d_limit_voltage,
 	// enable motors
 	this->Enable();
 	
+}
+
+IMDRIVER::~IMDRIVER()
+{
+	im_msgs::SetRGB srv;
+	
+	srv.request.times = -1;
+	srv.request.mode = 0;
+	srv.request.frequency = 1.0;
+	srv.request.color = 0;
+	
+	if(this->client.call(srv) == 0)
+	{
+		ROS_ERROR("Failed to call service evarobot_rgb/SetRGB");
+	}
+	
+	printf("driver kapatiliyor\n");
+	this->Disable();
+	delete pwm;
+}
+
+void IMDRIVER::UpdateParams()
+{
+	if(b_is_received_params)
+	{
+		ROS_INFO("Updating Driver Params...");
+		ROS_INFO("%f, %f", g_d_max_lin, g_d_max_ang);
+		ROS_INFO("%f, %f", g_d_wheel_separation, g_d_wheel_diameter);
+
+		this->f_max_lin_vel = g_d_max_lin; 
+		this->f_max_ang_vel = g_d_max_ang; 
+		this->f_wheel_separation = g_d_wheel_separation; 
+		this->f_wheel_diameter = g_d_wheel_diameter;
+
+		b_is_received_params = false;
+	}
+}
+
+void IMDRIVER::ApplyVel(float f_left_wheel_velocity, float f_right_wheel_velocity)
+{
+	if(f_left_wheel_velocity > 0)
+	{
+		this->m1_in[0].SetPinValue(IMGPIO::LOW);
+		this->m1_in[1].SetPinValue(IMGPIO::HIGH);
+	}
+	else if(f_left_wheel_velocity < 0)
+	{
+		this->m1_in[0].SetPinValue(IMGPIO::HIGH);
+		this->m1_in[1].SetPinValue(IMGPIO::LOW);
+	}
+	else
+	{
+		this->m1_in[0].SetPinValue(IMGPIO::LOW);
+		this->m1_in[1].SetPinValue(IMGPIO::LOW);
+	}
+	
+	if(f_right_wheel_velocity > 0)
+	{
+		this->m2_in[0].SetPinValue(IMGPIO::HIGH);
+		this->m2_in[1].SetPinValue(IMGPIO::LOW);
+	}
+	else if(f_right_wheel_velocity < 0)
+	{
+		this->m2_in[0].SetPinValue(IMGPIO::LOW);
+		this->m2_in[1].SetPinValue(IMGPIO::HIGH);
+	}
+	else
+	{
+		this->m2_in[0].SetPinValue(IMGPIO::LOW);
+		this->m2_in[1].SetPinValue(IMGPIO::LOW);
+	}
+
+	int i_left_wheel_duty = int(fabs(f_left_wheel_velocity) * 255 / this->f_max_lin_vel);
+	int i_right_wheel_duty = int(fabs(f_right_wheel_velocity) * 255 / this->f_max_lin_vel); 
+
+
+	i_left_wheel_duty = i_left_wheel_duty>=this->u_i_counts ? this->u_i_counts - 1:i_left_wheel_duty;
+	i_right_wheel_duty = i_right_wheel_duty>=this->u_i_counts ? this->u_i_counts - 1:i_right_wheel_duty;
+
+	if(i_left_wheel_duty != 0)
+		pwm->SetDutyCycleCount(i_left_wheel_duty, 0);
+
+	if(i_right_wheel_duty != 0)
+		pwm->SetDutyCycleCount(i_right_wheel_duty, 1);
+
+/*	if(this->CheckError() == -1)
+	{
+		ROS_ERROR("Failure at Left Motor.");
+	}
+	else if(this->CheckError() == -2)
+	{
+		ROS_ERROR("Failure at Right Motor.");
+	}
+	else if(this->CheckError() == -3)
+	{
+		ROS_ERROR("Failure at Both of Motors.");
+	}*/
+}
+
+void IMDRIVER::Enable()
+{
+	this->m1_en->SetPinDirection(IMGPIO::OUTPUT);	
+	this->m2_en->SetPinDirection(IMGPIO::OUTPUT);
+	
+	this->m1_en->SetPinValue(IMGPIO::HIGH);
+	this->m2_en->SetPinValue(IMGPIO::HIGH);
+	
+/*		this->m1_en->SetPinDirection(IMGPIO::INPUT);	
+	this->m2_en->SetPinDirection(IMGPIO::INPUT);*/
+}
+
+void IMDRIVER::Disable()
+{
+	this->m1_en->SetPinDirection(IMGPIO::OUTPUT);	
+	this->m2_en->SetPinDirection(IMGPIO::OUTPUT);
+	
+	this->m1_en->SetPinValue(IMGPIO::LOW);
+	this->m2_en->SetPinValue(IMGPIO::LOW);
+	
+}
+
+int IMDRIVER::CheckError()
+{
+	int i_ret = 0;
+	
+	string str_m1_data;
+	string str_m2_data;
+	
+	this->m1_en->GetPinValue(str_m1_data);
+	this->m2_en->GetPinValue(str_m2_data);
+	
+	if(str_m1_data == IMGPIO::LOW)
+	{
+		--i_ret;
+	}
+	
+	if(str_m2_data == IMGPIO::LOW)
+	{
+		--i_ret;
+	}
+	
+	return i_ret;
 }
 
 im_msgs::Voltage IMDRIVER::GetMotorVoltage() const
@@ -311,89 +307,43 @@ void IMDRIVER::ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &s
 	stat.add("Left Motor Voltage", this->f_left_motor_voltage);
 }
 
-void IMDRIVER::CallbackWheelVel(const geometry_msgs::Twist::ConstPtr & msg)
+bool IMDRIVER::CheckTimeout()
 {
-	float f_left_wheel_velocity = msg->linear.x;
-	float f_right_wheel_velocity = msg->linear.y;
+	double dt;
 	
-	if(b_is_received_params)
-	{
-		ROS_INFO("Updating Driver Params...");
-		ROS_INFO("%f, %f", g_d_max_lin, g_d_max_ang);
-		ROS_INFO("%f, %f", g_d_wheel_separation, g_d_wheel_diameter);
-
-		this->f_max_lin_vel = g_d_max_lin; 
-		this->f_max_ang_vel = g_d_max_ang; 
-		this->f_wheel_separation = g_d_wheel_separation; 
-		this->f_wheel_diameter = g_d_wheel_diameter;
-
-		b_is_received_params = false;
-	}
+	dt = (ros::Time::now() - this->curr_vel_time).toSec();
 	
-	if(f_left_wheel_velocity > 0)
+	if(dt > this->d_timeout)
 	{
-		this->m1_in[0].SetPinValue(IMGPIO::LOW);
-		this->m1_in[1].SetPinValue(IMGPIO::HIGH);
+		ROS_ERROR("Controller Timeout Error (Past)");
+		this->ApplyVel(0.0, 0.0);
+		b_timeout_err = true;
 	}
-	else if(f_left_wheel_velocity < 0)
+	else if(dt < 0)
 	{
-		this->m1_in[0].SetPinValue(IMGPIO::HIGH);
-		this->m1_in[1].SetPinValue(IMGPIO::LOW);
+		ROS_ERROR("Controller Timeout Error (Future)");
+		this->ApplyVel(0.0, 0.0);
+		b_timeout_err = true;
 	}
 	else
 	{
-		this->m1_in[0].SetPinValue(IMGPIO::LOW);
-		this->m1_in[1].SetPinValue(IMGPIO::LOW);
+		b_timeout_err = false;
 	}
 	
-	if(f_right_wheel_velocity > 0)
-	{
-		this->m2_in[0].SetPinValue(IMGPIO::HIGH);
-		this->m2_in[1].SetPinValue(IMGPIO::LOW);
-	}
-	else if(f_right_wheel_velocity < 0)
-	{
-		this->m2_in[0].SetPinValue(IMGPIO::LOW);
-		this->m2_in[1].SetPinValue(IMGPIO::HIGH);
-	}
-	else
-	{
-		this->m2_in[0].SetPinValue(IMGPIO::LOW);
-		this->m2_in[1].SetPinValue(IMGPIO::LOW);
-	}
+	return this->b_timeout_err;
+}
+
+void IMDRIVER::CallbackWheelVel(const im_msgs::WheelVel::ConstPtr & msg)
+{
+	float f_left_wheel_velocity = msg->left_vel;
+	float f_right_wheel_velocity = msg->right_vel;
+	this->curr_vel_time = msg->header.stamp;
+		
+	// UpdateParams
+	this->UpdateParams();
 	
-
-//	int i_left_wheel_duty = int(fabs(f_left_wheel_velocity) * this->i_const_count);
-//	int i_right_wheel_duty = int(fabs(f_right_wheel_velocity) * this->i_const_count); 
-
-
-        int i_left_wheel_duty = int(fabs(f_left_wheel_velocity) * 255 / this->f_max_lin_vel);
-        int i_right_wheel_duty = int(fabs(f_right_wheel_velocity) * 255 / this->f_max_lin_vel); 
-
-
-	i_left_wheel_duty = i_left_wheel_duty>=this->u_i_counts ? this->u_i_counts - 1:i_left_wheel_duty;
-	i_right_wheel_duty = i_right_wheel_duty>=this->u_i_counts ? this->u_i_counts - 1:i_right_wheel_duty;
-
-	if(i_left_wheel_duty != 0)
-		pwm->SetDutyCycleCount(i_left_wheel_duty, 0);
-//		pwm->SetDutyCycleCount(150, 0);
-
-	if(i_right_wheel_duty != 0)
-		pwm->SetDutyCycleCount(i_right_wheel_duty, 1);
-//		pwm->SetDutyCycleCount(150, 1);
-/*	if(this->CheckError() == -1)
-	{
-		ROS_ERROR("Failure at Left Motor.");
-	}
-	else if(this->CheckError() == -2)
-	{
-		ROS_ERROR("Failure at Right Motor.");
-	}
-	else if(this->CheckError() == -3)
-	{
-		ROS_ERROR("Failure at Both of Motors.");
-	}*/
-
+	// ApplyVel
+	this->ApplyVel(f_left_wheel_velocity, f_right_wheel_velocity);
 }
 
 void CallbackReconfigure(evarobot_driver::ParamsConfig &config, uint32_t level)
@@ -426,10 +376,10 @@ int main(int argc, char **argv)
   double d_duty;
   double d_limit_voltage;
   
+  double d_timeout;
+    
   int i_counts;
-  
   int i_mode;
-  
   int i_m1_in1, i_m1_in2, i_m1_en;
   int i_m2_in1, i_m2_in2, i_m2_en;
   
@@ -453,6 +403,7 @@ int main(int argc, char **argv)
   n.param<int>("evarobot_driver/M2_EN", i_m2_en, 6);
 
   n.param<double>("evarobot_driver/limitVoltage", d_limit_voltage, 0.63);
+  n.param<double>("evarobot_driver/timeout", d_timeout, 0.5);
   
   if(!n.getParam("evarobot_driver/maxLinearVel", d_max_lin_vel))
   {
@@ -569,7 +520,7 @@ int main(int argc, char **argv)
   IMDRIVER imdriver(d_limit_voltage, (float)d_max_lin_vel, (float)d_max_ang_vel, 
 				  (float)d_wheel_separation, (float)d_wheel_diameter,
 					d_frequency, i_counts, d_duty, i_mode, 
-					gpio_m1_in, gpio_m2_in, &gpio_m1_en, &gpio_m2_en, p_im_adc, client);
+					gpio_m1_in, gpio_m2_in, &gpio_m1_en, &gpio_m2_en, p_im_adc, client, d_timeout);
   
 	ros::Subscriber sub = n.subscribe("cntr_wheel_vel", 2, &IMDRIVER::CallbackWheelVel, &imdriver);
 	ros::Publisher pub = n.advertise<im_msgs::Voltage>("motor_voltages", 1);
@@ -591,6 +542,7 @@ int main(int argc, char **argv)
 	{
 		
 		imdriver.CheckMotorCurrent();
+		imdriver.CheckTimeout();
 		pub.publish(imdriver.GetMotorVoltage());
 		
 		updater.update();
