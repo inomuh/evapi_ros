@@ -116,11 +116,12 @@ void PIDController::ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapp
 	stat.add("Derivative Error", this->d_derivative_error);
 }
 
-void CallbackMeasured(const geometry_msgs::PointStamped::ConstPtr & msg)
+void CallbackMeasured(const im_msgs::WheelVel::ConstPtr & msg)
 {
 	b_is_new_measured = true;
-	g_f_left_measured = msg->point.x;
-	g_f_right_measured = msg->point.y;
+	g_d_dt = (ros::Time::now() - msg->header.stamp).toSec();
+	g_f_left_measured = msg->left_vel;
+	g_f_right_measured = msg->right_vel;
 }
 
 void CallbackDesired(const geometry_msgs::Twist::ConstPtr & msg)
@@ -192,12 +193,12 @@ int main(int argc, char **argv)
   double d_integral_constant_right;
   double d_derivative_constant_right;
   double d_proportional_constant_right;
-  
-  bool b_always_on;
-  
+    
   double d_max_vel;
   double d_frequency;
   double d_max_freq, d_min_freq;
+  
+  double d_timeout;
   
   //---------------
   
@@ -205,10 +206,10 @@ int main(int argc, char **argv)
   ros::NodeHandle n;
 
   
-  n.param("evarobot_controller/alwaysOn", b_always_on, false);
   n.param<double>("evarobot_controller/maxVel", d_max_vel, 0.9);
   n.param("evarobot_controller/minFreq", d_min_freq, 0.2);
   n.param("evarobot_controller/maxFreq", d_max_freq, 10.0);
+  n.param("evarobot_controller/timeout", d_timeout, 0.5);
   
   if(!n.getParam("evarobot_controller/wheelSeparation", g_d_wheel_separation))
   {
@@ -261,9 +262,10 @@ int main(int argc, char **argv)
 																								 d_max_vel,
 																								 "RightController");
   
-  ros::Subscriber measured_pub = n.subscribe("wheel_vel", 1, CallbackMeasured);
-  ros::Subscriber desired_pub = n.subscribe("cmd_vel", 1, CallbackDesired);
-  ros::Publisher ctrl_pub = n.advertise<geometry_msgs::Twist>("cntr_wheel_vel", 10);
+  ros::Subscriber measured_sub = n.subscribe("wheel_vel", 1, CallbackMeasured);
+  ros::Subscriber desired_sub = n.subscribe("cmd_vel", 1, CallbackDesired);
+  realtime_tools::RealtimePublisher<im_msgs::WheelVel> * ctrl_pub = new realtime_tools::RealtimePublisher<im_msgs::WheelVel>(n, "cntr_wheel_vel", 10);
+  
   ros::ServiceServer service = n.advertiseService("evarobot_controller/reset_controller", CallbackResetController);
   
   // Dynamic Reconfigure
@@ -284,8 +286,6 @@ int main(int argc, char **argv)
   		
   
   ros::Rate loop_rate(d_frequency);
-
-  geometry_msgs::Twist msg;
   
   while(ros::ok())
   {
@@ -318,20 +318,38 @@ int main(int argc, char **argv)
 
 //		printf("LEFT: Desired: %f, Measured: %f\n", g_f_left_desired, g_f_left_measured);
 //		printf("RIGHT: Desired: %f, Measured: %f\n", g_f_right_desired, g_f_right_measured);
-
-		msg.linear.x = left_controller.RunController(g_f_left_desired, g_f_left_measured);
-		msg.linear.y = right_controller.RunController(g_f_right_desired, g_f_right_measured);
+		ctrl_pub->msg_.header.stamp = ros::Time::now();
+		ctrl_pub->msg_.left_vel = left_controller.RunController(g_f_left_desired, g_f_left_measured);
+		ctrl_pub->msg_.right_vel = right_controller.RunController(g_f_right_desired, g_f_right_measured);
+		
+		if(g_d_dt > d_timeout)
+		{
+			ROS_ERROR("Odometry Timeout Error (Past)");
+			ctrl_pub->msg_.left_vel = 0.0;
+			ctrl_pub->msg_.right_vel = 0.0;
+			left_controller.Reset();
+			right_controller.Reset();
+		}
+		else if(g_d_dt < 0)
+		{
+			ROS_ERROR("Odometry Timeout Error (Future)");
+			ctrl_pub->msg_.left_vel = 0.0;
+			ctrl_pub->msg_.right_vel = 0.0;
+			left_controller.Reset();
+			right_controller.Reset();
+		}
 		
 		b_is_new_desired = false;
 		b_is_new_measured = false;
 		
-		if(ctrl_pub.getNumSubscribers() > 0 || b_always_on)
+
+		if (ctrl_pub->trylock())
 		{
-			ctrl_pub.publish(msg);
-			pub_freq.tick();
-		}
+			ctrl_pub->unlockAndPublish();
+		}			
+		pub_freq.tick();
 		
-	 // }
+
 	  updater.update();
 	  ros::spinOnce();
 	  loop_rate.sleep();

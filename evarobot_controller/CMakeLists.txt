@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   dynamic_reconfigure
   diagnostic_updater
+  realtime_tools
 )
 
 generate_dynamic_reconfigure_options(cfg/evarobot_controller.cfg)
@@ -34,6 +35,7 @@ include_directories(
 
 
  add_executable(evarobot_controller src/evarobot_controller.cpp)
+ add_dependencies(evarobot_controller im_msgs_generate_messages_cpp)
  add_dependencies(evarobot_controller evarobot_controller_gencfg)
  target_link_libraries(evarobot_controller
    ${catkin_LIBRARIES}

@@ -2,6 +2,7 @@
 #define INCLUDE_EVAROBOT_CONTROLLER_H_
 
 #include "ros/ros.h"
+#include <realtime_tools/realtime_publisher.h>
 
 #include "geometry_msgs/PointStamped.h"
 #include "geometry_msgs/Twist.h"
@@ -10,13 +11,13 @@
 #include <diagnostic_updater/publisher.h>
 
 #include "std_srvs/Empty.h"
+#include "im_msgs/WheelVel.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 
 #include <string>    
 #include <sstream>
-
 
 float g_f_left_desired = 0.0;
 float g_f_right_desired = 0.0;
@@ -46,6 +47,8 @@ double g_d_d_left;
 double g_d_p_right;
 double g_d_i_right;
 double g_d_d_right;
+
+double g_d_dt = 0;
 
 class PIDController
 {

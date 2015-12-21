@@ -1,7 +1,6 @@
-alwaysOn: true
 wheelSeparation: 0.35
 Frequency: 10.0
-
+timeout: 0.5
 maxVel: 1.2
 minFreq: 0.2
 maxFreq: 10.0
