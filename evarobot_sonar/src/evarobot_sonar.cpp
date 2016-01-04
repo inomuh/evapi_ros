@@ -50,100 +50,55 @@ IMSONAR::~IMSONAR()
 
 bool IMSONAR::Check()
 {
-        int ret_val = 0;
-        char read_buf[100];
-        stringstream ss;
+	int ret_val = 0;
+	char read_buf[100];
+	stringstream ss;
 
-        ss << (this->i_id + 100);
+	ss << (this->i_id + 100);
 
-        int raw_dist = -1;
+	int raw_dist = -1;
 
-        //ioctl(this->i_fd, IOCTL_READ_RANGE, &this->data);
+	double start, stop;
 
-        double start, stop;
+	start = ros::Time::now().toSec();
 
-        start = ros::Time::now().toSec();
+	write(this->i_fd, ss.str().c_str(), sizeof(ss.str().c_str()));
 
-        write(this->i_fd, ss.str().c_str(), sizeof(ss.str().c_str()));
+	while(raw_dist < 0)
+	{
+		stop = ros::Time::now().toSec();
 
-        while(raw_dist < 0)
-        {
-                stop = ros::Time::now().toSec();
+		if(stop - start > 0.50)
+		{
+		ROS_INFO("Sonar[%d] is not ALIVE ", this->i_id);
+		this->b_is_alive = false;
+		return false;
+		}
 
-                if(stop - start > 0.50)
-                {
-                        ROS_INFO("Sonar[%d] is not ALIVE ", this->i_id);
-                        this->b_is_alive = false;
-                        return false;
-                }
-
-                //ROS_INFO("Timeout[%d]: %f ", this->i_id, stop-start);
+		//ROS_INFO("Timeout[%d]: %f ", this->i_id, stop-start);
 		ss.str("");
 		ss << this->i_id;
 		strcpy(read_buf, ss.str().c_str());
-		
-                ret_val = read(this->i_fd, read_buf, sizeof(read_buf));
-                raw_dist = atoi(read_buf);
 
-        }
+		ret_val = read(this->i_fd, read_buf, sizeof(read_buf));
+		raw_dist = atoi(read_buf);
 
-        this->b_is_alive = true; 
-       return true;
+	}
+
+	this->b_is_alive = true; 
+	return true;
 
 }
-
-
-/*void IMSONAR::CheckTrigger()
-{
-        stringstream ss;
-
-        ss << (this->i_id + 100);
-
-        int raw_dist = -1;
-
-        write(this->i_fd, ss.str().c_str(), sizeof(ss.str().c_str()));
-}*/
-
 
 void IMSONAR::Trigger()
 {
-        stringstream ss;
-        
-        ss << this->i_id;
-        
-        int raw_dist = -1;
+	stringstream ss;
+	int raw_dist = -1;
 
-        write(this->i_fd, ss.str().c_str(), sizeof(ss.str().c_str()));
+	ss << this->i_id;
+	write(this->i_fd, ss.str().c_str(), sizeof(ss.str().c_str()));
 }
 
-/*bool IMSONAR::CheckEcho()
-{
-        stringstream ss;
-        char read_buf[100];
-        int read_data = -1;
-        bool ret_val;
-
-        ss << this->i_id;
-
-        strcpy(read_buf, ss.str().c_str());
-
-        ret_val = read(this->i_fd, read_buf, sizeof(read_buf));
-        read_data = atoi(read_buf);
-
-	if(read_data > 0)
-	{
-		ret_val = true;
-		this->b_is_alive = true;
-	}
-	else
-	{
-		ROS_INFO("Sonar[%d] is not ALIVE ", this->i_id);
-		ret_val = false;
-		this->b_is_alive = false;
-	}
-
-        return ret_val;
-}*/
 
 int IMSONAR::Echo()
 {
@@ -159,20 +114,14 @@ int IMSONAR::Echo()
 	ret_val = read(this->i_fd, read_buf, sizeof(read_buf));
 	raw_dist = atoi(read_buf);
 
-        this->sonar_msg.range = (float)(raw_dist * 0.0001);
-        this->sonar_msg.header.stamp = ros::Time::now();
-        this->sonar_msg.field_of_view = this->dynamic_params->d_fov;
-        this->sonar_msg.min_range = this->dynamic_params->d_min_range;
-        this->sonar_msg.max_range = this->dynamic_params->d_max_range;
+	this->sonar_msg.range = (float)(raw_dist * 0.0001);
+	this->sonar_msg.header.stamp = ros::Time::now();
+	this->sonar_msg.field_of_view = this->dynamic_params->d_fov;
+	this->sonar_msg.min_range = this->dynamic_params->d_min_range;
+	this->sonar_msg.max_range = this->dynamic_params->d_max_range;
 
 	return ret_val;
 }
-
-/*void IMSONAR::CheckWait()
-{
-        usleep(250);
-}*/
-
 
 void IMSONAR::Wait()
 {
@@ -274,32 +223,6 @@ int main(int argc, char **argv)
 	
 	
 	ROS_INFO("Number of sonars: %d", T_i_sonar_pins.size());
-
-	
-	/******************************************************************/
-	/* Init */
-	/******************************************************************/
-	
-/*	clock_gettime(CLOCK_MONOTONIC, &ts);
-
-	// Lock memory to ensure no swapping is done.
-	if(mlockall(MCL_FUTURE|MCL_CURRENT))
-	{
-		ROS_ERROR("Failed to lock memory");
-	}
-
-	// Set our thread to real time priority
-	struct sched_param sp;
-	
-	sp.sched_priority = 30;
-	
-	if(pthread_setschedparam(pthread_self(), SCHED_FIFO, &sp))
-	{
-		ROS_ERROR("Failed to set stepper thread"
-				"to real-time priority");
-	}
-	*/
-
 
 	i_fd = open(str_driver_path.c_str(), O_RDWR);
 	

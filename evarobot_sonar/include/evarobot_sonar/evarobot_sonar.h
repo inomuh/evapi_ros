@@ -97,11 +97,7 @@ class IMSONAR
 	void Trigger();
 	void Wait();
 	int Echo();
-/*	
-	void CheckTrigger();
-	void CheckWait();
-	bool CheckEcho();
-*/
+
 	bool Check();
 	void Publish();
 	void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat);
@@ -118,7 +114,6 @@ class IMSONAR
 	sensor_msgs::Range sonar_msg;
 	
 	boost::shared_ptr<IMDynamicReconfig> dynamic_params;
-	//IMDynamicReconfig * dynamic_params;
 	
 	double min_freq;
 	double max_freq;
