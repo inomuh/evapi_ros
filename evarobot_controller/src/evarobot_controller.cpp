@@ -49,6 +49,11 @@ float PIDController::RunController(float f_desired, float f_measured)
 	
 	double d_current_error = (double)(f_desired - f_measured);
 
+	if( (this->d_integral_error < 0.0 && f_desired >= 0.0) || (this->d_integral_error > 0.0 && f_desired <= 0.0) )
+	{
+		this->d_integral_error = 0.0;
+	}
+
 	if(fabs(d_current_error) <= 0.05)
 	{
 		d_current_error = 0.0;
@@ -69,27 +74,12 @@ float PIDController::RunController(float f_desired, float f_measured)
 	
 	this->d_pre_error = d_current_error;
 			
-//	if(f_desired >= -0.001 && f_desired <= 0.001)
-//	{
-//		f_ret = 0.0;
-//		return f_ret;
-//	}
-
 	if( fabs(f_ret) > this->d_max_vel )
 	{
-		ROS_INFO("MAX VEL: %f", this->d_max_vel);
+		ROS_WARN("MAX VEL: %f", this->d_max_vel);
 		f_ret = (f_ret * this->d_max_vel) / fabs(f_ret);
 	}
 
-//	if(fabs(f_desired-f_measured) <= 0.1 && f_desired == 0.0)
-//	{
-//					this->Reset();
-//	}
-
-			
-//	printf("%lf, %lf, %lf, %f \n", this->d_proportional_error, this->d_integral_error, this->d_derivative_error, f_ret);
-//	printf("%s: p:%f, i:%f, d:%f, dur_time:%f\n", this->str_name.c_str(), this->d_proportional_constant, this->d_integral_constant, this->d_derivative_constant, dur_time.toSec());
-	
 	return f_ret;
 	
 }
@@ -118,7 +108,6 @@ void PIDController::ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapp
 
 void CallbackMeasured(const im_msgs::WheelVel::ConstPtr & msg)
 {
-	b_is_new_measured = true;
 	g_d_dt = (ros::Time::now() - msg->header.stamp).toSec();
 	g_f_left_measured = msg->left_vel;
 	g_f_right_measured = msg->right_vel;
@@ -126,35 +115,8 @@ void CallbackMeasured(const im_msgs::WheelVel::ConstPtr & msg)
 
 void CallbackDesired(const geometry_msgs::Twist::ConstPtr & msg)
 {
-//	b_is_new_desired = true;
-	
-	if(fabs(g_f_pre_linear_desired - msg->linear.x) > 0.1 || fabs(g_f_pre_angular_desired - msg->angular.z) > 0.1)
-	{
-		b_is_new_desired = true;
-		g_f_pre_linear_desired = msg->linear.x;
-		g_f_pre_angular_desired = msg->angular.z;
-	}
-
-
 	float f_linear_vel = msg->linear.x;
 	float f_angular_vel = msg->angular.z;
-
-//	if(f_linear_vel == 0.0 && f_angular_vel != 0.0)
-	if(f_angular_vel != 0.0)
-	{
-		g_b_only_ang_vel = true;
-//		ROS_INFO("Only Angular");
-	}
-
-	if(f_linear_vel != 0.0 && g_b_only_ang_vel && b_is_new_desired)
-	{
-		// Reset Controller
-		b_is_new_desired = false;
-		b_reset_controller = true;
-		g_b_only_ang_vel = false;
-  //              ROS_INFO("Clear Angular Flag");
-
-	}
 
 	g_f_left_desired = ((2 * f_linear_vel) - f_angular_vel * g_d_wheel_separation) / 2; // m/s
 	g_f_right_desired = ((2 * f_linear_vel) + f_angular_vel * g_d_wheel_separation) / 2; // m/s
@@ -289,13 +251,6 @@ int main(int argc, char **argv)
   
   while(ros::ok())
   {
-	  //if(b_is_new_desired && b_is_new_measured)
-	 // {
-//		if(b_is_new_desired)
-//		{
-//			left_controller.Reset();
-//			right_controller.Reset();
-//		}
 		
 		if(b_is_received_params)
 		{
@@ -315,9 +270,6 @@ int main(int argc, char **argv)
 			b_reset_controller = false;
 		}
 
-
-//		printf("LEFT: Desired: %f, Measured: %f\n", g_f_left_desired, g_f_left_measured);
-//		printf("RIGHT: Desired: %f, Measured: %f\n", g_f_right_desired, g_f_right_measured);
 		ctrl_pub->msg_.header.stamp = ros::Time::now();
 		ctrl_pub->msg_.left_vel = left_controller.RunController(g_f_left_desired, g_f_left_measured);
 		ctrl_pub->msg_.right_vel = right_controller.RunController(g_f_right_desired, g_f_right_measured);
@@ -339,10 +291,6 @@ int main(int argc, char **argv)
 			right_controller.Reset();
 		}
 		
-		b_is_new_desired = false;
-		b_is_new_measured = false;
-		
-
 		if (ctrl_pub->trylock())
 		{
 			ctrl_pub->unlockAndPublish();
