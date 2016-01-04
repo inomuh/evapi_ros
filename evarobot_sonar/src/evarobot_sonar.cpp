@@ -48,51 +48,135 @@ IMSONAR::~IMSONAR()
 	delete pub_sonar_freq;
 }
 
-
-bool IMSONAR::ReadRange()
+bool IMSONAR::Check()
 {
-	int ret_val = 0;
-	char read_buf[100];
-	stringstream ss;
-	
-	ss << this->i_id;
-	
-	int raw_dist = -1;
+        int ret_val = 0;
+        char read_buf[100];
+        stringstream ss;
 
-	//ioctl(this->i_fd, IOCTL_READ_RANGE, &this->data);
-	
-	double start, stop;
-	
-	start = ros::Time::now().toSec();
-	
-	write(this->i_fd, ss.str().c_str(), sizeof(ss.str().c_str()));
+        ss << (this->i_id + 100);
 
-	while(raw_dist < 0)
+        int raw_dist = -1;
+
+        //ioctl(this->i_fd, IOCTL_READ_RANGE, &this->data);
+
+        double start, stop;
+
+        start = ros::Time::now().toSec();
+
+        write(this->i_fd, ss.str().c_str(), sizeof(ss.str().c_str()));
+
+        while(raw_dist < 0)
+        {
+                stop = ros::Time::now().toSec();
+
+                if(stop - start > 0.50)
+                {
+                        ROS_INFO("Sonar[%d] is not ALIVE ", this->i_id);
+                        this->b_is_alive = false;
+                        return false;
+                }
+
+                //ROS_INFO("Timeout[%d]: %f ", this->i_id, stop-start);
+		ss.str("");
+		ss << this->i_id;
+		strcpy(read_buf, ss.str().c_str());
+		
+                ret_val = read(this->i_fd, read_buf, sizeof(read_buf));
+                raw_dist = atoi(read_buf);
+
+        }
+
+        this->b_is_alive = true; 
+       return true;
+
+}
+
+
+/*void IMSONAR::CheckTrigger()
+{
+        stringstream ss;
+
+        ss << (this->i_id + 100);
+
+        int raw_dist = -1;
+
+        write(this->i_fd, ss.str().c_str(), sizeof(ss.str().c_str()));
+}*/
+
+
+void IMSONAR::Trigger()
+{
+        stringstream ss;
+        
+        ss << this->i_id;
+        
+        int raw_dist = -1;
+
+        write(this->i_fd, ss.str().c_str(), sizeof(ss.str().c_str()));
+}
+
+/*bool IMSONAR::CheckEcho()
+{
+        stringstream ss;
+        char read_buf[100];
+        int read_data = -1;
+        bool ret_val;
+
+        ss << this->i_id;
+
+        strcpy(read_buf, ss.str().c_str());
+
+        ret_val = read(this->i_fd, read_buf, sizeof(read_buf));
+        read_data = atoi(read_buf);
+
+	if(read_data > 0)
 	{
-		stop = ros::Time::now().toSec();
-		
-		if(stop - start > 0.5)
-		{
-			ROS_INFO("Sonar[%d] is not ALIVE ", this->i_id);
-			this->b_is_alive = false;
-			return false;
-		}
-		
-		//ROS_INFO("Timeout[%d]: %f ", this->i_id, stop-start);
-		ret_val = read(this->i_fd, read_buf, sizeof(read_buf));
-		usleep(50000);
-		raw_dist = atoi(read_buf);
-		
+		ret_val = true;
+		this->b_is_alive = true;
 	}
+	else
+	{
+		ROS_INFO("Sonar[%d] is not ALIVE ", this->i_id);
+		ret_val = false;
+		this->b_is_alive = false;
+	}
+
+        return ret_val;
+}*/
+
+int IMSONAR::Echo()
+{
+	stringstream ss;
+	char read_buf[100];
+	int raw_dist = -1;
+	int ret_val;
+
+	ss << this->i_id;
+
+	strcpy(read_buf, ss.str().c_str());
 	
-	this->b_is_alive = true;
-	this->sonar_msg.range = (float)(raw_dist * 0.0001);
-	this->sonar_msg.header.stamp = ros::Time::now();
-	this->sonar_msg.field_of_view = this->dynamic_params->d_fov;
-	this->sonar_msg.min_range = this->dynamic_params->d_min_range;
-	this->sonar_msg.max_range = this->dynamic_params->d_max_range;
-	
-	return true;
+	ret_val = read(this->i_fd, read_buf, sizeof(read_buf));
+	raw_dist = atoi(read_buf);
+
+        this->sonar_msg.range = (float)(raw_dist * 0.0001);
+        this->sonar_msg.header.stamp = ros::Time::now();
+        this->sonar_msg.field_of_view = this->dynamic_params->d_fov;
+        this->sonar_msg.min_range = this->dynamic_params->d_min_range;
+        this->sonar_msg.max_range = this->dynamic_params->d_max_range;
+
+	return ret_val;
+}
+
+/*void IMSONAR::CheckWait()
+{
+        usleep(250);
+}*/
+
+
+void IMSONAR::Wait()
+{
+	usleep(300000);
 }
 
 void IMSONAR::Publish()
@@ -161,12 +245,13 @@ IMDynamicReconfig::IMDynamicReconfig():n_private("~")
 int main(int argc, char **argv)
 {
 	int i_fd;
-  stringstream ss;
-  
-  vector<IMSONAR *> sonar;
+	stringstream ss;
+	vector<bool> b_sonar_alive;
+	vector<IMSONAR *> sonar;
   
   // ROS PARAMS
 	vector<int> T_i_sonar_pins;
+	int i_element_no;
 	double d_frequency;
 	string str_driver_path;
 	// rosparams end
@@ -179,6 +264,7 @@ int main(int argc, char **argv)
 	
 	n.param<string>("evarobot_sonar/driverPath", str_driver_path, "/dev/evarobotSonar");
 	n.param<double>("evarobot_sonar/frequency", d_frequency, 10.0);
+	n.param<int>("evarobot_sonar/element", i_element_no, 3);
 	n.getParam("evarobot_sonar/sonarPins", T_i_sonar_pins);
 		
 	if(T_i_sonar_pins.size() > MAX_SONAR)
@@ -187,9 +273,8 @@ int main(int argc, char **argv)
 	}
 	
 	
-	#ifdef DEBUG
-		ROS_INFO("Number of sonars: %d", T_i_sonar_pins.size());
-	#endif
+	ROS_INFO("Number of sonars: %d", T_i_sonar_pins.size());
+
 	
 	/******************************************************************/
 	/* Init */
@@ -235,6 +320,7 @@ int main(int argc, char **argv)
 	
 	for(uint i = 0; i < T_i_sonar_pins.size(); i++)
 	{
+		b_sonar_alive.push_back(true);
 		if(T_i_sonar_pins[i] < MAX_SONAR)
 		{
 			IMSONAR * dummy_sonar = new IMSONAR(i_fd, T_i_sonar_pins[i], SONAR[T_i_sonar_pins[i]], dyn_params);
@@ -245,25 +331,50 @@ int main(int argc, char **argv)
 			ROS_ERROR("Undefined pin value.");
 		}
 	}
-	
+	double d_dummy = (double)T_i_sonar_pins.size() / (double)i_element_no;
+	int i_group_max = (int)ceil(d_dummy);
+	ROS_DEBUG("Group MAX -> %d", i_group_max);
+	ROS_DEBUG("Pins -> %d", T_i_sonar_pins.size());
+	ROS_DEBUG("element -> %d", i_element_no);
+
+	int i_check_sonar = 0;
+
 	while(ros::ok())
 	{
-		
-		for(uint i = 0; i < T_i_sonar_pins.size(); i++)
-		{
-			if(sonar[i]->ReadRange())
-			{
-				sonar[i]->Publish();
-			}	
-			
-			sonar[i]->updater.update();
-			
-			usleep(45000);
+		b_sonar_alive[i_check_sonar] = sonar[i_check_sonar]->Check();
+		i_check_sonar++;
+		if(i_check_sonar >= T_i_sonar_pins.size())
+			i_check_sonar = 0;
 
+		for(int i_group_no = 0; i_group_no < i_group_max; i_group_no++)
+		{
+			ROS_DEBUG("Group -> %d", i_group_no);
+			for(int i = (i_group_no * i_element_no); i < ((i_group_no+1) * i_element_no) && i < T_i_sonar_pins.size(); i++)
+			{
+				ROS_DEBUG("Trigger -> %d", i);
+				if(b_sonar_alive[i])
+					sonar[i]->Trigger();
+				usleep(45000);
+			}
+			ROS_DEBUG("Wait");
+			if(T_i_sonar_pins.size() > 0)
+				sonar[0]->Wait();
+
+			for(int i = (i_group_no * i_element_no); i < ((i_group_no+1) * i_element_no) && i < T_i_sonar_pins.size(); i++)
+			{
+				ROS_DEBUG("Echo -> %d", i);
+				if(b_sonar_alive[i])
+				{
+					sonar[i]->Echo();
+					sonar[i]->Publish();
+					sonar[i]->updater.update();
+				}
+				usleep(45000);
+			}
 		}
 		
 		ros::spinOnce();
-		loop_rate.sleep();	
+//		loop_rate.sleep();	
 	
 	}
 	

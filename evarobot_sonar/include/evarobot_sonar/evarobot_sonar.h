@@ -94,13 +94,21 @@ class IMSONAR
 				 int pin,
 				 boost::shared_ptr<IMDynamicReconfig> _dynamic_params);
 	~IMSONAR();
-	bool ReadRange();
+	void Trigger();
+	void Wait();
+	int Echo();
+/*	
+	void CheckTrigger();
+	void CheckWait();
+	bool CheckEcho();
+*/
+	bool Check();
 	void Publish();
 	void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat);
 	
 	ros::NodeHandle n;
-  ros::Publisher pub_sonar;
-  diagnostic_updater::Updater updater;
+	ros::Publisher pub_sonar;
+	diagnostic_updater::Updater updater;
   	
 	private:
 	int i_fd;
