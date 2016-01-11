@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<launch>
+  <node name="master_sync" pkg="master_sync_fkie" type="master_sync">
+    <rosparam param="ignore_nodes">['/rplidarNode']</rosparam>
+    <rosparam param="ignore_hosts">[]</rosparam> 
+  </node>
+</launch>
