@@ -54,7 +54,7 @@ float PIDController::RunController(float f_desired, float f_measured)
 		this->d_integral_error = 0.0;
 	}
 
-	if(fabs(d_current_error) <= 0.05)
+	if(fabs(d_current_error) <= 0.01)
 	{
 		d_current_error = 0.0;
 		//ROS_DEBUG("Steady state error is in the boundary.");
