@@ -25,6 +25,22 @@
 
 using namespace std;
 
+int i_error_code = 0;
+
+
+void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
+{
+    if(i_error_code<0)
+    {
+        stat.summaryf(diagnostic_msgs::DiagnosticStatus::ERROR, "%s", GetErrorDescription(i_error_code).c_str());
+        i_error_code = 0;
+    }
+    else
+    {
+        stat.summary(diagnostic_msgs::DiagnosticStatus::OK, "No collision!");
+    }
+}
+
 int main(int argc, char *argv[])
 {
 	// Semaphore
@@ -52,7 +68,9 @@ int main(int argc, char *argv[])
 	mutex = sem_open(SEM_NAME,O_CREAT,0644,1);
 	if(mutex == SEM_FAILED)
 	{
-		perror("unable to create semaphore");
+		ROS_INFO(GetErrorDescription(-125).c_str());
+        i_error_code = -125;
+        
 		sem_unlink(SEM_NAME);
 		
 		return(-1);
@@ -85,16 +103,26 @@ int main(int argc, char *argv[])
 	i_status = batteryReader.setVoltageThresholdHigh(13.0);
 	if(i_status < 0)
 	{
-		ROS_ERROR("Failed: setVoltageThresholdHigh");
+		ROS_INFO(GetErrorDescription(-126).c_str());
+        i_error_code = -126;
 	}
 	
 	i_status = batteryReader.setVoltageThresholdLow(4.5);
 	if(i_status < 0)
 	{
-		ROS_ERROR("Failed: setVoltageThresholdLow");
+		ROS_INFO(GetErrorDescription(-127).c_str());
+        i_error_code = -127;
 	}
 
 	sem_post(mutex);
+
+	// Diagnostics
+	diagnostic_updater::Updater updater;
+	updater.setHardwareID("LTC2943");
+	updater.add("evarobot_battery", &ProduceDiagnostics);
+
+	diagnostic_updater::HeaderlessTopicDiagnostic pub_freq("evarobot_battery", updater,
+            diagnostic_updater::FrequencyStatusParam(&d_min_freq, &d_max_freq, 0.1, 10));
 	
 	// Define frequency
 	ros::Rate loop_rate(10.0);	
@@ -140,6 +168,7 @@ int main(int argc, char *argv[])
 			//pub_freq.tick();
 		}
 		
+		updater.update();
 		ros::spinOnce();
 		loop_rate.sleep();
 		

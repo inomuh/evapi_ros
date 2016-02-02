@@ -17,6 +17,9 @@
 
 #include "IMADC.h"
 
+#include <ros/console.h>
+#include "ErrorCodes.h"
+
 //#ifndef DEBUG
 //#define DEBUG
 //#endif

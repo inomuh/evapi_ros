@@ -9,6 +9,7 @@
 		<include file="$(find evarobot_bumper)/launch/evarobot_bumper.launch" />
 		<include file="$(find evarobot_infrared)/launch/evarobot_infrared.launch" />
 		<include file="$(find evarobot_sonar)/launch/evarobot_sonar.launch" />
+		<include file="$(find evamobil)/launch/evamobil.launch" />
 	</group>
   <!-- multimaster_fkie -->
   <include file="$(find evarobot_start)/launch/master_discovery.launch" />

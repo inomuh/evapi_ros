@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(evarobot_sonar)
 
+set(EVAPI_LIB_SDK_PATH "../sdk/")
+
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
@@ -23,6 +25,7 @@ catkin_package(
 ###########
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  ${EVAPI_LIB_SDK_PATH}/include
   include
 )
 

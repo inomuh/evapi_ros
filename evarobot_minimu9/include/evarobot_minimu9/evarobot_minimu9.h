@@ -31,6 +31,9 @@
 
 #include <sstream>
 
+#include <ros/console.h>
+#include "ErrorCodes.h"
+
 //#include <string.h>
 
 

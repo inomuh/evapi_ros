@@ -59,8 +59,11 @@ int IMADC::ReadChannel(int i_channel_no)
 	u_c_data[1] = 0b10000000 |( ((i_channel_no & 7) << 4)); // second byte transmitted -> (SGL/DIF = 1, D2=D1=D0=0)
 	u_c_data[2] = 0; // third byte transmitted....don't care
 */
-    this->p_imspi->SpiWriteRead(u_c_data, sizeof(u_c_data));
-
+	try{
+		this->p_imspi->SpiWriteRead(u_c_data, sizeof(u_c_data));
+	}catch(int i){
+		throw i;
+	}
 	//sleep(1);
 
     i_value = (u_c_data[1]<< 8) & this->i_mask; //0b111100000000; //0b1100000000;  //merge data[1] & data[2] to get result
@@ -86,15 +89,16 @@ int IMADC::ReadMotorChannel(int i_channel_no)
 	}
 	else
 	{
-		perror("IMADC: Invalid channel number");
-		return 0;
+		throw -64;
 	}
 	
 	u_c_data[2] = 0x00;
 	
-
-    this->p_imspi->SpiWriteRead(u_c_data, sizeof(u_c_data));
-
+	try{
+		this->p_imspi->SpiWriteRead(u_c_data, sizeof(u_c_data));
+	}catch(int i){
+		throw i;
+	}
 
     i_value = (u_c_data[1]<< 8) & this->i_mask; //0b111100000000; //0b1100000000;  //merge data[1] & data[2] to get result
     i_value |=  (u_c_data[2] & 0xff);
@@ -109,27 +113,28 @@ int IMADC::ReadChannel(int i_channel_plus, int i_channel_negative)
 
 	if(i_channel_plus > 7 || i_channel_negative > 7)
 	{
-		perror("IMADC: Wrong Channel Selection.");
-		exit(1);
+		throw -64;
 	}
 
 	if(i_channel_plus % 2 == 0 && i_channel_negative <= i_channel_plus)
 	{
-		perror("IMADC: Wrong Channel Selection.");
-		exit(1);
+		throw -64;
 	}
 
 	if(i_channel_plus % 2 != 0 && i_channel_negative >= i_channel_plus)
 	{
-		perror("IMADC: Wrong Channel Selection.");
-		exit(1);
+		throw -64;
 	}
 
 	u_c_data[0] = 1;  //  first byte transmitted -> start bit
 	u_c_data[1] = 0b00000000 |( ((i_channel_plus & 7) << 4)); // second byte transmitted -> (SGL/DIF = 1, D2=D1=D0=0)
 	u_c_data[2] = 0; // third byte transmitted....don't care
 
-    this->p_imspi->SpiWriteRead(u_c_data, sizeof(u_c_data));
+	try{
+		this->p_imspi->SpiWriteRead(u_c_data, sizeof(u_c_data));
+	}catch(int i){
+		throw i;
+	}
 
     i_value = (u_c_data[1]<< 8) & this->i_mask; // 0b111100000000; //merge data[1] & data[2] to get result
     i_value |=  (u_c_data[2] & 0xff);

@@ -23,6 +23,9 @@
 #include <fcntl.h>
 #include <math.h>
 
+#include <ros/console.h>
+#include <ErrorCodes.h>
+
 #define PI 3.1416
 
 using namespace std;

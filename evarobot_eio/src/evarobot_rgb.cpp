@@ -19,6 +19,8 @@ const int IMRGB::CHARGING    = 6;
 const int IMRGB::CHARGED     = 7;
 const int IMRGB::ERROR       = 8;
 
+int i_error_code;
+
 IMRGB::IMRGB(IMEIO * eio)
 {
 	this->eio = eio;
@@ -27,12 +29,16 @@ IMRGB::IMRGB(IMEIO * eio)
 	this->f_frequency = 10.0;
 	this->i_times = 0;
 	this->i_color = IMRGB::LEDOFF;
-	
-	this->eio->SetPinADirection(IMEIO::RGB_LED1, IMEIO::OUTPUT);
-	this->eio->SetPinADirection(IMEIO::RGB_LED2, IMEIO::OUTPUT);
-    this->eio->SetPinADirection(IMEIO::RGB_LED3, IMEIO::OUTPUT);
-    
-    this->TurnLedOn(0);
+
+	try{
+		this->eio->SetPinADirection(IMEIO::RGB_LED1, IMEIO::OUTPUT);
+		this->eio->SetPinADirection(IMEIO::RGB_LED2, IMEIO::OUTPUT);
+		this->eio->SetPinADirection(IMEIO::RGB_LED3, IMEIO::OUTPUT);
+	}catch(int e){
+		ROS_INFO(GetErrorDescription(e).c_str());
+        i_error_code = e;
+	}
+	this->TurnLedOn(0);
 }
 
 IMRGB::~IMRGB()
@@ -53,17 +59,22 @@ void IMRGB::TurnLedOn(int i_color)
 	
 	if(i_color > 7)
 	{
-		ROS_ERROR("Invalid Color while turning led on");
+		ROS_INFO(GetErrorDescription(-92).c_str());
+        i_error_code = -92;
 	}
 	
 	for(int i = 0; i < 3; i++)
 	{
 		b_rgb[i] = (bool)(i_color & i_dummies[i]);
 	}
-
-	this->eio->SetPinAValue(IMEIO::RGB_LED1, b_rgb[0]);
-	this->eio->SetPinAValue(IMEIO::RGB_LED2, b_rgb[1]);
-	this->eio->SetPinAValue(IMEIO::RGB_LED3, b_rgb[2]);
+	try{
+		this->eio->SetPinAValue(IMEIO::RGB_LED1, b_rgb[0]);
+		this->eio->SetPinAValue(IMEIO::RGB_LED2, b_rgb[1]);
+		this->eio->SetPinAValue(IMEIO::RGB_LED3, b_rgb[2]);
+	}catch(int e){
+		ROS_INFO(GetErrorDescription(e).c_str());
+                i_error_code = e;
+	}
 }
 
 void IMRGB::RunAutonomousMode()
@@ -141,7 +152,8 @@ void IMRGB::Flash(int i_color, float f_frequency)
 	
 	if(f_frequency == 0.0)
 	{
-		ROS_ERROR("Division by zero");
+		ROS_INFO(GetErrorDescription(-93).c_str());
+        i_error_code = -93;
 		return;
 	}
 	
@@ -252,7 +264,8 @@ bool IMRGB::callbackSetRGB(im_msgs::SetRGB::Request& request, im_msgs::SetRGB::R
 	if(request.mode < 0 || request.mode > 8)
 	{
 		response.ret = 0;
-		ROS_ERROR("Invalid mode.");
+		ROS_INFO(GetErrorDescription(-94).c_str());
+        i_error_code = -94;
 	}
 	else
 	{
@@ -262,7 +275,8 @@ bool IMRGB::callbackSetRGB(im_msgs::SetRGB::Request& request, im_msgs::SetRGB::R
 	if(request.frequency == 0)
 	{
 		response.ret = 0;
-		ROS_ERROR("Invalid frequency.");
+		ROS_INFO(GetErrorDescription(-95).c_str());
+        i_error_code = -95;
 	}
 	else
 	{
@@ -272,7 +286,8 @@ bool IMRGB::callbackSetRGB(im_msgs::SetRGB::Request& request, im_msgs::SetRGB::R
 	if(request.color < 0 || request.color > 7)
 	{
 		response.ret = 0;
-		ROS_ERROR("Invalid color.");
+		ROS_INFO(GetErrorDescription(-96).c_str());
+        i_error_code = -96;
 	}
 	else
 	{
@@ -280,6 +295,19 @@ bool IMRGB::callbackSetRGB(im_msgs::SetRGB::Request& request, im_msgs::SetRGB::R
 	}
 	
 	return true;
+}
+
+void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
+{
+    if(i_error_code<0)
+    {
+        stat.summaryf(diagnostic_msgs::DiagnosticStatus::ERROR, "%s", GetErrorDescription(i_error_code).c_str());
+        i_error_code = 0;
+    }
+    else
+    {
+		stat.summary(diagnostic_msgs::DiagnosticStatus::OK, "EvarobotRGB: No problem.");
+    }
 }
 
 int main(int argc, char **argv)
@@ -294,7 +322,8 @@ int main(int argc, char **argv)
 	mutex = sem_open(SEM_NAME,O_CREAT,0644,1);
 	if(mutex == SEM_FAILED)
 	{
-		perror("unable to create semaphore");
+		ROS_INFO(GetErrorDescription(-97).c_str());
+        i_error_code = -97;
 		sem_unlink(SEM_NAME);
 
 		return(-1);
@@ -309,8 +338,14 @@ int main(int argc, char **argv)
 	
 	n.param<string>("evarobot_eio/i2c_path", str_i2c_path, "/dev/i2c-1");
 		
-
-	IMEIO * eio = new IMEIO(0b00100000, string("/dev/i2c-1"),  mutex);
+	IMEIO * eio;
+	try{
+		eio = new IMEIO(0b00100000, string("/dev/i2c-1"),  mutex);
+	}catch(int e){
+		ROS_INFO(GetErrorDescription(e).c_str());
+        i_error_code = e;
+	}
+	
 	IMRGB * rgb = new IMRGB(eio);
 	
 	ros::ServiceServer service = n.advertiseService("evarobot_rgb/SetRGB", &IMRGB::callbackSetRGB, rgb);
@@ -318,7 +353,13 @@ int main(int argc, char **argv)
 	ros::Time start_time, end_time;
 	ros::Duration sleep_duration, loop_duration;
 	ros::Rate loop_rate(10.0);
-	
+
+
+	// Diagnostics
+	diagnostic_updater::Updater updater;
+	updater.setHardwareID("EvarobotRGB");
+	updater.add("rgb", &ProduceDiagnostics);
+
 	while(ros::ok())
 	{	
 		start_time = ros::Time::now();
@@ -387,7 +428,8 @@ int main(int argc, char **argv)
 		{
 			rgb->TurnLedOff();
 		}
-				
+
+		updater.update();
 		ros::spinOnce();
 	
 		end_time = ros::Time::now();

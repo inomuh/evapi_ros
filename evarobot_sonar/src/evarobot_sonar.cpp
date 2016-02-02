@@ -6,6 +6,8 @@
  * 
  * 
  * */
+ 
+int i_error_code = 0;
 
 IMSONAR::IMSONAR(int fd, 
 								 int id, 
@@ -70,7 +72,7 @@ bool IMSONAR::Check()
 
 		if(stop - start > 0.50)
 		{
-		ROS_INFO("Sonar[%d] is not ALIVE ", this->i_id);
+		ROS_DEBUG("EvarobotSonar: Sonar[%d] is not ALIVE ", this->i_id);
 		this->b_is_alive = false;
 		return false;
 		}
@@ -139,7 +141,12 @@ void IMSONAR::Publish()
 
 void IMSONAR::ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
 {
-	if(this->b_is_alive)
+	if(i_error_code<0)
+	{
+		stat.summary(diagnostic_msgs::DiagnosticStatus::ERROR, GetErrorDescription(i_error_code).c_str());
+        i_error_code = 0;
+	}
+	else if(this->b_is_alive)
 	{
 		stat.summaryf(diagnostic_msgs::DiagnosticStatus::OK, "Sonar%d is alive!", this->i_id);
 	}
@@ -159,7 +166,7 @@ void IMSONAR::ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &st
 
 void IMDynamicReconfig::CallbackReconfigure(evarobot_sonar::SonarParamsConfig &config, uint32_t level)
 {
-	ROS_INFO("Updating Sonar Params...");
+	ROS_DEBUG("EvarobotSonar: Updating Sonar Params...");
 		
 	this->d_fov = config.field_of_view;
 	this->d_min_range = config.minRange;
@@ -177,10 +184,10 @@ IMDynamicReconfig::IMDynamicReconfig():n_private("~")
 	n_private.param("maxFreq", this->d_max_freq, 10.0);
 	n_private.param("minFreq", this->d_min_freq, 0.2);
 		
-	ROS_DEBUG("b_always_on: %d", this->b_always_on);
-	ROS_DEBUG("d_fov: %f", this->d_fov);
-	ROS_DEBUG("d_min_range: %f", this->d_min_range);
-	ROS_DEBUG("d_max_range: %f", this->d_max_range);
+	ROS_DEBUG("EvarobotSonar: b_always_on: %d", this->b_always_on);
+	ROS_DEBUG("EvarobotSonar: d_fov: %f", this->d_fov);
+	ROS_DEBUG("EvarobotSonar: d_min_range: %f", this->d_min_range);
+	ROS_DEBUG("EvarobotSonar: d_max_range: %f", this->d_max_range);
 	
 	
 	// Dynamic Reconfigure
@@ -218,17 +225,19 @@ int main(int argc, char **argv)
 		
 	if(T_i_sonar_pins.size() > MAX_SONAR)
 	{
-		ROS_ERROR("Number of sonar devices mustn't be greater than %d", MAX_SONAR);
+		ROS_INFO(GetErrorDescription(-120).c_str());
+        i_error_code = -120;
 	}
 	
 	
-	ROS_INFO("Number of sonars: %d", T_i_sonar_pins.size());
+	ROS_DEBUG("EvarobotSonar: Number of sonars: %d", T_i_sonar_pins.size());
 
 	i_fd = open(str_driver_path.c_str(), O_RDWR);
 	
 	if(i_fd < 0)
 	{
-		printf("file %s either does not exist or has been locked by another process\n", str_driver_path.c_str());
+		ROS_INFO(GetErrorDescription(-121).c_str());
+        i_error_code = -121;
 		exit(-1);
 	}
 		
@@ -251,7 +260,8 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-			ROS_ERROR("Undefined pin value.");
+			ROS_INFO(GetErrorDescription(-122).c_str());
+			i_error_code = -122;
 		}
 	}
 	double d_dummy = (double)T_i_sonar_pins.size() / (double)i_element_no;
@@ -271,27 +281,24 @@ int main(int argc, char **argv)
 
 		for(int i_group_no = 0; i_group_no < i_group_max; i_group_no++)
 		{
-			ROS_DEBUG("Group -> %d", i_group_no);
 			for(int i = (i_group_no * i_element_no); i < ((i_group_no+1) * i_element_no) && i < T_i_sonar_pins.size(); i++)
 			{
-				ROS_DEBUG("Trigger -> %d", i);
 				if(b_sonar_alive[i])
 					sonar[i]->Trigger();
 				usleep(45000);
 			}
-			ROS_DEBUG("Wait");
+
 			if(T_i_sonar_pins.size() > 0)
 				sonar[0]->Wait();
 
 			for(int i = (i_group_no * i_element_no); i < ((i_group_no+1) * i_element_no) && i < T_i_sonar_pins.size(); i++)
 			{
-				ROS_DEBUG("Echo -> %d", i);
 				if(b_sonar_alive[i])
 				{
 					sonar[i]->Echo();
 					sonar[i]->Publish();
-					sonar[i]->updater.update();
 				}
+				sonar[i]->updater.update();
 				usleep(45000);
 			}
 		}

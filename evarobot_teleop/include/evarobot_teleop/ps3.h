@@ -3,6 +3,12 @@
 #include "geometry_msgs/Twist.h"
 #include "im_msgs/SetRGB.h"
 
+#include <diagnostic_updater/diagnostic_updater.h>
+#include <diagnostic_updater/publisher.h>
+
+#include "IMEIO.h"
+#include "ErrorCodes.h"
+
 using namespace std;
 
 class IMJoystick

@@ -12,6 +12,12 @@
 
 #include <sstream>
 
+#include <diagnostic_updater/diagnostic_updater.h>
+#include <diagnostic_updater/publisher.h>
+
+#include <ros/console.h>
+#include <ErrorCodes.h>
+
 //#ifndef DEBUG
 //#define DEBUG
 //#endif

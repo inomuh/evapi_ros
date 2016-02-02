@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(evarobot_teleop)
 
+set(EVAPI_LIB_SDK_PATH "../sdk/")
+
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   roscpp
@@ -8,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
   im_msgs
+  diagnostic_updater
 )
 
 catkin_package(
@@ -20,6 +23,7 @@ catkin_package(
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  ${EVAPI_LIB_SDK_PATH}/include
   include
 )
 

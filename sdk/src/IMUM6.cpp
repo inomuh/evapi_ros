@@ -26,15 +26,23 @@ IMUM6::IMUM6(IMSerial * p_imserial)
 
 bool IMUM6::ParseData()
 {
+
 	bool b_return = false;
 
 	bool b_received_data = false;
-
-	this->StoreData();
+	try{
+		this->StoreData();
+	}catch(int i){
+		throw i;
+	}
 
 	if(!this->b_incomplete_packet)
 	{
-		b_received_data = this->isReceivedData(this->c_start_bits, sizeof(this->c_start_bits));
+		try{
+			b_received_data = this->isReceivedData(this->c_start_bits, sizeof(this->c_start_bits));
+		}catch(int e){
+			throw e;
+		}
 		if(!b_received_data)
 		{
 			return b_return;
@@ -42,7 +50,6 @@ bool IMUM6::ParseData()
 
 		this->i_incomplete_no = 0;
 	}
-
 
 	if(this->b_incomplete_packet || b_received_data)
 	{
@@ -117,10 +124,10 @@ bool IMUM6::ParseData()
 			}
 			else
 			{
-				printf("IMIMU_UM6: Undefined Packet Number. Number: %d\n", this->i_incomplete_no);
-				this->b_incomplete_packet = false;
+				//this->b_incomplete_packet = false;
 				//this->i_incomplete_no = 0;
-				break;
+				throw -38;
+				//break;
 			}
 		}
 
@@ -143,8 +150,14 @@ bool IMUM6::ParseData()
 
 bool IMUM6::GetRawData(IMUM6::UM6_DATA & data)
 {
-
-	bool b_status = this->ParseData();
+	
+	bool b_status = false;
+	
+	try{
+		b_status = this->ParseData();
+	}catch(int i){
+		throw i;
+	}
 
 	if(b_status)
 	{
@@ -158,6 +171,7 @@ bool IMUM6::isReceivedData(char * p_c_start_bits, int i_length)
 {
 	bool b_received_data = false;
 
+try{
 	int i_k = 0;
 
 	for(list<char>::iterator it = this->T_c_stored_data.begin(); it != this->T_c_stored_data.end(); it++)
@@ -195,7 +209,9 @@ bool IMUM6::isReceivedData(char * p_c_start_bits, int i_length)
 
 //	if(b_received_data)
 //		printf("\n");
-
+}catch(...){
+	throw -119;
+}
 	return b_received_data;
 }
 
@@ -208,8 +224,7 @@ void IMUM6::StoreData()
 
 		if(i_size < 0)
 		{
-			perror("IMIMU_UM6: A failure occured when reading data.");
-			exit(1);
+			throw -39;
 		}
 
 		for(int i = 0; i < i_size; i++)
@@ -301,11 +316,13 @@ int IMUM6::SetFrequency(int i_frequency)
 	c_broadcast_rate = (i_frequency - 20.0) * (255.0 / 280.0);
 
 	printf("Broadcast Rate: %x\n", c_broadcast_rate);
-
-	this->SetRegisterPinValue(this->i_communication_register, 0, 8, c_broadcast_rate);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
-
+	try{
+		this->SetRegisterPinValue(this->i_communication_register, 0, 8, c_broadcast_rate);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
+	}catch(int i){
+		throw i;
+	}
 	return i_status_value;
 }
 
@@ -368,16 +385,17 @@ int IMUM6::SetBaudRate(long l_baudrate)
 		}
 		default:
 		{
-			perror("IMUM6: Undefined Baudrate.");
-			exit(1);
-			break;
+			throw -40;
 		}
-
 	}
-
-	this->SetRegisterPinValue(this->i_communication_register, 8, 3, c_baudrate);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
+	
+	try{
+		this->SetRegisterPinValue(this->i_communication_register, 8, 3, c_baudrate);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
+	}catch(int i){
+		throw i;
+	}
 
 	return i_status_value;
 }
@@ -441,18 +459,16 @@ int IMUM6::SetGPSBaudrate(long l_baudrate)
 		}
 		default:
 		{
-			perror("IMIMU_UM6: Undefined Baudrate.");
-			exit(1);
-			break;
+			throw -40;
 		}
-
 	}
-
-	this->SetRegisterPinValue(this->i_communication_register, 11, 3, c_baudrate);
-
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
-
+	
+	try{
+		this->SetRegisterPinValue(this->i_communication_register, 11, 3, c_baudrate);
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
+	}catch(int i){
+		throw i;
+	}
 	return i_status_value;
 }
 
@@ -469,10 +485,13 @@ int IMUM6::SetDetailedSatelliteStatusTrasmission(bool b_status)
 
 	if(b_status) c_status = 0x01;
 
-	this->SetRegisterPinValue(this->i_communication_register, 15, 1, c_status);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
-
+	try{
+		this->SetRegisterPinValue(this->i_communication_register, 15, 1, c_status);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
+	}catch(int i){
+		throw i;
+	}
 	return i_status_value;
 }
 
@@ -488,11 +507,13 @@ int IMUM6::SetSatelliteSummaryTrasmission(bool b_status)
 	char c_status = 0x00;
 
 	if(b_status) c_status = 0x01;
-
-	this->SetRegisterPinValue(this->i_communication_register, 16, 1, c_status);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
-
+	try{
+		this->SetRegisterPinValue(this->i_communication_register, 16, 1, c_status);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
+	}catch(int i){
+		throw i;
+	}
 	return i_status_value;
 }
 
@@ -509,12 +530,13 @@ int IMUM6::SetGPSCourseVelocityTrasmission(bool b_status)
 	char c_status = 0x00;
 
 	if(b_status) c_status = 0x01;
-
-	this->SetRegisterPinValue(this->i_communication_register, 17, 1, c_status);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION,
-			this->i_communication_register);
-
+	try{
+		this->SetRegisterPinValue(this->i_communication_register, 17, 1, c_status);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
+	}catch(int i){
+		throw i;
+	}
 	return i_status_value;
 }
 
@@ -531,11 +553,13 @@ int IMUM6::SetGPSRelativePositionTrasmission(bool b_status)
 	char c_status = 0x00;
 
 	if(b_status) c_status = 0x01;
-
-	this->SetRegisterPinValue(this->i_communication_register, 18, 1, c_status);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION,
-			this->i_communication_register);
+	try{
+		this->SetRegisterPinValue(this->i_communication_register, 18, 1, c_status);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
+	}catch(int i){
+		throw i;
+	}
 	return i_status_value;
 }
 
@@ -552,10 +576,14 @@ int IMUM6::SetGPSPositionTransmission(bool b_status)
 
 	if(b_status) c_status = 0x01;
 
-	this->SetRegisterPinValue(this->i_communication_register, 19, 1, c_status);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION,
-			this->i_communication_register);
+	try{
+		this->SetRegisterPinValue(this->i_communication_register, 19, 1, c_status);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
+	}catch(int i){
+		throw i;
+	}
+		
 	return i_status_value;
 }
 
@@ -571,11 +599,14 @@ int IMUM6::SetTemperatureMeasurementTransmission(bool b_status)
 	char c_status = 0x00;
 
 	if(b_status) c_status = 0x01;
-
-	this->SetRegisterPinValue(this->i_communication_register, 20, 1, c_status);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION,
-			this->i_communication_register);
+	
+	try{
+		this->SetRegisterPinValue(this->i_communication_register, 20, 1, c_status);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
+	}catch(int i){
+		throw i;
+	}
 	return i_status_value;
 }
 
@@ -591,11 +622,14 @@ int IMUM6::SetCovarianceMatrixTransmission(bool b_status)
 
 	if(b_status) c_status = 0x01;
 
-	this->SetRegisterPinValue(this->i_communication_register, 21, 1, c_status);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION,
-			this->i_communication_register);
-
+	try{
+		this->SetRegisterPinValue(this->i_communication_register, 21, 1, c_status);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
+	}catch(int i){
+		throw i;
+	}
+	
 	return i_status_value;
 }
 
@@ -610,11 +644,14 @@ int IMUM6::SetEulerAngleTransmission(bool b_status)
 
 	if(b_status) c_status = 0x01;
 
-	this->SetRegisterPinValue(this->i_communication_register, 22, 1, c_status);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION,
-			this->i_communication_register);
-
+	try{
+		this->SetRegisterPinValue(this->i_communication_register, 22, 1, c_status);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
+	}catch(int i){
+		throw i;
+	}
+	
 	return i_status_value;
 }
 
@@ -631,11 +668,14 @@ int IMUM6::SetQuaternionTransmission(bool b_status)
 
 	if(b_status) c_status = 0x01;
 
-	this->SetRegisterPinValue(this->i_communication_register, 23, 1, c_status);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION,
-			this->i_communication_register);
-
+	try{
+		this->SetRegisterPinValue(this->i_communication_register, 23, 1, c_status);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
+	}catch(int i){
+		throw i;
+	}
+	
 	return i_status_value;
 }
 
@@ -650,12 +690,15 @@ int IMUM6::SetProcessedMagnetometerTransmission(bool b_status)
 	char c_status = 0x00;
 
 	if(b_status) c_status = 0x01;
-
-	this->SetRegisterPinValue(this->i_communication_register, 24, 1, c_status);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION,
-			this->i_communication_register);
-
+	
+	try{
+		this->SetRegisterPinValue(this->i_communication_register, 24, 1, c_status);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
+	}catch(int i){
+		throw i;
+	}
+	
 	return i_status_value;
 }
 
@@ -671,11 +714,14 @@ int IMUM6::SetProcessedAccelerometerTransmission(bool b_status)
 
 	if(b_status) c_status = 0x01;
 
-	this->SetRegisterPinValue(this->i_communication_register, 25, 1, c_status);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION,
-			this->i_communication_register);
-
+	try{
+		this->SetRegisterPinValue(this->i_communication_register, 25, 1, c_status);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
+	}catch(int i){
+		throw i;
+	}
+	
 	return i_status_value;
 }
 
@@ -691,11 +737,14 @@ int IMUM6::SetProcessedGyroTransmission(bool b_status)
 
 	if(b_status) c_status = 0x01;
 
-	this->SetRegisterPinValue(this->i_communication_register, 26, 1, c_status);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION,
-			this->i_communication_register);
-
+	try{
+		this->SetRegisterPinValue(this->i_communication_register, 26, 1, c_status);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
+	}catch(int i){
+		throw i;
+	}
+	
 	return i_status_value;
 }
 
@@ -711,11 +760,14 @@ int IMUM6::SetRawMagnetometerTransmission(bool b_status)
 
 	if(b_status) c_status = 0x01;
 
-	this->SetRegisterPinValue(this->i_communication_register, 27, 1, c_status);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION,
-			this->i_communication_register);
-
+	try{
+		this->SetRegisterPinValue(this->i_communication_register, 27, 1, c_status);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
+	}catch(int i){
+		throw i;
+	}
+	
 	return i_status_value;
 }
 
@@ -731,11 +783,14 @@ int IMUM6::SetRawAccelerometerTransmission(bool b_status)
 
 	if(b_status) c_status = 0x01;
 
-	this->SetRegisterPinValue(this->i_communication_register, 28, 1, c_status);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION,
-			this->i_communication_register);
-
+	try{
+		this->SetRegisterPinValue(this->i_communication_register, 28, 1, c_status);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
+	}catch(int i){
+		throw i;
+	}
+	
 	return i_status_value;
 }
 
@@ -750,12 +805,15 @@ int IMUM6::SetRawGyroTransmission(bool b_status)
 	char c_status = 0x00;
 
 	if(b_status) c_status = 0x01;
-
-	this->SetRegisterPinValue(this->i_communication_register, 29, 1, c_status);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION,
-			this->i_communication_register);
-
+	
+	try{
+		this->SetRegisterPinValue(this->i_communication_register, 29, 1, c_status);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
+	}catch(int i){
+		throw i;
+	}
+	
 	return i_status_value;
 }
 
@@ -772,16 +830,18 @@ int IMUM6::SetMode(bool b_mode)
 	if(b_mode) { c_status = 0x01;}
 	else {c_status = 0x00;}
 
-	this->SetRegisterPinValue(this->i_communication_register, 30, 1, c_status);
-
-/*	this->i_communication_register &= (0xBFFF);
-	this->i_communication_register |= (c_status);*/
-
-	printf("Communication Register (Setmode): %x\n", this->i_communication_register);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION,
-			this->i_communication_register);
-
+	try{
+		this->SetRegisterPinValue(this->i_communication_register, 30, 1, c_status);
+	/*	this->i_communication_register &= (0xBFFF);
+		this->i_communication_register |= (c_status);*/
+		
+		printf("Communication Register (Setmode): %x\n", this->i_communication_register);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_COMMUNICATION, this->i_communication_register);
+	}catch(int i){
+		throw i;
+	}
+	
 	return i_status_value;
 }
 
@@ -797,11 +857,14 @@ int IMUM6::SetPPSTiming(bool b_status)
 
 	if(b_status) c_status = 0x01;
 
-	this->SetRegisterPinValue(this->i_misc_config_register, 27, 1, c_status);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_MISC_CONFIG,
-			this->i_misc_config_register);
-
+	try{
+		this->SetRegisterPinValue(this->i_misc_config_register, 27, 1, c_status);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_MISC_CONFIG, this->i_misc_config_register);
+	}catch(int i){
+		throw i;
+	}
+	
 	return i_status_value;
 }
 
@@ -815,11 +878,14 @@ int IMUM6::SetQuaterninonState(bool b_status)
 
 	if(b_status) c_status = 0x01;
 
-	this->SetRegisterPinValue(this->i_misc_config_register, 28, 1, c_status);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_MISC_CONFIG,
-			this->i_misc_config_register);
-
+	try{
+		this->SetRegisterPinValue(this->i_misc_config_register, 28, 1, c_status);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_MISC_CONFIG, this->i_misc_config_register);
+	}catch(int i){
+		throw i;
+	}
+	
 	return i_status_value;
 }
 
@@ -834,11 +900,14 @@ int IMUM6::SetGyroCalibration(bool b_status)
 
 	if(b_status) c_status = 0x01;
 
-	this->SetRegisterPinValue(this->i_misc_config_register, 29, 1, c_status);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_MISC_CONFIG,
-			this->i_misc_config_register);
-
+	try{
+		this->SetRegisterPinValue(this->i_misc_config_register, 29, 1, c_status);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_MISC_CONFIG, this->i_misc_config_register);
+	}catch(int i){
+		throw i;
+	}
+	
 	return i_status_value;
 }
 
@@ -852,11 +921,14 @@ int IMUM6::SetEKFAccelerometerUpdates(bool b_status)
 
 	if(b_status) c_status = 0x01;
 
-	this->SetRegisterPinValue(this->i_misc_config_register, 30, 1, c_status);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_MISC_CONFIG,
-			this->i_misc_config_register);
-
+	try{
+		this->SetRegisterPinValue(this->i_misc_config_register, 30, 1, c_status);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_MISC_CONFIG, this->i_misc_config_register);
+	}catch(int i){
+		throw i;
+	}
+	
 	return i_status_value;
 }
 
@@ -870,11 +942,14 @@ int IMUM6::SetEKFMagnetometerUpdates(bool b_status)
 
 	if(b_status) c_status = 0x01;
 
-	this->SetRegisterPinValue(this->i_misc_config_register, 31, 1, c_status);
-
-	i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_MISC_CONFIG,
-			this->i_misc_config_register);
-
+	try{
+		this->SetRegisterPinValue(this->i_misc_config_register, 31, 1, c_status);
+		
+		i_status_value = this->SetRegister32bitValue(IMUM6::REGISTERS::UM6_MISC_CONFIG, this->i_misc_config_register);
+	}catch(int i){
+		throw i;
+	}
+	
 	return i_status_value;
 }
 
@@ -892,8 +967,7 @@ void IMUM6::SetRegisterPinValue(
 
 	if(i_count_of_pins > 32)
 	{
-		perror("IMIMU_UM6: Wrong count of pins. \n");
-		exit(1);
+		throw -41;
 	}
 
 	for(int i = 0; i < i_count_of_pins; i++)
@@ -909,14 +983,6 @@ void IMUM6::SetRegisterPinValue(
 	i_register &= i_mask;
 	i_register |= (c_value << i_pin_no);
 }
-
-
-
-
-
-
-
-
 
 /*
  * Example:
@@ -946,7 +1012,6 @@ int IMUM6::SetRegister32bitValue(int i_register, float f_data)
 	c_data[8] = union32.c[0];
 
 
-
 	// Sum of
 	for(uint i = 0; i < sizeof(c_data)-2; i++)
 	{
@@ -956,8 +1021,12 @@ int IMUM6::SetRegister32bitValue(int i_register, float f_data)
 	c_data[9] = (i_computed_checksum >> 8) & 0xFF;
 	c_data[10] = i_computed_checksum & 0xFF;
 
-
-	i_status_value = this->p_imserial->WriteData(c_data, sizeof(c_data));
+	try{
+		i_status_value = this->p_imserial->WriteData(c_data, sizeof(c_data));
+	}catch(int i){
+		throw i;
+	}
+	
 	usleep(1000);
 	this->b_command_complete = false;
 
@@ -986,8 +1055,6 @@ int IMUM6::SetRegister32bitValue(int i_register, int32_t i_data)
 	c_data[7] = union32.c[1];
 	c_data[8] = union32.c[0];
 
-
-
 	// Sum of
 	for(uint i = 0; i < sizeof(c_data)-2; i++)
 	{
@@ -997,8 +1064,12 @@ int IMUM6::SetRegister32bitValue(int i_register, int32_t i_data)
 	c_data[9] = (i_computed_checksum >> 8) & 0xFF;
 	c_data[10] = i_computed_checksum & 0xFF;
 
-
-	i_status_value = this->p_imserial->WriteData(c_data, sizeof(c_data));
+	try{
+		i_status_value = this->p_imserial->WriteData(c_data, sizeof(c_data));
+	}catch(int i){
+		throw i;
+	}
+	
 	usleep(1000);
 	this->b_command_complete = false;
 
@@ -1016,7 +1087,11 @@ int IMUM6::SetRegister16bitValue(int i_register, int16_t * p_i_data)
 	union32.i = -(unsigned int)p_i_data[0];
 	union32.i |= (-(unsigned int)p_i_data[1]) << 16;
 
-	i_status_value = this->SetRegister32bitValue(i_register, union32.i);
+	try{
+		i_status_value = this->SetRegister32bitValue(i_register, union32.i);
+	}catch(int i){
+		throw i;
+	}
 
 	return i_status_value;
 }
@@ -1028,13 +1103,15 @@ int IMUM6::SetRegister16bitValue(int i_register, int16_t i_data)
 
 	UNION32 union32;
 
-
 	// Two's complement
 	union32.i = 0x0000;
 	union32.i |= (-(unsigned int)i_data) << 16;
 
-	i_status_value = this->SetRegister32bitValue(i_register, union32.i);
-
+	try{
+		i_status_value = this->SetRegister32bitValue(i_register, union32.i);
+	}catch(int i){
+		throw i;
+	}
 
 	return i_status_value;
 }
@@ -1076,16 +1153,16 @@ int IMUM6::ProcessData(vector<int> & T_i_registers)
 		}
 		else
 		{
-			perror("IMIMU_UM6: Negative Batch.\n");
-			exit(1);
+			throw -42;
 		}
 	}
 	else if(this->um6_data.packet_type.i_packet_has_data == 0)
 	{
 		if(this->um6_data.packet_type.i_command_failed == 1)
 		{
-			printf("IMIMU_UM6: Command Failed. Address: %x\n", this->um6_data.c_adress);
+
 			this->b_command_complete = false;
+			throw -43;
 		}
 		else
 		{
@@ -1095,8 +1172,7 @@ int IMUM6::ProcessData(vector<int> & T_i_registers)
 	}
 	else
 	{
-		perror("IMIMU_UM6: Negative Has Data.\n");
-		exit(1);
+		throw -43;
 	}
 
 
@@ -1131,24 +1207,17 @@ int IMUM6::SetCommand(int i_register)
 	c_data[5] = (i_computed_checksum >> 8) & 0xFF;
 	c_data[6] = i_computed_checksum & 0xFF;
 
-
-	i_status_value = this->p_imserial->WriteData(c_data, sizeof(c_data));
+	try{
+		i_status_value = this->p_imserial->WriteData(c_data, sizeof(c_data));
+	}catch(int i){
+		throw i;
+	}
+	
 	usleep(1000);
 	this->b_command_complete = false;
 
 	return i_status_value;
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 int IMUM6::CalculateChecksum()
@@ -1163,15 +1232,6 @@ bool IMUM6::isCommandCompleted() const
 {
 	return this->b_command_complete;
 }
-
-
-
-
-
-
-
-
-
 
 /*void IMUM6::CBReadData()
 {

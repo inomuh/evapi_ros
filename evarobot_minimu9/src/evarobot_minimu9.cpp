@@ -3,6 +3,8 @@
 #include <dynamic_reconfigure/server.h>
 #include <evarobot_minimu9/ParamsConfig.h>
 
+int i_error_code = 0;
+
 std::ostream & operator << (std::ostream & os, const vector & vector)
 {
     return os << FLOAT_FORMAT << vector(0) << ' '
@@ -29,17 +31,17 @@ typedef void rotation_output_function(quaternion& rotation);
 
 void output_quaternion(quaternion & rotation)
 {
-    std::cout << rotation;
+    ROS_DEBUG_STREAM("EvarobotIMU: " << rotation);
 }
 
 void output_matrix(quaternion & rotation)
 {
-    std::cout << rotation.toRotationMatrix();
+    ROS_DEBUG_STREAM("EvarobotIMU: " << rotation.toRotationMatrix());
 }
 
 void output_euler(quaternion & rotation)
 {
-    std::cout << (vector)(rotation.toRotationMatrix().eulerAngles(2, 1, 0) * (180 / M_PI));
+    ROS_DEBUG_STREAM("EvarobotIMU: " << (vector)(rotation.toRotationMatrix().eulerAngles(2, 1, 0) * (180 / M_PI)));
 }
 
 int millis()
@@ -55,7 +57,7 @@ void streamRawValues(IMU& imu)
     while(1)
     {
         imu.read();
-        printf("%7d %7d %7d  %7d %7d %7d  %7d %7d %7d\n",
+        ROS_DEBUG("EvarobotIMU: %7d %7d %7d  %7d %7d %7d  %7d %7d %7d\n",
                imu.raw_m[0], imu.raw_m[1], imu.raw_m[2],
                imu.raw_a[0], imu.raw_a[1], imu.raw_a[2],
                imu.raw_g[0], imu.raw_g[1], imu.raw_g[2]
@@ -155,7 +157,11 @@ void ahrs(IMU & imu, fuse_function * fuse, rotation_output_function * output)
         int last_start = start;
         start = millis();
         float dt = (start-last_start)/1000.0;
-        if (dt < 0){ throw std::runtime_error("Time went backwards."); }
+        if (dt < 0){ 
+			ROS_INFO(GetErrorDescription(-107).c_str());
+			i_error_code = -107;
+			throw std::runtime_error("Time went backwards."); 
+		}
 
         vector angular_velocity = imu.readGyro();
         vector acceleration = imu.readAcc();
@@ -179,6 +185,19 @@ bool b_is_received_params = false;
 void CallbackReconfigure(evarobot_minimu9::ParamsConfig &config, uint32_t level)
 {
    b_is_received_params = true;        
+}
+
+void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
+{
+    if(i_error_code<0)
+    {
+        stat.summaryf(diagnostic_msgs::DiagnosticStatus::ERROR, "%s", GetErrorDescription(i_error_code).c_str());
+        i_error_code = 0;
+    }
+    else
+    {
+		stat.summary(diagnostic_msgs::DiagnosticStatus::OK, "EvarobotIMU: No problem.");
+    }
 }
 
 
@@ -205,7 +224,8 @@ int main(int argc, char *argv[])
 	mutex = sem_open(SEM_NAME,O_CREAT,0644,1);
 	if(mutex == SEM_FAILED)
 	{
-		perror("unable to create semaphore");
+		ROS_INFO(GetErrorDescription(-105).c_str());
+        i_error_code = -105;
 		sem_unlink(SEM_NAME);
 		
 		return(-1);
@@ -231,7 +251,8 @@ int main(int argc, char *argv[])
 	
 	if(!n.getParam("evarobot_minimu9/frequency", d_frequency))
 	{
-	  ROS_ERROR("Failed to get param 'frequency'");
+	    ROS_INFO(GetErrorDescription(-106).c_str());
+        i_error_code = -106;
 	} 	
 	
 	realtime_tools::RealtimePublisher<sensor_msgs::Imu> * imu_pub = new realtime_tools::RealtimePublisher<sensor_msgs::Imu>(n, "imu", 10);
@@ -245,8 +266,8 @@ int main(int argc, char *argv[])
 	
 	// Diagnostics
 	diagnostic_updater::Updater updater;
-	updater.setHardwareID("None");
-		
+	updater.setHardwareID("minimu9");
+	updater.add("imu", &ProduceDiagnostics);
 	diagnostic_updater::HeaderlessTopicDiagnostic pub_freq("imu", updater,
 											diagnostic_updater::FrequencyStatusParam(&d_min_freq, &d_max_freq, 0.1, 10));
 	
@@ -257,7 +278,7 @@ int main(int argc, char *argv[])
 		MinIMU9 imu(i2cDevice.c_str());
 		
 		// void ahrs(IMU & imu, fuse_function * fuse, rotation_output_function * output)
-    imu.loadCalibration();
+    	imu.loadCalibration();
 		imu.enable();
 		imu.measureOffsets();
 
@@ -271,7 +292,7 @@ int main(int argc, char *argv[])
 			
 			if(b_is_received_params)
 			{
-				ROS_INFO("Updating IMU Params...");
+				ROS_DEBUG("EvarobotIMU: Updating IMU Params...");
 			
 				b_is_received_params = false;
 			}	
@@ -279,7 +300,11 @@ int main(int argc, char *argv[])
 			int last_start = start;
 			start = millis();
 			float dt = (start-last_start)/1000.0;
-			if (dt < 0){ throw std::runtime_error("Time went backwards."); }
+			if (dt < 0){ 
+				ROS_INFO(GetErrorDescription(-107).c_str());
+				i_error_code = -107;
+				throw std::runtime_error("Time went backwards."); 
+			}
 
 			vector angular_velocity = imu.readGyro();
 			vector acceleration = imu.readAcc();
@@ -348,17 +373,20 @@ int main(int argc, char *argv[])
     {
         std::string what = error.what();
         const std::error_code & code = error.code();
-        std::cerr << "Error: " << what << "  " << code.message() << " (" << code << ")" << std::endl;
+        ROS_INFO_STREAM("[ERROR] EvarobotIMU: " << what << "  " << code.message() << " (" << code << ")");
+        ROS_ERROR_STREAM("[ERROR] EvarobotIMU: " << what << "  " << code.message() << " (" << code << ")");
         return 2;
     }
     catch(const opts::multiple_occurrences & error)
     {
-        std::cerr << "Error: " << error.what() << " of " << error.get_option_name() << " option." << std::endl;
+        ROS_INFO_STREAM("[ERROR] EvarobotIMU: " << error.what() << " of " << error.get_option_name() << " option.");
+        ROS_ERROR_STREAM("[ERROR] EvarobotIMU: " << error.what() << " of " << error.get_option_name() << " option.");
         return 1;
     }
     catch(const std::exception & error)    
     {
-        std::cerr << "Error: " << error.what() << std::endl;
+        ROS_INFO_STREAM("[ERROR] EvarobotIMU: " << error.what());
+        ROS_ERROR_STREAM("[ERROR] EvarobotIMU: " << error.what());
         return 9;
     }
 }

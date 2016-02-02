@@ -2,7 +2,7 @@
 	<master auto="start"/>
 	
 	<!-- Run evarobot_orientation -->
-	<node pkg="evarobot_orientation" type="evarobot_orientation" respawn="false" name="evarobot_orientation" output="screen">
+	<node pkg="evarobot_orientation" type="evarobot_orientation" respawn="false" name="evarobot_orientation">
 		<rosparam file="$(find evarobot_orientation)/params/evarobot_orientation_params.yaml" command="load"/>
 	</node>
 	

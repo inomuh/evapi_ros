@@ -65,8 +65,7 @@ int IMI2C::OpenI2C()
 	i_status_value = open(str_i2c_file_name.c_str(), O_RDWR);
 	if(i_status_value < 0)
 	{
-		perror("IMI2C: Could not open file.");
-		exit(1);
+		throw -22;
 	}
 
 	return i_status_value;
@@ -84,8 +83,7 @@ int IMI2C::CloseI2C(int i_i2cfd)
 
 	if(i_status_value < 0)
 	{
-		perror("Could not close file");
-		exit(1);
+		throw -23;
 	}
 
 	//sem_post(this->mutex);
@@ -101,7 +99,6 @@ int IMI2C::CloseI2C(int i_i2cfd)
  ********************************************************************/
 int IMI2C::WriteDataByte(unsigned char u_c_register_address, unsigned char u_c_data)
 {
-
 	unsigned char u_c_buffer[2];
 	//unsigned char u_c_buffer[1];
 	int i_status_value = -1;
@@ -109,7 +106,12 @@ int IMI2C::WriteDataByte(unsigned char u_c_register_address, unsigned char u_c_d
 	struct i2c_msg messages[1];
 	int i_i2cfd = -1;
 
-	i_i2cfd = this->OpenI2C();
+	try{
+		i_i2cfd = this->OpenI2C();
+	}catch(int i){
+		throw i;
+	}
+
 
 	u_c_buffer[0] = u_c_register_address;
 	u_c_buffer[1] = u_c_data;
@@ -126,11 +128,20 @@ int IMI2C::WriteDataByte(unsigned char u_c_register_address, unsigned char u_c_d
 	i_status_value = ioctl(i_i2cfd, I2C_RDWR, &packets);
 	if(i_status_value < 0)
 	{
-		perror("Write to I2C Device failed");
-		exit(1);
+		try{
+                	this->CloseI2C(i_i2cfd);
+       		}catch(int i){
+        	        throw i;
+	        }
+
+		throw -24;
 	}
 
-	this->CloseI2C(i_i2cfd);
+	try{
+		this->CloseI2C(i_i2cfd);
+	}catch(int i){
+		throw i;
+	}
 
 	return i_status_value;
 }
@@ -138,22 +149,35 @@ int IMI2C::WriteDataByte(unsigned char u_c_register_address, unsigned char u_c_d
 /********************************************************************
  *This function writes only one byte.
  ********************************************************************/
+  /*
+  * TODO: Check this function.
+  */
 int IMI2C::WriteByte(unsigned char u_c_byte)
 {
 	int i_i2cfd = -1;
 
-	i_i2cfd = this->OpenI2C();
+	try{
+		i_i2cfd = this->OpenI2C();
+	}catch(int i){
+		throw i;
+	}
 
 	if (ioctl(i_i2cfd, I2C_SLAVE, u_c_byte) < 0)
 	{
-	    /* ERROR HANDLING; you can check errno to see what went wrong */
-		perror("Read from I2C Device failed");
-	    exit(1);
+	    throw -25;
 	}
 
 	int returnval = i2c_smbus_read_byte(i_i2cfd);
+	if(returnval < 0)
+	{
+		throw -25;
+	}
 
-	this->CloseI2C(i_i2cfd);
+	try{
+		this->CloseI2C(i_i2cfd);
+	}catch(int i){
+		throw i;
+	}
 
 	return returnval;
 }
@@ -204,11 +228,14 @@ int IMI2C::WriteTwoDataByte(unsigned char u_c_register_address, unsigned char u_
 	i_status_value = ioctl(i_i2cfd, I2C_RDWR, &packets);
 	if(i_status_value < 0)
 	{
-		perror("Write to I2C Device failed");
-		exit(1);
+		throw -24;
 	}
 
-	this->CloseI2C(i_i2cfd);
+	try{
+		this->CloseI2C(i_i2cfd);
+	}catch(int i){
+		throw i;
+	}
 
 	return i_status_value;
 }
@@ -234,7 +261,11 @@ int IMI2C::ReadDataByte(unsigned char u_c_register_address, unsigned char & u_c_
 	//struct i2c_msg messages[1];
 	int i_i2cfd = -1;
 
-	i_i2cfd = this->OpenI2C();
+	try{
+		i_i2cfd = this->OpenI2C();
+	}catch(int i){
+		throw i;
+	}
 
 	u_c_outbuff = u_c_register_address;
 	messages[0].addr = this->u_c_device_adress;
@@ -262,15 +293,27 @@ int IMI2C::ReadDataByte(unsigned char u_c_register_address, unsigned char & u_c_
 	i_status_value = ioctl(i_i2cfd, I2C_RDWR, &packets);
 	if(i_status_value < 0)
 	{
-		perror("Read from I2C Device failed");
-		exit(1);
+		try{
+                	this->CloseI2C(i_i2cfd);
+        	}catch(int i){
+                	throw i;
+        	}
+
+		throw -25;
 	}
-	
-	this->CloseI2C(i_i2cfd);
+
+	try{
+		this->CloseI2C(i_i2cfd);
+	}catch(int i){
+		throw i;
+	}
 
 	return i_status_value;
 }
 
+ /*
+  * TODO: Check this function.
+  */
 int IMI2C::ReadTwoDataByte(unsigned char u_c_register_address, unsigned char & u_c_msb_data, unsigned char & u_c_lsb_data)
 {
     unsigned char u_c_outbuff;
@@ -281,7 +324,11 @@ int IMI2C::ReadTwoDataByte(unsigned char u_c_register_address, unsigned char & u
 	struct i2c_msg messages[3];
 	int i_i2cfd = -1;
 
-	i_i2cfd = this->OpenI2C();
+	try{
+		i_i2cfd = this->OpenI2C();
+	}catch(int i){
+		throw i;
+	}
 
 	u_c_outbuff = u_c_register_address;
 	messages[0].addr = this->u_c_device_adress;
@@ -315,11 +362,14 @@ int IMI2C::ReadTwoDataByte(unsigned char u_c_register_address, unsigned char & u
 	i_status_value = ioctl(i_i2cfd, I2C_RDWR, &packets);
 	if(i_status_value < 0)
 	{
-		perror("Read from I2C Device failed");
-		exit(1);
+		throw -25;
 	}
 
-	this->CloseI2C(i_i2cfd);
+	try{
+		this->CloseI2C(i_i2cfd);
+	}catch(int i){
+		throw i;
+	}
 
 	return i_status_value;
 

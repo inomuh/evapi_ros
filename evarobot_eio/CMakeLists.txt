@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   im_msgs
+  diagnostic_updater
 )
 
 

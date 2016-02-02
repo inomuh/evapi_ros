@@ -91,7 +91,7 @@ public:
 	 * \return
 	 */
 	#endif
-	unsigned int SetFrequency(const double & c_d_hz);
+	void SetFrequency(const double & c_d_hz);
 
 	#ifdef English_dox
 	//! Sets PWM resolution (counts) and reinitializes PWM peripheral
@@ -107,7 +107,7 @@ public:
 	 * \return
 	 */
 	#endif
-	unsigned int SetCounts(const unsigned int & c_u_i_counts);
+	void SetCounts(const unsigned int & c_u_i_counts);
 
 	#ifdef English_dox
 	//! Sets Duty Cycle as a Percentage (Fast)
@@ -125,7 +125,7 @@ public:
 	 * \return
 	 */
 	#endif
-	unsigned int SetDutyCycle(const double &c_d_duty, int i_pwm_no);
+	void SetDutyCycle(const double &c_d_duty, int i_pwm_no);
 
 	#ifdef English_dox
 	//! Sets Duty Cycle as a count value (Fast) i.e. if counts is 1024 and 'duty' is set to 512, a 50% duty cycle is achieved
@@ -143,7 +143,7 @@ public:
 	 * \return
 	 */
 	#endif
-	unsigned int SetDutyCycleCount(const unsigned int &c_u_i_counts, int i_pwm_no);
+	void SetDutyCycleCount(const unsigned int &c_u_i_counts, int i_pwm_no);
 
 	#ifdef English_dox
 	//! Disables PWM, sets duty cycle and enable PWM respectively.
@@ -163,7 +163,7 @@ public:
 	 * \return
 	 */
 	#endif
-	unsigned int SetDutyCycleForce(const double &c_d_duty, const  int &c_i_m, int i_pwm_no);
+	void SetDutyCycleForce(const double &c_d_duty, const  int &c_i_m, int i_pwm_no);
 
 
 	#ifdef English_dox
@@ -180,7 +180,7 @@ public:
 	 * \return
 	 */
 	#endif
-	unsigned int SetMode(const  int &c_i_m);
+	void SetMode(const  int &c_i_m);
 
 
 	#ifdef English_dox

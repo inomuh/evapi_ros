@@ -18,11 +18,12 @@
   <build_depend>sensor_msgs</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_depend>im_msgs</build_depend>
+  <build_depend>diagnostic_updater</build_depend>
   <run_depend>geometry_msgs</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>rospy</run_depend>
   <run_depend>sensor_msgs</run_depend>
   <run_depend>std_msgs</run_depend>
   <run_depend>im_msgs</run_depend>
-
+  <run_depend>diagnostic_updater</run_depend>
 </package>

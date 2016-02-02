@@ -19,4 +19,6 @@
 #include <dynamic_reconfigure/server.h>
 #include <evarobot_minimu9/ParamsConfig.h>
 
+#include "ErrorCodes.h"
+
 char SEM_NAME[]= "i2c";

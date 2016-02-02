@@ -2,7 +2,7 @@
 	<master auto="start"/>
 	
 	<!-- Run evarobot_driver -->
-	<node pkg="evarobot_driver" type="evarobot_driver" respawn="false" name="evarobot_driver" output="screen">
+	<node pkg="evarobot_driver" type="evarobot_driver" respawn="false" name="evarobot_driver">
 		<rosparam file="$(find evarobot_driver)/params/evarobot_driver_params.yaml" command="load"/>
 	</node>
 	

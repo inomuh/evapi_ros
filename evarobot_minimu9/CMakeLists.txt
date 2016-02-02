@@ -3,6 +3,8 @@ project(evarobot_minimu9)
 
 set(CMAKE_CXX_FLAGS "-std=c++0x ${CMAKE_CXX_FLAGS}")
 
+set(EVAPI_LIB_SDK_PATH "../sdk/")
+
 set(MINIMU9_LIB_SDK_PATH "../minimu9/")
 FILE(GLOB MINIMU9_LIB_SDK_SRC "${MINIMU9_LIB_SDK_PATH}/src/*.cpp")
 
@@ -29,6 +31,7 @@ catkin_package(
 ###########
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  ${EVAPI_LIB_SDK_PATH}/include
   ${MINIMU9_LIB_SDK_PATH}/include
   ${MINIMU9_LIB_SDK_PATH}/src  
   include

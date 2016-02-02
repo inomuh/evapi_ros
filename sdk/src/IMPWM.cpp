@@ -46,17 +46,20 @@ const int IMPWM::ERRMODE;
  ***********************************************************************/
 IMPWM::IMPWM()
 {
-  this->p_v_u_clk = MapRegisterAddres(CLOCK_BASE);// map PWM clock registers into memory
-  this->p_v_u_pwm = MapRegisterAddres(PWM_BASE); //map PWM registers into memory
-  this->p_v_u_gpio = MapRegisterAddres(GPIO_BASE);// map GPIO registers into memory
-  this->d_frequency = 1000.0; // set frequency
-  this->u_i_counts = 256; //set PWM resolution
-  this->d_dutyCycle = 50.0; //set duty cycle
-  this->i_mode = PWMMODE; // set pwm mode
+    this->p_v_u_clk = MapRegisterAddres(CLOCK_BASE);// map PWM clock registers into memory
+    this->p_v_u_pwm = MapRegisterAddres(PWM_BASE); //map PWM registers into memory
+    this->p_v_u_gpio = MapRegisterAddres(GPIO_BASE);// map GPIO registers into memory
+    this->d_frequency = 1000.0; // set frequency
+    this->u_i_counts = 256; //set PWM resolution
+    this->d_dutyCycle = 50.0; //set duty cycle
+    this->i_mode = PWMMODE; // set pwm mode
 
-
-  ConfigPWMPin(); //configure GPIO18 to ALT15 (PWM output)
-  ConfigPWM();   // configure PWM1
+    try {
+        ConfigPWMPin(); //configure GPIO18 to ALT15 (PWM output)
+        ConfigPWM();   // configure PWM1
+    } catch(int i) {
+        throw i;
+    }
 
 }
 
@@ -78,40 +81,42 @@ IMPWM::IMPWM()
  ***********************************************************************/
 IMPWM::IMPWM(double d_Hz, unsigned int u_i_counts, double d_duty,  int i_m)
 {
+    try {
+        this->p_v_u_clk = MapRegisterAddres(CLOCK_BASE);
+        this->p_v_u_gpio = MapRegisterAddres(GPIO_BASE);
+        this->p_v_u_pwm = MapRegisterAddres(PWM_BASE);
+    } catch(int i) {
+        throw i;
+    }
 
-  this->p_v_u_clk = MapRegisterAddres(CLOCK_BASE);
-  this->p_v_u_gpio = MapRegisterAddres(GPIO_BASE);
-  this->p_v_u_pwm = MapRegisterAddres(PWM_BASE);
+    if( (u_i_counts < 0) || (u_i_counts > UINT_MAX) ) {
+        throw -44;
+    }
 
+    if ((d_Hz < 1e-5) || (d_Hz > 19200000.0f)) {
+        throw -45;
+    }
 
-   if( (u_i_counts < 0) || (u_i_counts > UINT_MAX) ) {
-   printf("counts value must be between 0-%d\n",UINT_MAX);
-   exit(1);
-  }
+    if( (d_duty < 1e-5) || (d_duty> 99.99999) ) {
+        throw -27;
+    }
 
-  if ((d_Hz < 1e-5) || (d_Hz > 19200000.0f)){
-    printf("frequency value must be between 0-19200000\n");
-    exit(1);
-  }
+    if( (i_m != PWMMODE) && (i_m != MSMODE) ) {
+        throw -28;
+    }
 
-  if( (d_duty < 1e-5) || (d_duty> 99.99999) ) {
-    printf("dutyCycle value must be between 0-99.99999\n");
-    exit(1);
-  }
-
-  if( (i_m != PWMMODE) && (i_m != MSMODE) ) {
-    printf("mode must be either PWMMODE(1) or MSMODE(2)\n");
-    exit(1);
-  }
-
-  this->d_frequency = d_Hz;
-  this->u_i_counts = u_i_counts;
-  this->d_dutyCycle = d_duty;
-  this->i_mode = i_m;
-  ConfigPWMPin();
-  ConfigPWM();
-  SetDutyCycleCount(0, 0);
-  SetDutyCycleCount(0, 1);
+    this->d_frequency = d_Hz;
+    this->u_i_counts = u_i_counts;
+    this->d_dutyCycle = d_duty;
+    this->i_mode = i_m;
+    try {
+        ConfigPWMPin();
+        ConfigPWM();
+        SetDutyCycleCount(0, 0);
+        SetDutyCycleCount(0, 1);
+    } catch(int i) {
+        throw i;
+    }
 }
 
 /***********************************************************************
@@ -122,25 +127,23 @@ IMPWM::IMPWM(double d_Hz, unsigned int u_i_counts, double d_duty,  int i_m)
  ***********************************************************************/
 IMPWM::~IMPWM()
 {
-	printf("pwm kapatiliyor\n");
 
-	//lets put the PWM peripheral registers in their original state
-	*(p_v_u_pwm + PWM_CTL) = 0;
-	*(p_v_u_pwm + PWM_RNG1) = 0x20;
-	*(p_v_u_pwm + PWM_DAT1) = 0;
+    //lets put the PWM peripheral registers in their original state
+    *(p_v_u_pwm + PWM_CTL) = 0;
+    *(p_v_u_pwm + PWM_RNG1) = 0x20;
+    *(p_v_u_pwm + PWM_DAT1) = 0;
 
     // unmap the memory block containing PWM registers
-    if(munmap((void*)p_v_u_pwm, BLOCK_SIZE) < 0){
-		perror("munmap (pwm) failed");
-		exit(1);
-	}
-	//lets put the PWM Clock peripheral registers in their original state
+    if(munmap((void*)p_v_u_pwm, BLOCK_SIZE) < 0) {
+        throw -66;
+    }
+    //lets put the PWM Clock peripheral registers in their original state
     //kill PWM clock
     *(p_v_u_clk + PWMCLK_CNTL) = 0x5A000000 | (1 << 5);
     usleep(10);
 
     // wait until busy flag is set
-    while ( (*(p_v_u_clk + PWMCLK_CNTL)) & 0x00000080){}
+    while ( (*(p_v_u_clk + PWMCLK_CNTL)) & 0x00000080) {}
 
     //reset divisor
     *(p_v_u_clk + PWMCLK_DIV) = 0x5A000000;
@@ -150,20 +153,18 @@ IMPWM::~IMPWM()
     *(p_v_u_clk + PWMCLK_CNTL) = 0x5A000011;
 
     // unmap the memory block containing PWM Clock registers
-    if(munmap((void*)p_v_u_clk, BLOCK_SIZE) < 0){
-		perror("munmap (clk) failed");
-		exit(1);
-	}
+    if(munmap((void*)p_v_u_clk, BLOCK_SIZE) < 0) {
+        throw -67;
+    }
 
-   //lets put the GPIO peripheral registers in their original state
-   //first put it in input mode (default)
-   //taken from #define INP_GPIO(g) *(gpio+((g)/10)) &= ~(7<<(((g)%10)*3))
-   *(p_v_u_gpio+1) &= ~(7 << 24);
-   //then munmap
-    if(munmap((void*)p_v_u_gpio, BLOCK_SIZE) < 0){
-		perror("munmap (gpio) failed");
-		exit(1);
-	}
+    //lets put the GPIO peripheral registers in their original state
+    //first put it in input mode (default)
+    //taken from #define INP_GPIO(g) *(gpio+((g)/10)) &= ~(7<<(((g)%10)*3))
+    *(p_v_u_gpio+1) &= ~(7 << 24);
+    //then munmap
+    if(munmap((void*)p_v_u_gpio, BLOCK_SIZE) < 0) {
+        throw -68;
+    }
 }
 
 
@@ -173,23 +174,22 @@ IMPWM::~IMPWM()
  * peripheral to update the frequency. The function performs a check to
  * ensure that the PWM frequency is between 0 & 19.2MHz
  * Parameters: hz (double) - Frequency in Hz
- * Return Value: 0 if successful or rpiPWM::ERRFREQ if frequency
- *               parameter is invalid
  ***********************************************************************/
- unsigned int IMPWM::SetFrequency(const double & c_d_hz)
- {
-	 unsigned int u_i_return_value = 0;
-	if (c_d_hz < 1e-5 || c_d_hz > 19200000.0f)
-	{ // make sure that Frequency is valid
-		u_i_return_value = ERRFREQ; //if not return error code
-	}
-	else
-	{
-		this->d_frequency = c_d_hz;
-		ConfigPWM();
-	}
-
-	return u_i_return_value; // return 0 for success.....
+void IMPWM::SetFrequency(const double & c_d_hz)
+{
+    if (c_d_hz < 1e-5 || c_d_hz > 19200000.0f)
+    {   
+        throw -30;
+    }
+    else
+    {
+        this->d_frequency = c_d_hz;
+        try {
+            ConfigPWM();
+        } catch(int i) {
+            throw i;
+        }
+    }
 }
 
 
@@ -199,23 +199,22 @@ IMPWM::~IMPWM()
  * peripheral to update the PWM resolution (counts). The function performs a check to
  * ensure that the PWM resolution is between 0 &  UINT_MAX (its a 32-bit register)
  * Parameters: cnts (unsigned int) - counts
- * Return Value: 0 if successful or rpiPWM::ERRCOUNT if count value is invalid
  ***********************************************************************/
-unsigned int IMPWM::SetCounts(const unsigned int & c_u_i_counts)
+void IMPWM::SetCounts(const unsigned int & c_u_i_counts)
 {
-	unsigned int u_i_return_value = 0;
-
-	if( (c_u_i_counts < 0) || (c_u_i_counts > UINT_MAX) )
-	{
-		u_i_return_value = ERRCOUNT;
-	}
-	else
-	{
-		this->u_i_counts = c_u_i_counts;
-		ConfigPWM();
-	}
-
-	return u_i_return_value;
+    if( (c_u_i_counts < 0) || (c_u_i_counts > UINT_MAX) )
+    {
+        throw -31;
+    }
+    else
+    {
+        this->u_i_counts = c_u_i_counts;
+        try {
+            ConfigPWM();
+        } catch(int i) {
+            throw i;
+        }
+    }
 }
 
 /***********************************************************************
@@ -224,28 +223,24 @@ unsigned int IMPWM::SetCounts(const unsigned int & c_u_i_counts)
  * The function performs a check to ensure that the PWM Duty Cycle is between
  * 0 & 99.99999 %
  * Parameters: duty (double) - Duty Cycle in %
- * Return Value: 0 if successful or rpiPWM::ERRDUTY if Duty cycle is invalid
  ****************************************************************************/
-unsigned int IMPWM::SetDutyCycle(const double &c_d_duty, int i_pwm_no)
+void IMPWM::SetDutyCycle(const double &c_d_duty, int i_pwm_no)
 {
-	unsigned int u_i_bit_count = 0;
-	unsigned int u_i_return_value = 0;
+    unsigned int u_i_bit_count = 0;
 
-	if( (c_d_duty < 1e-5) || (c_d_duty > 99.99999) )
-	{
-		u_i_return_value = ERRDUTY;
-	}
-	else
-	{
-		this->d_dutyCycle = c_d_duty;
-		u_i_bit_count = (int) ((this->d_dutyCycle/100.0) * this->u_i_counts);
-		if(i_pwm_no == 0)
-			*(p_v_u_pwm + PWM_DAT1) = u_i_bit_count;
-		else
-			*(p_v_u_pwm + PWM_DAT2) = u_i_bit_count;
-	}
-
-	return u_i_return_value;
+    if( (c_d_duty < 1e-5) || (c_d_duty > 99.99999) )
+    {
+        throw -32;
+    }
+    else
+    {
+        this->d_dutyCycle = c_d_duty;
+        u_i_bit_count = (int) ((this->d_dutyCycle/100.0) * this->u_i_counts);
+        if(i_pwm_no == 0)
+            *(p_v_u_pwm + PWM_DAT1) = u_i_bit_count;
+        else
+            *(p_v_u_pwm + PWM_DAT2) = u_i_bit_count;
+    }
 }
 
 /***********************************************************************
@@ -257,56 +252,51 @@ unsigned int IMPWM::SetDutyCycle(const double &c_d_duty, int i_pwm_no)
  *
  * Parameters: duty (double) - Duty Cycle in %
  *             m (int) - pwm mode (rpiPWM::PWMMODE or rpiPWM::MSMODE)
- * Return Value: 0 if successful or rpiPWM::ERRDUTY if Duty cycle is invalid
  *******************************************************************************/
-unsigned int IMPWM::SetDutyCycleForce(const double &c_d_duty, const  int &c_i_m, int i_pwm_no)
+void IMPWM::SetDutyCycleForce(const double &c_d_duty, const  int &c_i_m, int i_pwm_no)
 {
-	unsigned int u_i_return_value = 0;
-
-	if( (c_i_m != PWMMODE) && (c_i_m != MSMODE) )
-	{
-		u_i_return_value = ERRMODE;
-	}
-	else if( (c_d_duty < 1e-5) || (c_d_duty > 99.99999) )
-	{
-		u_i_return_value = ERRDUTY;
-	}
-	else
-	{
-		this->i_mode = c_i_m;
-		this->d_dutyCycle = c_d_duty;
-		// disable PWM & start from a clean slate
-		*(p_v_u_pwm + PWM_CTL) = 0;
-		// needs some time until the PWM module gets disabled, without the delay the PWM module crashs
-		usleep(10);
-		if(i_pwm_no == 0)
-		{
-			// set the number of counts that constitute a period
-			*(p_v_u_pwm + PWM_RNG1) = this->u_i_counts;
-			//set  duty cycle
-			*(p_v_u_pwm + PWM_DAT1) = (int) ((this->d_dutyCycle / 100.0) * this->u_i_counts);
-			// start PWM1 in
-			if(this->i_mode == PWMMODE) //PWM mode
-				*(p_v_u_pwm + PWM_CTL) |= (1 << 0);
-			else // M/S Mode
-				*(p_v_u_pwm + PWM_CTL) |= ( (1 << 7) | (1 << 0) );
-
-		}
-		else
-		{
-			// set the number of counts that constitute a period
-			*(p_v_u_pwm + PWM_RNG2) = this->u_i_counts;
+    if( (c_i_m != PWMMODE) && (c_i_m != MSMODE) )
+    {
+        throw -33;
+    }
+    else if( (c_d_duty < 1e-5) || (c_d_duty > 99.99999) )
+    {
+        throw -32;
+    }
+    else
+    {
+        this->i_mode = c_i_m;
+        this->d_dutyCycle = c_d_duty;
+        // disable PWM & start from a clean slate
+        *(p_v_u_pwm + PWM_CTL) = 0;
+        // needs some time until the PWM module gets disabled, without the delay the PWM module crashs
+        usleep(10);
+        if(i_pwm_no == 0)
+        {
+            // set the number of counts that constitute a period
+            *(p_v_u_pwm + PWM_RNG1) = this->u_i_counts;
             //set  duty cycle
-			*(p_v_u_pwm + PWM_DAT2) = (int) ((this->d_dutyCycle/100.0) * this->u_i_counts);
-			// start PWM1 in
-			if(this->i_mode == PWMMODE) //PWM mode
-				*(p_v_u_pwm + PWM_CTL) |= (1 << 8);
-			else // M/S Mode
-				*(p_v_u_pwm + PWM_CTL) |= ( (1 << 15) | (1 << 8) );
-		}
+            *(p_v_u_pwm + PWM_DAT1) = (int) ((this->d_dutyCycle / 100.0) * this->u_i_counts);
+            // start PWM1 in
+            if(this->i_mode == PWMMODE) //PWM mode
+                *(p_v_u_pwm + PWM_CTL) |= (1 << 0);
+            else // M/S Mode
+                *(p_v_u_pwm + PWM_CTL) |= ( (1 << 7) | (1 << 0) );
 
-	}
-	return u_i_return_value;
+        }
+        else
+        {
+            // set the number of counts that constitute a period
+            *(p_v_u_pwm + PWM_RNG2) = this->u_i_counts;
+            //set  duty cycle
+            *(p_v_u_pwm + PWM_DAT2) = (int) ((this->d_dutyCycle/100.0) * this->u_i_counts);
+            // start PWM1 in
+            if(this->i_mode == PWMMODE) //PWM mode
+                *(p_v_u_pwm + PWM_CTL) |= (1 << 8);
+            else // M/S Mode
+                *(p_v_u_pwm + PWM_CTL) |= ( (1 << 15) | (1 << 8) );
+        }
+    }
 }
 
 /***********************************************************************
@@ -315,26 +305,21 @@ unsigned int IMPWM::SetDutyCycleForce(const double &c_d_duty, const  int &c_i_m,
  * while the PWM peripheral is running. The function performs a check to
  * ensure that the PWM Duty Cycle count value is between 0 and count
  * Parameters: dutyCycleCnts (unsigned int) - Duty Cycle in counts
- * Return Value:0 if successful or rpiPWM::ERRDUTY if Duty cycle is invalid
  ***********************************************************************/
-unsigned int IMPWM::SetDutyCycleCount(const unsigned int &c_u_i_counts, int i_pwm_no)
+void IMPWM::SetDutyCycleCount(const unsigned int &c_u_i_counts, int i_pwm_no)
 {
-	unsigned int u_i_return_value = 0;
-
     if( (c_u_i_counts < 0) || ( c_u_i_counts > this->u_i_counts ))
     {
-    	u_i_return_value = ERRDUTY;
-	}
-	else
-	{
-		this->d_dutyCycle = ((c_u_i_counts * 1.0)/ this->u_i_counts) * 100.0;
-		if(i_pwm_no == 0)
-			*(p_v_u_pwm + PWM_DAT1) = c_u_i_counts;
-		else
-			*(p_v_u_pwm + PWM_DAT2) = c_u_i_counts;
-	}
-
-	return u_i_return_value;
+        throw -32;
+    }
+    else
+    {
+        this->d_dutyCycle = ((c_u_i_counts * 1.0)/ this->u_i_counts) * 100.0;
+        if(i_pwm_no == 0)
+            *(p_v_u_pwm + PWM_DAT1) = c_u_i_counts;
+        else
+            *(p_v_u_pwm + PWM_DAT2) = c_u_i_counts;
+    }
 }
 
 /***********************************************************************
@@ -342,24 +327,23 @@ unsigned int IMPWM::SetDutyCycleCount(const unsigned int &c_u_i_counts, int i_pw
  * This function sets the PWM mode. The function performs a check to
  * ensure that a valid PWM mode is requested.
  * Parameters: m (int) - pwm mode (rpiPWM::PWMMODE or rpiPWM::MSMODE)
- * Return Value: 0 if successful or rpiPWM::ERRMODE if MODE is invalid
  ********************************************************************************/
-unsigned int IMPWM::SetMode(const  int &c_i_m)
+void IMPWM::SetMode(const  int &c_i_m)
 {
-	unsigned int u_i_return_value = 0;
-
-	if( (c_i_m != PWMMODE) && (c_i_m != MSMODE) )
-	{
-		u_i_return_value = ERRMODE;
-	}
-	else
-	{
-		this->i_mode = c_i_m;
-		SetDutyCycleForce(this->d_dutyCycle, this->i_mode, 0);
-		SetDutyCycleForce(this->d_dutyCycle, this->i_mode, 1);
-	 }
-
-	return u_i_return_value;
+    if( (c_i_m != PWMMODE) && (c_i_m != MSMODE) )
+    {
+        throw -32;
+    }
+    else
+    {
+        try {
+            this->i_mode = c_i_m;
+            SetDutyCycleForce(this->d_dutyCycle, this->i_mode, 0);
+            SetDutyCycleForce(this->d_dutyCycle, this->i_mode, 1);
+        } catch(int i) {
+            throw i;
+        }
+    }
 }
 
 
@@ -368,15 +352,25 @@ unsigned int IMPWM::SetMode(const  int &c_i_m)
  * to access the PWM frequency, resolution, duty cycle and mode as well
  * as the PWM clock divisor value.
  *********************************************************************/
- double IMPWM::GetFrequency() const { return this->d_frequency;}
+double IMPWM::GetFrequency() const {
+    return this->d_frequency;
+}
 
- int IMPWM::GetCounts() const { return this->u_i_counts;}
+int IMPWM::GetCounts() const {
+    return this->u_i_counts;
+}
 
- int IMPWM::GetDivisor() const {return this->u_i_divisor;}
+int IMPWM::GetDivisor() const {
+    return this->u_i_divisor;
+}
 
- double IMPWM::GetDutyCycle() const {return this->d_dutyCycle;}
+double IMPWM::GetDutyCycle() const {
+    return this->d_dutyCycle;
+}
 
- int IMPWM::GetMode() const{return this->i_mode;}
+int IMPWM::GetMode() const {
+    return this->i_mode;
+}
 
 /***********************************************************************
  *	volatile unsigned *rpiPWM::mapRegAddr(unsigned long baseAddr)
@@ -391,43 +385,41 @@ unsigned int IMPWM::SetMode(const  int &c_i_m)
  ***********************************************************************/
 volatile unsigned *IMPWM::MapRegisterAddres(unsigned long u_l_base_address)
 {
-	int i_mem_fd = 0;
-	void *p_v_register_address_map = MAP_FAILED;
+    int i_mem_fd = 0;
+    void *p_v_register_address_map = MAP_FAILED;
 
-	if (!i_mem_fd)
-	{
-		if ((i_mem_fd = open("/dev/mem", O_RDWR|O_SYNC) ) < 0)
-		{
-			perror("can't open /dev/mem");
-			exit (1);
-		}
-	}
+    if (!i_mem_fd)
+    {
+        if ((i_mem_fd = open("/dev/mem", O_RDWR|O_SYNC) ) < 0)
+        {
+            //perror("can't open /dev/mem");
+            //exit (1);
+            throw -26;
+        }
+    }
 
-   /* mmap IO */
-	p_v_register_address_map = mmap(
-      NULL,             //Any adddress in our space will do
-      BLOCK_SIZE,       //Map length
-      PROT_READ|PROT_WRITE|PROT_EXEC,// Enable reading & writting to mapped memory
-      MAP_SHARED|MAP_LOCKED,       //Shared with other processes
-	  i_mem_fd,           //File to map
-	  u_l_base_address         //Offset to base address
-	  );
+    /* mmap IO */
+    p_v_register_address_map = mmap(
+                                   NULL,             //Any adddress in our space will do
+                                   BLOCK_SIZE,       //Map length
+                                   PROT_READ|PROT_WRITE|PROT_EXEC,// Enable reading & writting to mapped memory
+                                   MAP_SHARED|MAP_LOCKED,       //Shared with other processes
+                                   i_mem_fd,           //File to map
+                                   u_l_base_address         //Offset to base address
+                               );
 
-	if (p_v_register_address_map == MAP_FAILED)
-	{
-		perror("mmap error");
-		close(i_mem_fd);
-		exit (1);
-	}
+    if (p_v_register_address_map == MAP_FAILED)
+    {
+        close(i_mem_fd);
+        throw -34;
+    }
 
-	if(close(i_mem_fd) < 0)
-	{ //No need to keep mem_fd open after mmap
-	   //i.e. we can close /dev/mem
-		perror("couldn't close /dev/mem file descriptor");
-		exit(1);
-	}
+    if(close(i_mem_fd) < 0)
+    {   
+        throw -35;
+    }
 
-	return (volatile unsigned *)p_v_register_address_map;
+    return (volatile unsigned *)p_v_register_address_map;
 }
 
 
@@ -440,33 +432,33 @@ volatile unsigned *IMPWM::MapRegisterAddres(unsigned long u_l_base_address)
 void IMPWM::ConfigPWMPin()
 {
 
-//#define INP_GPIO(g) *(gpio+((g)/10)) &= ~(7<<(((g)%10)*3))
-//#define OUT_GPIO(g) *(gpio+((g)/10)) |=  (1<<(((g)%10)*3))
-//#define SET_GPIO_ALT(g,a) *(gpio+(((g)/10))) |= (((a)<=3?(a)+4:(a)==4?3:2)<<(((g)%10)*3))
+    //#define INP_GPIO(g) *(gpio+((g)/10)) &= ~(7<<(((g)%10)*3))
+    //#define OUT_GPIO(g) *(gpio+((g)/10)) |=  (1<<(((g)%10)*3))
+    //#define SET_GPIO_ALT(g,a) *(gpio+(((g)/10))) |= (((a)<=3?(a)+4:(a)==4?3:2)<<(((g)%10)*3))
 
-//#define GPIO_SET *(gpio+7)  // sets   bits which are 1 ignores bits which are 0
-//#define GPIO_CLR *(gpio+10) // clears bits which are 1 ignores bits which are 0
+    //#define GPIO_SET *(gpio+7)  // sets   bits which are 1 ignores bits which are 0
+    //#define GPIO_CLR *(gpio+10) // clears bits which are 1 ignores bits which are 0
 
-//#define GET_GPIO(g) (*(gpio+13)&(1<<g)) // 0 if LOW, (1<<g) if HIGH
+    //#define GET_GPIO(g) (*(gpio+13)&(1<<g)) // 0 if LOW, (1<<g) if HIGH
 
-//#define GPIO_PULL *(gpio+37) // Pull up/pull down
-//#define GPIO_PULLCLK0 *(gpio+38) // Pull up/pull down clock
+    //#define GPIO_PULL *(gpio+37) // Pull up/pull down
+    //#define GPIO_PULLCLK0 *(gpio+38) // Pull up/pull down clock
 
-	// PWM0
+    // PWM0
 
-	// GPIO18 - ALT5 Config
-	*(this->p_v_u_gpio + 1) &= ~(7 << 24);
-	*(this->p_v_u_gpio + 1) |= (2 << 24);
+    // GPIO18 - ALT5 Config
+    *(this->p_v_u_gpio + 1) &= ~(7 << 24);
+    *(this->p_v_u_gpio + 1) |= (2 << 24);
 
-	*(this->p_v_u_gpio + 1) &= ~(7 << 6);
-//	printf("GPIO18\n");
+    *(this->p_v_u_gpio + 1) &= ~(7 << 6);
+    //	printf("GPIO18\n");
 
-	// GPIO13 - ALT0 Config
-	*(this->p_v_u_gpio+1) &= ~(7 << 9);
-	*(this->p_v_u_gpio+1) |= (4 << 9);
+    // GPIO13 - ALT0 Config
+    *(this->p_v_u_gpio+1) &= ~(7 << 9);
+    *(this->p_v_u_gpio+1) |= (4 << 9);
 
-	*(this->p_v_u_gpio+1) &= ~(7 << 27);
-//	printf("GPIO13\n");
+    *(this->p_v_u_gpio+1) &= ~(7 << 27);
+    //	printf("GPIO13\n");
 
 }
 
@@ -484,42 +476,41 @@ void IMPWM::ConfigPWMPin()
  * - Writes the PWM resolution and Duty Cycle to the appropriate registers
  * - Enables the PWM peripheral in the requested mode
  * *********************************************************************/
-void  IMPWM::ConfigPWM()
+void IMPWM::ConfigPWM()
 {
 
-  double d_period;
-  double d_count_duration;
+    double d_period;
+    double d_count_duration;
 
-  // stop clock and waiting for busy flag doesn't work, so kill clock
-  *(p_v_u_clk + PWMCLK_CNTL) = 0x5A000000 | (1 << 5);
-  usleep(10);
+    // stop clock and waiting for busy flag doesn't work, so kill clock
+    *(p_v_u_clk + PWMCLK_CNTL) = 0x5A000000 | (1 << 5);
+    usleep(10);
 
-  // wait until busy flag is set
-  while ( (*(p_v_u_clk + PWMCLK_CNTL)) & 0x00000080){}
+    // wait until busy flag is set
+    while ( (*(p_v_u_clk + PWMCLK_CNTL)) & 0x00000080) {}
 
-  //calculate divisor value for PWM1 clock...base frequency is 19.2MHz
-  d_period = 1.0/this->d_frequency;
-  d_count_duration = d_period/(this->u_i_counts*1.0f);
-  this->u_i_divisor = (int)(19200000.0f / (1.0/d_count_duration));
+    //calculate divisor value for PWM1 clock...base frequency is 19.2MHz
+    d_period = 1.0/this->d_frequency;
+    d_count_duration = d_period/(this->u_i_counts*1.0f);
+    this->u_i_divisor = (int)(19200000.0f / (1.0/d_count_duration));
 
-  if( this->u_i_divisor < 0 || this->u_i_divisor > 4095 ) {
-    printf("divisor value must be between 0-4095\n");
-    exit(-1);
-  }
+    if( this->u_i_divisor < 0 || this->u_i_divisor > 4095 ) {
+        throw -36;
+    }
 
-  //set divisor
-  *(p_v_u_clk + PWMCLK_DIV) = 0x5A000000 | (this->u_i_divisor << 12);
+    //set divisor
+    *(p_v_u_clk + PWMCLK_DIV) = 0x5A000000 | (this->u_i_divisor << 12);
 
-  // source=osc and enable clock
-  *(p_v_u_clk + PWMCLK_CNTL) = 0x5A000011;
+    // source=osc and enable clock
+    *(p_v_u_clk + PWMCLK_CNTL) = 0x5A000011;
 
-  // disable PWM & start from a clean slate
-  *(p_v_u_pwm + PWM_CTL) = 0;
+    // disable PWM & start from a clean slate
+    *(p_v_u_pwm + PWM_CTL) = 0;
 
-  // needs some time until the PWM module gets disabled, without the delay the PWM module crashs
-  usleep(10);
+    // needs some time until the PWM module gets disabled, without the delay the PWM module crashs
+    usleep(10);
 
-  // set the number of counts that constitute a period with 0 for 20 milliseconds = 320 bits
+    // set the number of counts that constitute a period with 0 for 20 milliseconds = 320 bits
 
 
     *(p_v_u_pwm + PWM_RNG1) = this->u_i_counts;
@@ -534,14 +525,14 @@ void  IMPWM::ConfigPWM()
     // start PWM1 in
     if(this->i_mode == PWMMODE) //PWM mode
     {
-		*(p_v_u_pwm + PWM_CTL) |= (1 << 0) | (1 << 8);
-//		*(p_v_u_pwm + PWM_CTL) |= (1 << 8);
+        *(p_v_u_pwm + PWM_CTL) |= (1 << 0) | (1 << 8);
+        //		*(p_v_u_pwm + PWM_CTL) |= (1 << 8);
     }
     else // M/S Mode
     {
-		*(p_v_u_pwm + PWM_CTL) |= ( (1 << 7) | (1 << 0) ) | ( (1 << 15) | (1 << 8) );
-	//	*(pwm + PWM_CTL) |= ( (1 << 15) | (1 << 8) );
-	}
+        *(p_v_u_pwm + PWM_CTL) |= ( (1 << 7) | (1 << 0) ) | ( (1 << 15) | (1 << 8) );
+        //	*(pwm + PWM_CTL) |= ( (1 << 15) | (1 << 8) );
+    }
 
 }
 

@@ -1,5 +1,7 @@
 #include "evarobot_infrared/evarobot_infrared.h"
 
+int i_error_code = 0;
+
 /*
  * 
  * IMInfrared
@@ -48,8 +50,13 @@ bool IMInfrared::ReadRange()
 	int i_raw_data = 0;
 	bool b_ret = false;
 	float f_range = 0.0;
-			
-	i_raw_data = this->adc->ReadChannel(this->i_id);
+	
+	try{		
+		i_raw_data = this->adc->ReadChannel(this->i_id);
+	}catch(int e){
+		ROS_INFO(GetErrorDescription(e).c_str());
+        i_error_code = e;
+	}
 	f_range = 0.01 * ((1 / (this->dynamic_params->d_par_a * (double)i_raw_data + this->dynamic_params->d_par_b)) 
 						- this->dynamic_params->d_par_k);
 						
@@ -89,7 +96,12 @@ void IMInfrared::Publish()
 
 void IMInfrared::ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
 {
-	if(this->b_is_alive)
+	if(i_error_code<0)
+	{
+		stat.summaryf(diagnostic_msgs::DiagnosticStatus::ERROR, "%s", GetErrorDescription(i_error_code).c_str());
+        i_error_code = 0;
+	}
+	else if(this->b_is_alive)
 	{
 		stat.summaryf(diagnostic_msgs::DiagnosticStatus::OK, "INFRARED%d is alive!", this->i_id);
 	}
@@ -109,7 +121,7 @@ void IMInfrared::ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper 
  * */
 void IMDynamicReconfig::CallbackReconfigure(evarobot_infrared::ParamsConfig &config, uint32_t level)
 {
-	ROS_INFO("Updating Sonar Params...");
+	ROS_DEBUG("EvarobotInfrared: Updating Sonar Params...");
 		
 	this->d_fov = config.field_of_view;
 	this->d_min_range = config.minRange;
@@ -133,10 +145,10 @@ IMDynamicReconfig::IMDynamicReconfig():n_private("~")
 	n_private.param("parA", this->d_par_a, 0.0000473);
 	n_private.param("parB", this->d_par_b, -0.0013461);
 		
-	ROS_DEBUG("b_always_on: %d", this->b_always_on);
-	ROS_DEBUG("d_fov: %f", this->d_fov);
-	ROS_DEBUG("d_min_range: %f", this->d_min_range);
-	ROS_DEBUG("d_max_range: %f", this->d_max_range);
+	ROS_DEBUG("EvarobotInfrared: b_always_on: %d", this->b_always_on);
+	ROS_DEBUG("EvarobotInfrared: d_fov: %f", this->d_fov);
+	ROS_DEBUG("EvarobotInfrared: d_min_range: %f", this->d_min_range);
+	ROS_DEBUG("EvarobotInfrared: d_max_range: %f", this->d_max_range);
 	
 	
 	// Dynamic Reconfigure
@@ -174,22 +186,25 @@ int main(int argc, char **argv)
 			
 	if(!n.getParam("evarobot_infrared/frequency", d_frequency))
 	{
-		ROS_ERROR("Failed to get param 'frequency'");
+		ROS_INFO(GetErrorDescription(-100).c_str());
+        i_error_code = -100;
 	} 
 
 	if(i_adc_bits > 16)
 	{
-		ROS_ERROR("adcBits mustn't be greater than 16");
+		ROS_INFO(GetErrorDescription(-101).c_str());
+        i_error_code = -101;
 	}
 	
 	n.getParam("evarobot_infrared/channelNo", T_i_channels);
 			
 	if(T_i_channels.size() > MAX_IR)
 	{
-		ROS_ERROR("Number of infrared sensors mustn't be greater than %d", MAX_IR);
+		ROS_INFO(GetErrorDescription(-102).c_str());
+        i_error_code = -102;
 	}
 	
-	ROS_INFO("Number of ir sensors: %d", T_i_channels.size());
+	ROS_DEBUG("EvarobotInfrared: Number of ir sensors: %d", T_i_channels.size());
 	
 	
 	// Define frequency
@@ -224,14 +239,22 @@ int main(int argc, char **argv)
 		
 		default:
 		{
-			ROS_ERROR("Wrong spiMode. It should be 0-3.");
+			ROS_INFO(GetErrorDescription(-103).c_str());
+			i_error_code = -103;
 		}
 	}
 	
-	// create objects
+	IMSPI * p_im_spi;
+	boost::shared_ptr<IMADC> p_im_adc;
 	boost::shared_ptr<IMDynamicReconfig> dyn_params(new IMDynamicReconfig);
-	IMSPI * p_im_spi(new IMSPI(str_driver_path, u_c_spi_mode, i_spi_speed, i_spi_bits));
-	boost::shared_ptr<IMADC> p_im_adc(new IMADC(p_im_spi, i_adc_bits));
+	try{
+		p_im_spi = new IMSPI(str_driver_path, u_c_spi_mode, i_spi_speed, i_spi_bits);
+		p_im_adc = boost::shared_ptr<IMADC>(new IMADC(p_im_spi, i_adc_bits));
+	}catch(int e){
+		ROS_INFO(GetErrorDescription(e).c_str());
+        i_error_code = e;
+		return 0;
+	}
 	
 	for(uint i = 0; i < T_i_channels.size(); i++)
 	{
@@ -242,10 +265,11 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-			ROS_ERROR("Undefined channel value.");
+			ROS_INFO(GetErrorDescription(-104).c_str());
+			i_error_code = -104;
 		}
 	}
-	
+		
 	while(ros::ok())
 	{
 		for(uint i = 0; i < T_i_channels.size(); i++)

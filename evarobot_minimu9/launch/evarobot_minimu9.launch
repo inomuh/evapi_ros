@@ -2,7 +2,7 @@
 	<master auto="start"/>
 	
 	<!-- Run evarobot_minimu9 -->
-	<node pkg="evarobot_minimu9" type="evarobot_minimu9" respawn="false" name="evarobot_minimu9" output="screen">
+	<node pkg="evarobot_minimu9" type="evarobot_minimu9" respawn="false" name="evarobot_minimu9">
 		<rosparam file="$(find evarobot_minimu9)/params/evarobot_minimu9_params.yaml" command="load"/>
 	</node>
 	

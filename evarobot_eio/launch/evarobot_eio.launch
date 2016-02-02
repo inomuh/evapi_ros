@@ -2,7 +2,7 @@
 	<master auto="start"/>
 	
 	<!-- Run evarobot_bumper -->
-	<node pkg="evarobot_eio" type="evarobot_eio" respawn="false" name="evarobot_eio" output="screen">
+	<node pkg="evarobot_eio" type="evarobot_eio" respawn="false" name="evarobot_eio">
 		<rosparam file="$(find evarobot_eio)/params/evarobot_eio_params.yaml" command="load"/>
 	</node>
 	

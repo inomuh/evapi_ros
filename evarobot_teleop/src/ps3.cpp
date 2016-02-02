@@ -1,5 +1,8 @@
 #include "evarobot_teleop/ps3.h"
 #include <signal.h>
+
+int i_error_code = 0;
+
 IMJoystick::IMJoystick()
 {
 	this->max_lin = 1.0;
@@ -8,6 +11,19 @@ IMJoystick::IMJoystick()
 	
 	this->max_x = 0.2;
 	this->max_z = 0.5;
+}
+
+void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
+{
+    if(i_error_code<0)
+    {
+        stat.summaryf(diagnostic_msgs::DiagnosticStatus::ERROR, "%s", GetErrorDescription(i_error_code).c_str());
+        i_error_code = 0;
+    }
+    else
+    {
+        stat.summary(diagnostic_msgs::DiagnosticStatus::OK, "No collision!");
+    }
 }
 
 void IMJoystick::init()
@@ -32,7 +48,7 @@ void IMJoystick::init()
 	this->joy_sub_ = this->n.subscribe("joy", 10, &IMJoystick::CallbackJoy, this);
 	
 	this->n.param("evarobot_ps3/timeout", this->d_timeout, 1.0);
-	ROS_INFO("timeout: %f", this->d_timeout);
+	ROS_DEBUG("EvarobotTeleop: timeout: %f", this->d_timeout);
 		
 	this->last_time = ros::Time::now();	
 }
@@ -43,11 +59,11 @@ void IMJoystick::CallbackJoy(const sensor_msgs::Joy::ConstPtr& joy_msg)
 
 	this->last_time = ros::Time::now();	
 
-	ROS_DEBUG("DEADMAN %d", joy_msg->buttons[deadman_button]);
+	ROS_DEBUG("EvarobotTeleop: DEADMAN %d", joy_msg->buttons[deadman_button]);
 	
 	if (!deadman)
 	{
-		ROS_DEBUG("deadman is false");
+		ROS_DEBUG("EvarobotTeleop: deadman is false");
 		this->vel_msg.linear.x = 0.0;
 		this->vel_msg.angular.z = 0.0;
 		return;
@@ -80,8 +96,8 @@ void IMJoystick::CallbackJoy(const sensor_msgs::Joy::ConstPtr& joy_msg)
 
 
 
-	ROS_DEBUG("linear %f <-- %d", joy_msg->axes[axr_upwards], axr_upwards);
-	ROS_DEBUG("angular %f <-- %d", joy_msg->axes[axl_leftwards], axl_leftwards);
+	ROS_DEBUG("EvarobotTeleop: linear %f <-- %d", joy_msg->axes[axr_upwards], axr_upwards);
+	ROS_DEBUG("EvarobotTeleop: angular %f <-- %d", joy_msg->axes[axl_leftwards], axl_leftwards);
 
 	this->vel_msg.linear.x = this->max_x * joy_msg->axes[axr_upwards];
 	this->vel_msg.angular.z = this->max_z * joy_msg->axes[axl_leftwards];
@@ -104,7 +120,9 @@ void IMJoystick::CallRGBService()
 
 	if(this->client.call(srv) == 0)
 	{
-		ROS_ERROR("Failed to call service evarobot_rgb/SetRGB");
+		//ROS_ERROR("Failed to call service evarobot_rgb/SetRGB");
+		ROS_INFO(GetErrorDescription(-123).c_str());
+        i_error_code = -123;
 	}
 }
 
@@ -115,7 +133,9 @@ void IMJoystick::CheckTimeout()
 	{
 		this->vel_msg.linear.x = 0.0;
 		this->vel_msg.angular.z = 0.0;
-		ROS_ERROR("Timeout Error [%f]", duration.toSec());
+		//ROS_ERROR("Timeout Error [%f]", duration.toSec());
+		ROS_INFO(GetErrorDescription(-123).c_str());
+        i_error_code = -124;
 	}
 }
 
@@ -129,7 +149,9 @@ void IMJoystick::TurnOffRGB()
 	srv.request.color = 0;
 	if(this->client.call(srv) == 0)
 	{
-		ROS_ERROR("Failed to call service evarobot_rgb/SetRGB");
+		//ROS_ERROR("Failed to call service evarobot_rgb/SetRGB");
+		ROS_INFO(GetErrorDescription(-123).c_str());
+        i_error_code = -123;
 	}
 }
 
@@ -145,18 +167,30 @@ int main(int argc, char **argv)
 	ros::init(argc, argv, "evarobot_ps3");
 	
 	IMJoystick ps3;
-  ps3.init();
+	ps3.init();
 	ps3.CallRGBService();
 	
 	ros::Rate loop_rate(10.0);
 	
 	signal(SIGINT, &sighandler);
-	
+	// ROS PARAMS
+    double d_min_freq = 0.2;
+	double d_max_freq = 10.0;
+
+	// Diagnostics
+	diagnostic_updater::Updater updater;
+	updater.setHardwareID("EvarobotEIO");
+	updater.add("eio", &ProduceDiagnostics);
+
+	diagnostic_updater::HeaderlessTopicDiagnostic pub_freq("eio", updater,
+            diagnostic_updater::FrequencyStatusParam(&d_min_freq, &d_max_freq, 0.1, 10));
+            
   while (!g_b_terminate)
   {
 		ps3.PublishVel();
+		updater.update();
 		ros::spinOnce();
-    loop_rate.sleep();
+		loop_rate.sleep();
   }
   ps3.TurnOffRGB();  
 	return 0;

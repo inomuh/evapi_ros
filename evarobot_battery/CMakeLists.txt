@@ -27,9 +27,9 @@ include_directories(
   include
 )
 
- add_executable(evarobot_battery src/evarobot_battery.cpp ${EVAPI_LIB_SDK_SRC} src/LTC2943.cpp)
-  add_dependencies(evarobot_battery im_msgs_generate_messages_cpp)
- target_link_libraries(evarobot_battery
-   ${catkin_LIBRARIES}
-   pthread
- )
+add_executable(evarobot_battery src/evarobot_battery.cpp ${EVAPI_LIB_SDK_SRC} src/LTC2943.cpp)
+add_dependencies(evarobot_battery im_msgs_generate_messages_cpp)
+target_link_libraries(evarobot_battery
+ ${catkin_LIBRARIES}
+ pthread
+)

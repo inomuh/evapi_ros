@@ -25,9 +25,8 @@
 
 #include <boost/shared_ptr.hpp>
 
-#ifndef DEBUG
-#define DEBUG
-#endif
+#include <ros/console.h>
+#include "ErrorCodes.h"
 
 // In order to change max number of sonar, MAX_SONAR macros 
 // in evarobot_sonar.cpp(ROS) and driver_sonar.h(MODULE)

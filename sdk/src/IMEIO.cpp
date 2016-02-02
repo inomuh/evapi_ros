@@ -45,7 +45,11 @@ IMEIO::IMEIO(unsigned char u_c_device_address, string str_i2c_file_name, sem_t *
 	this->u_c_pins_directions_B = 0x00;
 	this->u_c_pins_data_B = 0x00;
 
-	this->i2c = new IMI2C(u_c_device_address, str_i2c_file_name, mutex);
+	try{
+		this->i2c = new IMI2C(u_c_device_address, str_i2c_file_name, mutex);
+	}catch(int i){
+		throw i;
+	}
 }
 
 IMEIO::~IMEIO()
@@ -62,8 +66,12 @@ int IMEIO::SetPinADirection(int i_pin_number, bool b_direction)
 	this->u_c_pins_directions_A &= u_c_mask;
 	this->u_c_pins_directions_A |= (b_direction << i_pin_number);
 
-	i_status = this->i2c->WriteDataByte(IMEIO::IODIRA, this->u_c_pins_directions_A);
-
+	try{
+		i_status = this->i2c->WriteDataByte(IMEIO::IODIRA, this->u_c_pins_directions_A);
+	}catch(int i){
+		throw i;
+	}
+	
 	return i_status;
 }
 
@@ -76,7 +84,11 @@ int IMEIO::SetPinBDirection(int i_pin_number, bool b_direction)
 	this->u_c_pins_directions_B &= u_c_mask;
 	this->u_c_pins_directions_B |= (b_direction << i_pin_number);
 
-	i_status = this->i2c->WriteDataByte(IMEIO::IODIRB, this->u_c_pins_directions_B);
+	try{
+		i_status = this->i2c->WriteDataByte(IMEIO::IODIRB, this->u_c_pins_directions_B);
+	}catch(int i){
+		throw i;
+	}
 
 	return i_status;
 }
@@ -95,10 +107,13 @@ int IMEIO::SetPinAValue(int i_pin_number, bool b_value)
 
 	//printf("u_c_pins_data(A): %x \n", this->u_c_pins_data_A);
 
-	i_status = this->i2c->WriteDataByte(IMEIO::GPIOA, this->u_c_pins_data_A);
+	try{
+		i_status = this->i2c->WriteDataByte(IMEIO::GPIOA, this->u_c_pins_data_A);
+	}catch(int i){
+		throw i;
+	}
 
 	return i_status;
-
 }
 
 int IMEIO::SetPinBValue(int i_pin_number, bool b_value)
@@ -114,7 +129,11 @@ int IMEIO::SetPinBValue(int i_pin_number, bool b_value)
 
 	//printf("u_c_pins_data(B): %x \n", u_c_pins_data_B);
 
-	i_status = this->i2c->WriteDataByte(IMEIO::GPIOB, this->u_c_pins_data_B);
+	try{
+		i_status = this->i2c->WriteDataByte(IMEIO::GPIOB, this->u_c_pins_data_B);
+	}catch(int i){
+		throw i;
+	}
 
 	return i_status;
 }
@@ -123,7 +142,11 @@ int IMEIO::GetPinAValue(int i_pin_number, bool & b_value)
 {
 	int i_status = -1;
 
-	i_status = this->i2c->ReadDataByte(IMEIO::GPIOA, this->u_c_pins_data_A);
+	try{
+		i_status = this->i2c->ReadDataByte(IMEIO::GPIOA, this->u_c_pins_data_A);
+	}catch(int i){
+		throw i;
+	}
 
 	b_value = (this->u_c_pins_data_A >> i_pin_number) & 0x01;
 
@@ -135,15 +158,14 @@ int IMEIO::GetPinBValue(int i_pin_number, bool & b_value)
 {
 	int i_status = -1;
 
-	i_status = this->i2c->ReadDataByte(IMEIO::GPIOB, this->u_c_pins_data_B);
+	try{
+		i_status = this->i2c->ReadDataByte(IMEIO::GPIOB, this->u_c_pins_data_B);
+	}catch(int i){
+		throw i;
+	}
 
 	b_value = (this->u_c_pins_data_B >> i_pin_number) & 0x01;
 
 	return i_status;
 
 }
-
-
-
-
-

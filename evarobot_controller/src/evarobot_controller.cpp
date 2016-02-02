@@ -3,6 +3,7 @@
 #include <dynamic_reconfigure/server.h>
 #include <evarobot_controller/ParamsConfig.h>
 
+int i_error_code = 0;
 
 void PIDController::Reset()
 {
@@ -76,7 +77,7 @@ float PIDController::RunController(float f_desired, float f_measured)
 			
 	if( fabs(f_ret) > this->d_max_vel )
 	{
-		ROS_WARN("MAX VEL: %f", this->d_max_vel);
+		ROS_DEBUG("EvarobotController: MAX VEL: %f", this->d_max_vel);
 		f_ret = (f_ret * this->d_max_vel) / fabs(f_ret);
 	}
 
@@ -95,15 +96,23 @@ void PIDController::UpdateParams(double d_proportional_constant,
 
 void PIDController::ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
 {
-	stat.summaryf(diagnostic_msgs::DiagnosticStatus::OK, "%s is OK!", this->str_name.c_str());
-	
-	stat.add("Proportional Constant", this->d_proportional_constant);
-	stat.add("Integral Constant", this->d_integral_constant);
-	stat.add("Derivative Constant", this->d_derivative_constant);
-	
-	stat.add("Proportional Error", this->d_proportional_error);
-	stat.add("Integral Error", this->d_integral_error);
-	stat.add("Derivative Error", this->d_derivative_error);
+	if(i_error_code<0)
+    	{
+            stat.summaryf(diagnostic_msgs::DiagnosticStatus::ERROR, "%s", GetErrorDescription(i_error_code).c_str());
+    	    i_error_code = 0;
+        }
+	else
+	{
+		stat.summaryf(diagnostic_msgs::DiagnosticStatus::OK, "%s is OK!", this->str_name.c_str());
+
+		stat.add("Proportional Constant", this->d_proportional_constant);
+		stat.add("Integral Constant", this->d_integral_constant);
+		stat.add("Derivative Constant", this->d_derivative_constant);
+
+		stat.add("Proportional Error", this->d_proportional_error);
+		stat.add("Integral Error", this->d_integral_error);
+		stat.add("Derivative Error", this->d_derivative_error);
+	}
 }
 
 void CallbackMeasured(const im_msgs::WheelVel::ConstPtr & msg)
@@ -140,7 +149,7 @@ void CallbackReconfigure(evarobot_controller::ParamsConfig &config, uint32_t lev
 
 bool CallbackResetController(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response)
 {
-	ROS_INFO("Reset Controller");
+	ROS_DEBUG("EvarobotContoller: Reset Controller");
 	b_reset_controller = true;
 	return true;
 }
@@ -175,41 +184,49 @@ int main(int argc, char **argv)
   
   if(!n.getParam("evarobot_controller/wheelSeparation", g_d_wheel_separation))
   {
-	  ROS_ERROR("Failed to get param 'wheelSeparation'");
+	  ROS_INFO(GetErrorDescription(-28).c_str());
+  	  i_error_code = -28;
   }
   if(!n.getParam("evarobot_controller/integralConstLeft", d_integral_constant_left))
   {
-	  ROS_ERROR("Failed to get param 'integralConstLeft'");
+	  ROS_INFO(GetErrorDescription(-65).c_str());
+	  i_error_code = -65;
   }
 
   if(!n.getParam("evarobot_controller/derivativeConstLeft", d_derivative_constant_left))
   {
-	  ROS_ERROR("Failed to get param 'derivativeConstLeft'");
+	  ROS_INFO(GetErrorDescription(-69).c_str());
+	  i_error_code = -69;
   }  
 
   if(!n.getParam("evarobot_controller/proportionalConstLeft", d_proportional_constant_left))
   {
-	  ROS_ERROR("Failed to get param 'proportionalConstLeft'");
+	  ROS_INFO(GetErrorDescription(-70).c_str());
+	  i_error_code = -70;
   } 
 
   if(!n.getParam("evarobot_controller/integralConstRight", d_integral_constant_right))
   {
-	  ROS_ERROR("Failed to get param 'integralConstRight'");
+	  ROS_INFO(GetErrorDescription(-71).c_str());
+	  i_error_code = -71;
   }
 
   if(!n.getParam("evarobot_controller/derivativeConstRight", d_derivative_constant_right))
   {
-	  ROS_ERROR("Failed to get param 'derivativeConstRight'");
+	  ROS_INFO(GetErrorDescription(-72).c_str());
+	  i_error_code = -72;
   }  
 
   if(!n.getParam("evarobot_controller/proportionalConstRight", d_proportional_constant_right))
   {
-	  ROS_ERROR("Failed to get param 'proportionalConstRight'");
+	  ROS_INFO(GetErrorDescription(-73).c_str());
+  	  i_error_code = -73;
   }   
   
   if(!n.getParam("evarobot_controller/Frequency", d_frequency))
   {
-	  ROS_ERROR("Failed to get param 'Frequency'");
+	  ROS_INFO(GetErrorDescription(-74).c_str());
+	  i_error_code = -74;
   }  
     
   PIDController left_controller = PIDController(d_proportional_constant_left, 
@@ -254,9 +271,9 @@ int main(int argc, char **argv)
 		
 		if(b_is_received_params)
 		{
-			ROS_INFO("Updating Controller Params...");
-			ROS_INFO("%f, %f, %f", g_d_p_left, g_d_i_left, g_d_d_left);
-			ROS_INFO("%f, %f, %f", g_d_p_right, g_d_i_right, g_d_d_right);
+			ROS_DEBUG("EvarobotController: Updating Controller Params...");
+			ROS_DEBUG("EvarobotController: %f, %f, %f", g_d_p_left, g_d_i_left, g_d_d_left);
+			ROS_DEBUG("EvarobotController: %f, %f, %f", g_d_p_right, g_d_i_right, g_d_d_right);
 			
 			left_controller.UpdateParams(g_d_p_left, g_d_i_left, g_d_d_left);
 			right_controller.UpdateParams(g_d_p_right, g_d_i_right, g_d_d_right);
@@ -276,7 +293,8 @@ int main(int argc, char **argv)
 		
 		if(g_d_dt > d_timeout)
 		{
-			ROS_ERROR("Odometry Timeout Error (Past)");
+			ROS_INFO(GetErrorDescription(-75).c_str());
+			i_error_code = -75;
 			ctrl_pub->msg_.left_vel = 0.0;
 			ctrl_pub->msg_.right_vel = 0.0;
 			left_controller.Reset();
@@ -284,7 +302,8 @@ int main(int argc, char **argv)
 		}
 		else if(g_d_dt < 0)
 		{
-			ROS_ERROR("Odometry Timeout Error (Future)");
+			ROS_INFO(GetErrorDescription(-76).c_str());
+			i_error_code = -76;
 			ctrl_pub->msg_.left_vel = 0.0;
 			ctrl_pub->msg_.right_vel = 0.0;
 			left_controller.Reset();

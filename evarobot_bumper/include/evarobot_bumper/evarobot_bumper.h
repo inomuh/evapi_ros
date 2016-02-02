@@ -15,8 +15,10 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>		/* ioctl */
 
-#include "IMEIO.h"
+#include <ros/console.h>
 
+#include "IMEIO.h"
+#include "ErrorCodes.h"
 
 #define MAX_BUMPER 3
 

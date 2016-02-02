@@ -11,6 +11,13 @@
 
 #include "im_msgs/SetRGB.h"
 
+
+#include <ros/console.h>
+#include "ErrorCodes.h"
+
+#include <diagnostic_updater/diagnostic_updater.h>
+#include <diagnostic_updater/publisher.h>
+
 char SEM_NAME[]= "i2c";
 
 using namespace std;

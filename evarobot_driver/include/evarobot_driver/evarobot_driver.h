@@ -23,6 +23,8 @@
 #include "im_msgs/Voltage.h"
 #include "im_msgs/WheelVel.h"
 
+#include <ros/console.h>
+#include "ErrorCodes.h"
 
 using namespace std;
 
@@ -46,8 +48,8 @@ public:
 			 unsigned int u_i_counts, 
 			 double d_duty, 
 			 int i_mode,
-			 IMGPIO * m1_in, 
-			 IMGPIO * m2_in,
+			 IMGPIO ** m1_in, 
+			 IMGPIO ** m2_in,
 			 IMGPIO * m1_en,
 			 IMGPIO * m2_en,
 			 IMADC * adc,
@@ -72,8 +74,8 @@ public:
 	
 private:
 	IMPWM * pwm;
-	IMGPIO * m1_in;
-	IMGPIO * m2_in;
+	IMGPIO ** m1_in;
+	IMGPIO ** m2_in;
 	IMGPIO * m1_en;
 	IMGPIO * m2_en;
 	

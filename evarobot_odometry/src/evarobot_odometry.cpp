@@ -12,7 +12,7 @@ int i_gear_ratio;
 int i_cpr;
 double d_wheel_diameter;
 
-
+int i_error_code = 0;
 	
 void CallbackReconfigure(evarobot_odometry::ParamsConfig &config, uint32_t level)
 {
@@ -27,9 +27,24 @@ void CallbackReconfigure(evarobot_odometry::ParamsConfig &config, uint32_t level
 
 bool CallbackResetOdom(std_srvs::Empty::Request& request, std_srvs::Empty::Response& response)
 {
-	ROS_INFO("Reset Odometry");
+	ROS_DEBUG("EvarobotOdometry: Reset Odometry");
 	b_reset_odom = true;
 	return true;
+}
+
+
+
+void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
+{
+    if(i_error_code<0)
+    {
+        stat.summaryf(diagnostic_msgs::DiagnosticStatus::ERROR, "%s", GetErrorDescription(i_error_code).c_str());
+        i_error_code = 0;
+    }
+    else
+    {
+		stat.summary(diagnostic_msgs::DiagnosticStatus::OK, "EvarobotOdometry: No problem.");
+    }
 }
 
 int main(int argc, char **argv)
@@ -37,7 +52,7 @@ int main(int argc, char **argv)
 	int i_fd;
 	double d_frequency;
 	double d_min_freq, d_max_freq;
-  stringstream ss;
+    stringstream ss;
 	
 	string str_device_path;
 	
@@ -50,32 +65,38 @@ int main(int argc, char **argv)
 	
 	if(!n.getParam("evarobot_odometry/wheelSeparation", d_wheel_separation))
 	{
-	  ROS_ERROR("Failed to get param 'wheelSeparation'");
+	  ROS_INFO(GetErrorDescription(-108).c_str());
+        i_error_code = -108;
 	}
 	
 	if(!n.getParam("evarobot_odometry/height", d_height))
 	{
-	  ROS_ERROR("Failed to get param 'height'");
+	  ROS_INFO(GetErrorDescription(-109).c_str());
+        i_error_code = -109;
 	} 	
 	
 	if(!n.getParam("evarobot_odometry/frequency", d_frequency))
 	{
-	  ROS_ERROR("Failed to get param 'frequency'");
+	  ROS_INFO(GetErrorDescription(-110).c_str());
+        i_error_code = -110;
 	} 	
 	
 	if(!n.getParam("evarobot_odometry/gearRatio", i_gear_ratio))
 	{
-	  ROS_ERROR("Failed to get param 'gearRatio'");
+	  ROS_INFO(GetErrorDescription(-111).c_str());
+        i_error_code = -111;
 	} 	
 	
 	if(!n.getParam("evarobot_odometry/CPR", i_cpr))
 	{
-	  ROS_ERROR("Failed to get param 'CPR'");
+	  ROS_INFO(GetErrorDescription(-112).c_str());
+        i_error_code = -112;
 	} 	
 	
 	if(!n.getParam("evarobot_odometry/wheelDiameter", d_wheel_diameter))
 	{
-	  ROS_ERROR("Failed to get param 'wheelDiameter'");
+	  ROS_INFO(GetErrorDescription(-113).c_str());
+        i_error_code = -113;
 	}
 		
 	
@@ -100,7 +121,8 @@ int main(int argc, char **argv)
   
   // Diagnostics
 	diagnostic_updater::Updater updater;
-	updater.setHardwareID("None");
+	updater.setHardwareID("none");
+	updater.add("evarobot_odometry", &ProduceDiagnostics);
 		
 	diagnostic_updater::HeaderlessTopicDiagnostic pub_freq("odom", updater,
 											diagnostic_updater::FrequencyStatusParam(&d_min_freq, &d_max_freq, 0.1, 10));
@@ -138,7 +160,8 @@ int main(int argc, char **argv)
 	
 	if(i_fd < 0)
 	{
-		ROS_ERROR("File %s either does not exist or has been locked by another process\n", str_device_path.c_str());
+		ROS_INFO(GetErrorDescription(-114).c_str());
+        i_error_code = -114;
 		exit(-1);
 	}
 
@@ -146,13 +169,13 @@ int main(int argc, char **argv)
 	{
 		if(b_is_received_params)
 		{
-			ROS_INFO("Updating Odometry Params...");
+			ROS_DEBUG("EvarobotOdometry: Updating Odometry Params...");
 			b_is_received_params = false;
 		}
 		
 		if(b_reset_odom)
 		{
-			ROS_INFO("Resetting Odometry");
+			ROS_DEBUG("EvarobotOdometry: Resetting Odometry");
 			
 			write(i_fd, "clean", 5);
 			
@@ -173,11 +196,8 @@ int main(int argc, char **argv)
 		}
 		
 		// Reading encoder.
-//		cout << "Reading Encoder" << endl;
 		read(i_fd, c_read_buf, sizeof(c_read_buf));
 		str_data = c_read_buf; 
-//		cout << "Read Encoder" << endl;
-//		cout << str_data << endl;
 
 		dur_time = ros::Time::now() - read_time;
 
@@ -192,40 +212,29 @@ int main(int argc, char **argv)
 			str_data = "";
 		}	
 
-//		cout << "left_read: " << f_left_read << " right_read: " << f_right_read << endl;
-
 		float f_delta_sr = 0.0, f_delta_sl = 0.0, f_delta_s = 0.0; 
 
 		// Dönüş sayısı değişimi hesaplanıyor.
 		f_delta_sr =  PI * d_wheel_diameter * (f_right_read - f_right_read_last) / (i_gear_ratio * i_cpr);
 		f_delta_sl =  PI * d_wheel_diameter * (f_left_read - f_left_read_last) / (i_gear_ratio * i_cpr);
-//		cout << "donus sayisi hesaplandi" << endl;
-//		cout << "deltaSr: " << f_delta_sr << " deltaSl: " << f_delta_sl << endl;
 
 		// Oryantasyondaki değişim hesaplanıyor.
 		delta_odom_pose.theta = (f_delta_sr - f_delta_sl) / d_wheel_separation;
 		f_delta_s = (f_delta_sr + f_delta_sl) / 2;
-//		cout << "oryantasyon degisim hesaplandi" << endl;
-//		cout << "delta_teta: " << delta_odom_pose.theta << " deltaS: " << f_delta_s << endl;
 
 		// x ve y eksenlerindeki yer değiştirme hesaplanıyor.
 		delta_odom_pose.x = f_delta_s * cos(odom_pose.theta + delta_odom_pose.theta * 0.5);
 		delta_odom_pose.y = f_delta_s * sin(odom_pose.theta + delta_odom_pose.theta * 0.5);
-//		cout << "x ve y yer degistirme hesaplandi" << endl;
-//		cout << "delta_odom x: " <<  delta_odom_pose.x << " y: " <<  delta_odom_pose.y << endl;
 
-		// Yeni pozisyonlar hesaplanıyor.
+		// Calculate new positions.
 		odom_pose.x += delta_odom_pose.x;
 		odom_pose.y += delta_odom_pose.y;
 		odom_pose.theta += delta_odom_pose.theta;
-//		cout << "yeni pozisyonlar hesaplandi." << endl;
 
 		// Yeni dönüş değerleri son okunan olarak atanıyor.
 		f_right_read_last = f_right_read;
 		f_left_read_last = f_left_read;
 
-	//	cout << "read_last ri: " << f_right_read_last << " le: " << f_left_read_last << endl;
-	
 			
 		// Yayınlanacak Posizyon Verisi dolduruluyor.
 		pose_pub->msg_.pose.pose.position.x = odom_pose.x;
@@ -236,34 +245,27 @@ int main(int argc, char **argv)
 		pose_pub->msg_.pose.pose.orientation.y = 0.0;
 		pose_pub->msg_.pose.pose.orientation.z = sin(0.5 * odom_pose.theta); 
 		pose_pub->msg_.pose.pose.orientation.w = cos(0.5 * odom_pose.theta);
-//		cout << "yayinlanacak pozisyon datasi dolduruldu" << endl;
-													
-		//cout << "Pose.X: " << odom_pose.x << "  Pose.Y: " << odom_pose.y << "  Orientation: " << odom_pose.theta << endl;
 
 		float f_lin_vel = 0, f_ang_vel = 0;
 		float f_lin_vel_right = 0, f_lin_vel_left = 0;
 
-		cout << "dur_time: " << dur_time.toSec() << endl;
+		ROS_DEBUG_STREAM("EvarobotOdometry: dur_time: " << dur_time.toSec());
 
 		if(dur_time.toSec() > 0)
-		{
-//			f_lin_vel = sqrt(pow(delta_odom_pose.x, 2) + pow(delta_odom_pose.y, 2)) / dur_time.toSec();
-//			f_ang_vel = delta_odom_pose.theta / dur_time.toSec();
-			
+		{		
 			f_lin_vel_right = f_delta_sr / dur_time.toSec();
 			f_lin_vel_left = f_delta_sl / dur_time.toSec();
 			
-			cout << "VEl_LEFT: " << f_lin_vel_left << "  Vel_right: " << f_lin_vel_right << " dur: " << dur_time.toSec() << endl;
+			ROS_DEBUG_STREAM("EvarobotOdometry: VEl_LEFT: " << f_lin_vel_left << "  Vel_right: " << f_lin_vel_right << " dur: " << dur_time.toSec());
 
 			
 			f_lin_vel = (f_lin_vel_right + f_lin_vel_left) / 2.0;
 			f_ang_vel = (f_lin_vel_right - f_lin_vel_left) / d_wheel_separation;
-//			cout << ".....HIZLAR HESAPLANDI......" << endl;
-
 		}
 		else
 		{
-			ROS_ERROR("Division by Zero");
+			ROS_INFO(GetErrorDescription(-115).c_str());
+			i_error_code = -115;
 		}
 		
 		ss.str("");
@@ -273,8 +275,7 @@ int main(int argc, char **argv)
 		vel_pub->msg_.header.stamp = ros::Time::now();
 		vel_pub->msg_.left_vel = f_lin_vel_left;
 		vel_pub->msg_.right_vel = f_lin_vel_right;
-//		cout << "Tekerlek hizlari dolduruldu." << endl;
-		
+
 		if (vel_pub->trylock())
 		{
 			vel_pub->unlockAndPublish();
@@ -289,7 +290,6 @@ int main(int argc, char **argv)
 		pose_pub->msg_.twist.twist.angular.y = 0.0;
 		pose_pub->msg_.twist.twist.angular.z = f_ang_vel;
 
-//		cout << "hizlar dolduruldu" << endl;
 		//uint32
 		//msg.header.seq
 		// ROS Zaman etiketi topiğe basılıyor. (time)
@@ -311,14 +311,10 @@ int main(int argc, char **argv)
 		}			
 		pub_freq.tick();
 
-//		cout << "spinonce cagriliyor..." << endl;
 		ros::spinOnce();
-//		cout << "updater cagriliyot..." << endl;
 		updater.update();
 		// Frekansı tutturmak için uyutuluyor.
-//		cout << "sleep cagriliyor..." << endl;
 		loop_rate.sleep();
-//		cout << "uyandi" << endl;
 	}
 
 	// Enkoder sürücü dosyası kapatılıyor.
