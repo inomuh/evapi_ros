@@ -100,8 +100,8 @@ public:
 	 * \retval >=0 hata yoksa
 	 */
 	#endif
-	int WriteDataByte(unsigned char u_c_register_address, unsigned char u_c_data);
-	int WriteTwoDataByte(unsigned char u_c_register_address, unsigned char u_c_msb_data, unsigned char u_c_lsb_data);
+	int WriteDataByte(char c_register_address, char c_data);
+	int WriteTwoDataByte(char c_register_address, char c_msb_data, char c_lsb_data);
 	int WriteByte(unsigned char u_c_register_address);
 	
 	#ifdef English_dox
@@ -124,8 +124,10 @@ public:
 	 * \retval >=0 hata yoksa
 	 */
 	#endif
-	int ReadDataByte(unsigned char u_c_register_address, unsigned char & u_c_data);
-	int ReadTwoDataByte(unsigned char u_c_register_address, unsigned char & u_c_msb_data, unsigned char & u_c_lsb_data);
+	int ReadDataByte(char c_register_address, char & c_data);
+	int ReadTwoDataByte(char c_register_address, char & c_msb_data, char & c_lsb_data);
+	void ReadMultipleRegister(char * c_data, int i_reg_size);
+
 private:
 
 	#ifdef English_dox

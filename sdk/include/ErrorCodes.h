@@ -54,6 +54,10 @@ std::string GetErrorDescription(int i_error_code)
 		
 		case -25: str_error_description = "[Error Code 25] IMI2C: A failure is occured while reading from I2C device"; break;
 		
+		case -130: str_error_description = "[Error Code 130] IMI2C: Could not detect the I2C device."; break;
+		
+		case -128: str_error_description = "[Error Code 128] IMI2C: A failure is occured while multiple registers reading from I2C device"; break;
+		
 		case -29: str_error_description = "[Error Code 29] IMPWM: An unhandled exception is occured"; break;
 		
 		case -30: str_error_description = "[Error Code 30] IMPWM: A failure is occured while setting frequency"; break;
@@ -252,17 +256,13 @@ std::string GetErrorDescription(int i_error_code)
 
 		case -124: str_error_description = "[Error Code 124] EvarobotTeleop: Timeout Error"; break;
 
-		case -125: str_error_description = "[Error Code 125] EvarobotBattary: Unable to create semaphore"; break;
+		case -125: str_error_description = "[Error Code 125] EvarobotBattery: Unable to create semaphore"; break;
 
-		case -126: str_error_description = "[Error Code 126] EvarobotBattary: Failed-> setVoltageThresholdHigh"; break;
+		case -126: str_error_description = "[Error Code 126] EvarobotBattery: High Voltage Threshold is exceeded"; break;
 
-		case -127: str_error_description = "[Error Code 127] EvarobotBattary: Failed-> setVoltageThresholdLow"; break;
+		case -127: str_error_description = "[Error Code 127] EvarobotBattery: Low Voltage"; break;
 
-		case -128: str_error_description = "[Error Code 128] Evarobot: "; break;
-
-		case -129: str_error_description = "[Error Code 129] Evarobot: "; break;
-
-		case -130: str_error_description = "[Error Code 130] Evarobot: "; break;
+		case -129: str_error_description = "[Error Code 129] EvarobotBattery: LOW Battery Level."; break;
 
 		case -131: str_error_description = "[Error Code 131] Evarobot: "; break;
 

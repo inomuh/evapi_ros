@@ -212,11 +212,11 @@ public:
 
 
 private:
-	unsigned char u_c_pins_directions_A;
-	unsigned char u_c_pins_data_A;
+	char c_pins_directions_A;
+	char c_pins_data_A;
 
-	unsigned char u_c_pins_directions_B;
-	unsigned char u_c_pins_data_B;
+	char c_pins_directions_B;
+	char c_pins_data_B;
 
 	#ifdef English_dox
 	//! Brief
@@ -241,14 +241,14 @@ private:
 
 	IMI2C * i2c;
 
-	static const unsigned char IODIRA = 0x00;
-	static const unsigned char IODIRB = 0x01;
+	static const char IODIRA = 0x00;
+	static const char IODIRB = 0x01;
 
-	static const unsigned char GPIOA = 0x12;
-	static const unsigned char GPIOB = 0x13;
+	static const char GPIOA = 0x12;
+	static const char GPIOB = 0x13;
 
-	static const unsigned char OLATA = 0x14;
-	static const unsigned char OLATB = 0x15;
+	static const char OLATA = 0x14;
+	static const char OLATB = 0x15;
 
 
 };

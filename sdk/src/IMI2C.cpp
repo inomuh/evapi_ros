@@ -17,9 +17,6 @@ IMI2C::IMI2C()
 {
 	this->str_i2c_file_name = "/dev/i2c-0";
 	this->u_c_device_adress= 0;
-	//this->i_i2cfd = -1;
-//	this->OpenI2C();
-
 }
 
 /*******************************************************************
@@ -34,18 +31,13 @@ IMI2C::IMI2C(unsigned char u_c_device_address, string str_i2c_file_name, sem_t *
 	this->str_i2c_file_name = str_i2c_file_name;
 	this->u_c_device_adress = u_c_device_address;
 	this->mutex = mutex;
-	//this->i_i2cfd = -1;
-//	this->OpenI2C();
 }
 /**********************************************************************
  * This is the class destructor it simply closes the open I2C device
  * by calling the closeI2C() which in turn calls the close() system call
  * *********************************************************************/
 
-IMI2C::~IMI2C(void)
-{
-	//this->CloseI2C();
-}
+IMI2C::~IMI2C(void){}
 
 /**********************************************************************
  * This function opens the I2C device by simply calling the open system
@@ -60,12 +52,17 @@ int IMI2C::OpenI2C()
 {
 	int i_status_value = -1;
 
-	//sem_wait(this->mutex);
+	sem_wait(this->mutex);
 
 	i_status_value = open(str_i2c_file_name.c_str(), O_RDWR);
 	if(i_status_value < 0)
 	{
 		throw -22;
+	}
+	
+	if(ioctl(i_status_value, I2C_SLAVE, this->u_c_device_adress) < 0)
+	{
+		throw -130;
 	}
 
 	return i_status_value;
@@ -86,7 +83,7 @@ int IMI2C::CloseI2C(int i_i2cfd)
 		throw -23;
 	}
 
-	//sem_post(this->mutex);
+	sem_post(this->mutex);
 
 	return i_status_value;
 }
@@ -97,10 +94,9 @@ int IMI2C::CloseI2C(int i_i2cfd)
  *both bytes are written (no read/write switch), both pieces
  *of information can be sent in a single message (i2c_msg structure)
  ********************************************************************/
-int IMI2C::WriteDataByte(unsigned char u_c_register_address, unsigned char u_c_data)
+int IMI2C::WriteDataByte(char c_register_address, char c_data)
 {
-	unsigned char u_c_buffer[2];
-	//unsigned char u_c_buffer[1];
+	char c_buffer[2];
 	int i_status_value = -1;
 	struct i2c_rdwr_ioctl_data packets;
 	struct i2c_msg messages[1];
@@ -112,15 +108,13 @@ int IMI2C::WriteDataByte(unsigned char u_c_register_address, unsigned char u_c_d
 		throw i;
 	}
 
-
-	u_c_buffer[0] = u_c_register_address;
-	u_c_buffer[1] = u_c_data;
-	//u_c_buffer[0] = u_c_data;
+	c_buffer[0] = c_register_address;
+	c_buffer[1] = c_data;
 
 	messages[0].addr = this->u_c_device_adress;
 	messages[0].flags = 0;
-	messages[0].len = sizeof(u_c_buffer);
-	messages[0].buf = (char *)u_c_buffer;
+	messages[0].len = sizeof(c_buffer);
+	messages[0].buf = c_buffer;
 
 	packets.msgs = messages;
 	packets.nmsgs = 1;
@@ -128,11 +122,12 @@ int IMI2C::WriteDataByte(unsigned char u_c_register_address, unsigned char u_c_d
 	i_status_value = ioctl(i_i2cfd, I2C_RDWR, &packets);
 	if(i_status_value < 0)
 	{
-		try{
-                	this->CloseI2C(i_i2cfd);
-       		}catch(int i){
-        	        throw i;
-	        }
+		try
+		{
+			this->CloseI2C(i_i2cfd);
+		}catch(int i){
+						throw i;
+		}
 
 		throw -24;
 	}
@@ -149,9 +144,6 @@ int IMI2C::WriteDataByte(unsigned char u_c_register_address, unsigned char u_c_d
 /********************************************************************
  *This function writes only one byte.
  ********************************************************************/
-  /*
-  * TODO: Check this function.
-  */
 int IMI2C::WriteByte(unsigned char u_c_byte)
 {
 	int i_i2cfd = -1;
@@ -190,37 +182,36 @@ int IMI2C::WriteByte(unsigned char u_c_byte)
  *of information can be sent in a single message (i2c_msg structure)
  * register -> low byte -> high byte
  ********************************************************************/
-int IMI2C::WriteTwoDataByte(unsigned char u_c_register_address, unsigned char u_c_msb_data, unsigned char u_c_lsb_data)
+int IMI2C::WriteTwoDataByte(char c_register_address, char c_msb_data, char c_lsb_data)
 {
 
-	unsigned char u_c_buffer[2];
-	//unsigned char u_c_buf[1];
-	//unsigned char u_c_buffer[1];
+	char c_buffer[2];
 	int i_status_value = -1;
 	struct i2c_rdwr_ioctl_data packets;
 	struct i2c_msg messages[2];
 	int i_i2cfd = -1;
 
-	i_i2cfd = this->OpenI2C();
+	try{
+		i_i2cfd = this->OpenI2C();
+	}catch(int e){
+		throw e;
+	}
 
-	u_c_buffer[0] = u_c_register_address;
-	u_c_buffer[1] = u_c_lsb_data;
-	//u_c_buffer[2] = u_c_lsb_data;
+	c_buffer[0] = c_register_address;
+	c_buffer[1] = c_lsb_data;
 
 	messages[0].addr = this->u_c_device_adress;
 	messages[0].flags = 0;
-	messages[0].len = sizeof(u_c_buffer);
-	messages[0].buf = (char *)u_c_buffer;
+	messages[0].len = sizeof(c_buffer);
+	messages[0].buf = c_buffer;
 
-	u_c_buffer[0] = u_c_register_address;
-	u_c_buffer[1] = u_c_msb_data;
-
-	//u_c_buf[0] = u_c_lsb_data;
+	c_buffer[0] = c_register_address;
+	c_buffer[1] = c_msb_data;
 
 	messages[1].addr = this->u_c_device_adress;
 	messages[1].flags = 0;
-	messages[1].len = sizeof(u_c_buffer);
-	messages[1].buf = (char *)u_c_buffer;
+	messages[1].len = sizeof(c_buffer);
+	messages[1].buf = c_buffer;
 
 	packets.msgs = messages;
 	packets.nmsgs = 2;
@@ -251,14 +242,13 @@ int IMI2C::WriteTwoDataByte(unsigned char u_c_register_address, unsigned char u_
  *variable "data".
  ********************************************************************/
 
-int IMI2C::ReadDataByte(unsigned char u_c_register_address, unsigned char & u_c_data)
+int IMI2C::ReadDataByte(char c_register_address, char & c_data)
 {
 
-    unsigned char *p_u_c_inbuff, u_c_outbuff;
+  char *p_c_inbuff, c_outbuff;
 	int i_status_value = -1;
 	struct i2c_rdwr_ioctl_data packets;
 	struct i2c_msg messages[2];
-	//struct i2c_msg messages[1];
 	int i_i2cfd = -1;
 
 	try{
@@ -267,37 +257,29 @@ int IMI2C::ReadDataByte(unsigned char u_c_register_address, unsigned char & u_c_
 		throw i;
 	}
 
-	u_c_outbuff = u_c_register_address;
+	c_outbuff = c_register_address;
 	messages[0].addr = this->u_c_device_adress;
 	messages[0].flags= 0;
-	messages[0].len = sizeof(u_c_outbuff);
-	messages[0].buf = (char*)&u_c_outbuff;
+	messages[0].len = sizeof(c_outbuff);
+	messages[0].buf = &c_outbuff;
 
-	p_u_c_inbuff = &u_c_data;
+	p_c_inbuff = &c_data;
 	messages[1].addr = this->u_c_device_adress;
 	messages[1].flags = I2C_M_RD;
-	messages[1].len = sizeof(*p_u_c_inbuff); // size of value pointed to by inbuff to size of pointer inbuff
-	messages[1].buf = (char*)p_u_c_inbuff;
-
-/*	p_u_c_inbuff = &u_c_data;
-	messages[0].addr = this->u_c_device_adress;
-	messages[0].flags = I2C_M_RD;
-	messages[0].len = sizeof(*p_u_c_inbuff); // size of value pointed to by inbuff to size of pointer inbuff
-	messages[0].buf = p_u_c_inbuff;
-*/
+	messages[1].len = sizeof(*p_c_inbuff); // size of value pointed to by inbuff to size of pointer inbuff
+	messages[1].buf = p_c_inbuff;
 
 	packets.msgs = messages;
-//	packets.nmsgs = 1;
 	packets.nmsgs = 2;
 
 	i_status_value = ioctl(i_i2cfd, I2C_RDWR, &packets);
 	if(i_status_value < 0)
 	{
 		try{
-                	this->CloseI2C(i_i2cfd);
-        	}catch(int i){
-                	throw i;
-        	}
+						this->CloseI2C(i_i2cfd);
+		}catch(int i){
+						throw i;
+		}
 
 		throw -25;
 	}
@@ -314,10 +296,10 @@ int IMI2C::ReadDataByte(unsigned char u_c_register_address, unsigned char & u_c_
  /*
   * TODO: Check this function.
   */
-int IMI2C::ReadTwoDataByte(unsigned char u_c_register_address, unsigned char & u_c_msb_data, unsigned char & u_c_lsb_data)
+int IMI2C::ReadTwoDataByte(char c_register_address, char & c_msb_data, char & c_lsb_data)
 {
-    unsigned char u_c_outbuff;
-    unsigned char *p_u_c_inbuff;
+   char c_outbuff;
+   char *p_c_inbuff;
 
 	int i_status_value = -1;
 	struct i2c_rdwr_ioctl_data packets;
@@ -330,33 +312,25 @@ int IMI2C::ReadTwoDataByte(unsigned char u_c_register_address, unsigned char & u
 		throw i;
 	}
 
-	u_c_outbuff = u_c_register_address;
+	c_outbuff = c_register_address;
 	messages[0].addr = this->u_c_device_adress;
 	messages[0].flags= 0;
-	messages[0].len = sizeof(u_c_outbuff);
-	messages[0].buf = (char*)&u_c_outbuff;
+	messages[0].len = sizeof(c_outbuff);
+	messages[0].buf = &c_outbuff;
 
-	p_u_c_inbuff = &u_c_msb_data;
+	p_c_inbuff = &c_msb_data;
 	messages[1].addr = this->u_c_device_adress;
 	messages[1].flags = I2C_M_RD;
-	messages[1].len = sizeof(*p_u_c_inbuff); // size of value pointed to by inbuff to size of pointer inbuff
-	messages[1].buf = (char*)p_u_c_inbuff;
+	messages[1].len = sizeof(*p_c_inbuff); // size of value pointed to by inbuff to size of pointer inbuff
+	messages[1].buf = p_c_inbuff;
 
-	p_u_c_inbuff = &u_c_lsb_data;
+	p_c_inbuff = &c_lsb_data;
 	messages[2].addr = this->u_c_device_adress;
 	messages[2].flags = I2C_M_RD;
-	messages[2].len = sizeof(*p_u_c_inbuff);
-	messages[2].buf = (char*)p_u_c_inbuff;
-
-/*	p_u_c_inbuff = &u_c_data;
-	messages[0].addr = this->u_c_device_adress;
-	messages[0].flags = I2C_M_RD;
-	messages[0].len = sizeof(*p_u_c_inbuff); // size of value pointed to by inbuff to size of pointer inbuff
-	messages[0].buf = p_u_c_inbuff;
-*/
+	messages[2].len = sizeof(*p_c_inbuff);
+	messages[2].buf = p_c_inbuff;
 
 	packets.msgs = messages;
-//	packets.nmsgs = 1;
 	packets.nmsgs = 3;
 
 	i_status_value = ioctl(i_i2cfd, I2C_RDWR, &packets);
@@ -373,4 +347,31 @@ int IMI2C::ReadTwoDataByte(unsigned char u_c_register_address, unsigned char & u
 
 	return i_status_value;
 
+}
+
+void IMI2C::ReadMultipleRegister(char * c_data, int i_reg_size)
+{
+	int i_i2cfd = -1;
+	
+	try{
+		i_i2cfd = this->OpenI2C();
+	}catch(int i){
+		throw i;
+	}
+	
+	if(read(i_i2cfd, c_data, i_reg_size) != i_reg_size)
+	{
+		try{
+			this->CloseI2C(i_i2cfd);
+		}catch(int i){
+			throw i;
+		}		
+		throw -128;
+	}
+
+	try{
+		this->CloseI2C(i_i2cfd);
+	}catch(int i){
+		throw i;
+	}
 }
