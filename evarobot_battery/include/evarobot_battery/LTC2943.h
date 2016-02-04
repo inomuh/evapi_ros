@@ -95,24 +95,24 @@ public:
 
 	int readStatusRegister();
 
-	int setChargeThresholdHigh(uint16_t _maxCharge);
-	int setChargeThresholdLow(uint16_t _minCharge);
-	int setVoltageThresholdHigh(float _maxVoltage);
-	int setVoltageThresholdLow(float _minVoltage);
+	void setChargeThresholdHigh(uint16_t _maxCharge);
+	void setChargeThresholdLow(uint16_t _minCharge);
+	void setVoltageThresholdHigh(float _maxVoltage);
+	void setVoltageThresholdLow(float _minVoltage);
 
 
-	int setCurrentThresholdHigh(uint16_t _maxCurrent);
-	int setCurrentThresholdLow(uint16_t _minCurrent);
-	int setTemperatureThresholdHigh(uint16_t _maxTemp);
-	int setTemperatureThresholdLow(uint16_t _minTemp);
+	void setCurrentThresholdHigh(uint16_t _maxCurrent);
+	void setCurrentThresholdLow(uint16_t _minCurrent);
+	void setTemperatureThresholdHigh(uint16_t _maxTemp);
+	void setTemperatureThresholdLow(uint16_t _minTemp);
 
 	int getVoltageThresholdLow();
 
-	int resetAlertStatus();
+	void resetAlertStatus();
 
-	int setControlRegister(unsigned char _mode, unsigned char _prescaler, unsigned char _alccConfiguration);
+	void setControlRegister(unsigned char _mode, unsigned char _prescaler, unsigned char _alccConfiguration);
 
-
+	void readRegisters();
 	LTC2943(unsigned char u_c_device_address,
 			 string str_i2c_file_name,
 			 sem_t * mutex);
@@ -121,6 +121,7 @@ public:
 
 private:
 	IMI2C * batteryReader;
+	char c_register_data[24];
 
 	float calculateAccumulatedChargeFromADCCode(uint16_t _accumulatedChargeADCCode);
 	float calculateVoltageFromADCCode(uint16_t _voltageCode);

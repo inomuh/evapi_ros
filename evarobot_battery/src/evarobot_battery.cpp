@@ -49,8 +49,7 @@ int main(int argc, char *argv[])
 	FILE *fd;
 	
 	im_msgs::Battery msg;
-	
-	int i_status;
+	double d_charge_last = -1.0;
 	
 	// ROS PARAMS
 	double d_frequency;
@@ -86,42 +85,35 @@ int main(int argc, char *argv[])
 	n.param("evarobot_battery/highVTh", d_high_voltage_th, 13.0);
 	n.param("evarobot_battery/lowVTh", d_low_voltage_th, 11.0);
 	n.param("evarobot_battery/maxCurr", d_max_current, 7.0);
-	n.param("evarobot_battery/batCapacity", d_bat_capacity, 7.0);
-	n.param("evarobot_battery/lowCapacity", d_low_capacity, 3.0);
+	n.param("evarobot_battery/batCapacity", d_bat_capacity, 13000.0);
+	n.param("evarobot_battery/lowCapacity", d_low_capacity, 7000.0);
 	n.param<std::string>("evarobot_minimu9/i2cDevice", str_i2cDevice, "/dev/i2c-1");
 
 	ros::Publisher pub_bat = n.advertise<im_msgs::Battery>("battery", 10);
 
 	LTC2943 batteryReader = LTC2943(0x64, "/dev/i2c-1", mutex);
 
-	sem_wait(mutex);
+	//sem_wait(mutex);
 
-	// create objects
-	batteryReader.setControlRegister(AUTOMATIC_MODE,PRESCALER_4096, ALERT_MODE);
-
-	
-	i_status = batteryReader.setVoltageThresholdHigh(13.0);
-	if(i_status < 0)
+	try
 	{
-		ROS_INFO(GetErrorDescription(-126).c_str());
-        i_error_code = -126;
+		batteryReader.setControlRegister(AUTOMATIC_MODE,PRESCALER_4096, ALERT_MODE);
+		batteryReader.setVoltageThresholdHigh(d_high_voltage_th);
+		batteryReader.setVoltageThresholdLow(d_low_voltage_th);
+	}catch(int e)
+	{
+		ROS_INFO(GetErrorDescription(e).c_str());
+		i_error_code = e;
 	}
 	
-	i_status = batteryReader.setVoltageThresholdLow(4.5);
-	if(i_status < 0)
-	{
-		ROS_INFO(GetErrorDescription(-127).c_str());
-        i_error_code = -127;
-	}
-
-	sem_post(mutex);
+	//sem_post(mutex);
 
 	// Diagnostics
 	diagnostic_updater::Updater updater;
 	updater.setHardwareID("LTC2943");
 	updater.add("evarobot_battery", &ProduceDiagnostics);
 
-	diagnostic_updater::HeaderlessTopicDiagnostic pub_freq("evarobot_battery", updater,
+	diagnostic_updater::HeaderlessTopicDiagnostic pub_freq("battery", updater,
             diagnostic_updater::FrequencyStatusParam(&d_min_freq, &d_max_freq, 0.1, 10));
 	
 	// Define frequency
@@ -129,43 +121,73 @@ int main(int argc, char *argv[])
 	while(ros::ok())
 	{
 		
-		sem_wait(mutex);
+		//sem_wait(mutex);
 
 		int i_status_register = 0;
 
 //		i_status_register = batteryReader.readStatusRegister();
 //		ROS_INFO("Status Register: %d", i_status_register);
 //		i_status = batteryReader.resetAlertStatus();
+
+		try
+		{
+			batteryReader.readRegisters();
+		}catch(int e)
+		{
+			ROS_INFO(GetErrorDescription(e).c_str());
+			i_error_code = e;
+		}
+
 		msg.voltage = batteryReader.readVoltage();
 		msg.current = batteryReader.readCurrent();
 		msg.charge = batteryReader.readAccumulatedCharge();
 		msg.temperature = batteryReader.readTemperature();
 			
-		sem_post(mutex);
+		//sem_post(mutex);
 		
-//		if(msg.voltage >= d_high_voltage_th)
-//		{
+		if(msg.voltage >= d_high_voltage_th)
+		{
 			// High Voltage
-//		}
-//		else if(msg.voltage <= d_low_voltage_th)
-//		{
+			ROS_INFO(GetErrorDescription(-126).c_str());
+			i_error_code = -126;
+		}
+		else if(msg.voltage <= d_low_voltage_th)
+		{
 			// Low voltage
-//		}
+			ROS_INFO(GetErrorDescription(-127).c_str());
+			i_error_code = -127;
+		}
 		
-//		if(msg.charge >= d_bat_capacity)
-//		{
-			// Charged
-//		}
-//		else if(msg.charge <= d_low_capacity)
-//		{
+		if(msg.charge <= d_low_capacity)
+		{
 			// Low battery
-//		}
-				
+			ROS_INFO(GetErrorDescription(-129).c_str());
+			i_error_code = -129;			
+		}
+		
+		if(d_charge_last > 0 && d_charge_last > msg.charge)
+		{
+			// Charging
+			msg.charge_state = 1;
+		}
+		else if(d_charge_last > 0 && d_charge_last < msg.charge)
+		{
+			// Discharging
+			msg.charge_state = 0;
+		}
+		
+		if(msg.charge >= d_bat_capacity)
+		{
+			// Charged
+			msg.charge_state = 2;
+		}
+		
+		d_charge_last = msg.charge;		
 		
 		if(pub_bat.getNumSubscribers() > 0 || b_always_on)
 		{
 			pub_bat.publish(msg);
-			//pub_freq.tick();
+			pub_freq.tick();
 		}
 		
 		updater.update();

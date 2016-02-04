@@ -11,18 +11,19 @@
 
 using namespace std;
 
-int LTC2943::resetAlertStatus()
+void LTC2943::resetAlertStatus()
 {
-	int returnVal = -1;
-
-	returnVal = batteryReader->WriteByte(LTC2943_ALERT_RESPONSE_ADDRESS);
-
-	return returnVal;
+	try
+	{
+		this->batteryReader->WriteByte(LTC2943_ALERT_RESPONSE_ADDRESS);
+	}catch(int e)
+	{
+		throw e;
+	} 
 }
 
-int LTC2943::setTemperatureThresholdHigh(uint16_t _maxTemp)
+void LTC2943::setTemperatureThresholdHigh(uint16_t _maxTemp)
 {
-	int i_status = -1;
 	uint16_t maxTemperature;
 
 	maxTemperature = (_maxTemp + 273.15)*(0xFFFF)/(FULLSCALE_TEMPERATURE);
@@ -35,20 +36,18 @@ int LTC2943::setTemperatureThresholdHigh(uint16_t _maxTemp)
 
 	data.w = maxTemperature;
 
-	i_status = batteryReader->WriteTwoDataByte(TEMPERATURE_THRESH_HIGH, data.b[1], data.b[0]);
-
-	if(i_status < 0)
+	try
 	{
-		perror("Writing to temperature high threshold register failed.");
-		exit(1);
-	}
+		this->batteryReader->WriteTwoDataByte(TEMPERATURE_THRESH_HIGH, data.b[1], data.b[0]);
+	}catch(int e)
+	{
+		throw e;
+	} 
 
-	return i_status;
 }
 
-int LTC2943::setTemperatureThresholdLow(uint16_t _minTemp)
+void LTC2943::setTemperatureThresholdLow(uint16_t _minTemp)
 {
-	int i_status = -1;
 	uint16_t minTemperature;
 
 	minTemperature = (_minTemp + 273.15)*(0xFFFF)/(FULLSCALE_TEMPERATURE);
@@ -61,20 +60,18 @@ int LTC2943::setTemperatureThresholdLow(uint16_t _minTemp)
 
 	data.w = minTemperature;
 
-	i_status = batteryReader->WriteTwoDataByte(TEMPERATURE_THRESH_LOW, data.b[1], data.b[0]);
-
-	if(i_status < 0)
+	try
 	{
-		perror("Writing to temperature low threshold register failed.");
-		exit(1);
+		this->batteryReader->WriteTwoDataByte(TEMPERATURE_THRESH_LOW, data.b[1], data.b[0]);
+	}catch(int e)
+	{
+		throw e;
 	}
 
-	return i_status;
 }
 
-int LTC2943::setCurrentThresholdHigh(uint16_t _maxCurrent)
+void LTC2943::setCurrentThresholdHigh(uint16_t _maxCurrent)
 {
-	int i_status = -1;
 	uint16_t maxCurrentCode;
 
 	maxCurrentCode = this->senseResistorValue * _maxCurrent *(0x7FFF)/(FULLSCALE_CURRENT) + 0x7FFF;
@@ -87,20 +84,18 @@ int LTC2943::setCurrentThresholdHigh(uint16_t _maxCurrent)
 
 	data.w = maxCurrentCode;
 
-	i_status = batteryReader->WriteTwoDataByte(CURRENT_THRESH_HIGH_MSB, data.b[1], data.b[0]);
-
-	if(i_status < 0)
+	try
 	{
-		perror("Writing to current high threshold register failed.");
-		exit(1);
+		this->batteryReader->WriteTwoDataByte(CURRENT_THRESH_HIGH_MSB, data.b[1], data.b[0]);
+	}catch(int e)
+	{
+		throw e;
 	}
 
-	return i_status;
 }
 
-int LTC2943::setCurrentThresholdLow(uint16_t _minCurrent)
+void LTC2943::setCurrentThresholdLow(uint16_t _minCurrent)
 {
-	int i_status = -1;
 	uint16_t minCurrentCode;
 
 	minCurrentCode = this->senseResistorValue * _minCurrent *(0x7FFF)/(FULLSCALE_CURRENT) + 0x7FFF;
@@ -113,21 +108,17 @@ int LTC2943::setCurrentThresholdLow(uint16_t _minCurrent)
 
 	data.w = minCurrentCode;
 
-	i_status = batteryReader->WriteTwoDataByte(CURRENT_THRESH_LOW_MSB, data.b[1], data.b[0]);
-
-	if(i_status < 0)
+	try
 	{
-		perror("Writing to current low threshold register failed.");
-		exit(1);
+		this->batteryReader->WriteTwoDataByte(CURRENT_THRESH_LOW_MSB, data.b[1], data.b[0]);
+	}catch(int e)
+	{
+		throw e;
 	}
-
-	return i_status;
 }
 
-int LTC2943::setChargeThresholdHigh(uint16_t _maxCharge)
+void LTC2943::setChargeThresholdHigh(uint16_t _maxCharge)
 {
-	int i_status = -1;
-
 	union
 	{
 		uint8_t b[2];
@@ -136,21 +127,17 @@ int LTC2943::setChargeThresholdHigh(uint16_t _maxCharge)
 
 	data.w = _maxCharge;
 
-	i_status = batteryReader->WriteTwoDataByte(CHARGE_THRESH_HIGH_MSB, data.b[1], data.b[0]);
-
-	if(i_status < 0)
+	try
 	{
-		perror("Writing to charge high threshold register failed.");
-		exit(1);
+		this->batteryReader->WriteTwoDataByte(CHARGE_THRESH_HIGH_MSB, data.b[1], data.b[0]);
+	}catch(int e)
+	{
+		throw e;
 	}
-
-	return i_status;
 }
 
-int LTC2943::setChargeThresholdLow(uint16_t _minCharge)
+void LTC2943::setChargeThresholdLow(uint16_t _minCharge)
 {
-	int i_status = -1;
-
 	union
 	{
 		uint8_t b[2];
@@ -159,27 +146,20 @@ int LTC2943::setChargeThresholdLow(uint16_t _minCharge)
 
 	data.w = _minCharge;
 
-	i_status = batteryReader->WriteTwoDataByte(CHARGE_THRESH_LOW_MSB, data.b[1], data.b[0]);
-
-	if(i_status < 0)
+	try
 	{
-		perror("Writing to charge low threshold register failed.");
-		exit(1);
+		this->batteryReader->WriteTwoDataByte(CHARGE_THRESH_LOW_MSB, data.b[1], data.b[0]);
+	}catch(int e)
+	{
+		throw e;
 	}
-
-	return i_status;
 }
 
-int LTC2943::setVoltageThresholdHigh(float _maxVoltage)
+void LTC2943::setVoltageThresholdHigh(float _maxVoltage)
 {
-	int i_status = -1;
 	uint16_t maxVoltageCode;
 
 	maxVoltageCode = _maxVoltage *(65535.0) / (FULLSCALE_VOLTAGE);
-
-	//cout << "max voltage code: " << endl;
-	//cout << maxVoltageCode << endl;
-
 
 	union
 	{
@@ -189,20 +169,17 @@ int LTC2943::setVoltageThresholdHigh(float _maxVoltage)
 
 	data.w = maxVoltageCode;
 
-	i_status = batteryReader->WriteTwoDataByte(VOLTAGE_THRESH_HIGH_MSB, data.b[1], data.b[0]);
-
-	if(i_status < 0)
+	try
 	{
-		perror("Writing to voltage high threshold register failed.");
-		exit(1);
+		this->batteryReader->WriteTwoDataByte(VOLTAGE_THRESH_HIGH_MSB, data.b[1], data.b[0]);
+	}catch(int e)
+	{
+		throw e;
 	}
-
-	return i_status;
 }
 
-int LTC2943::setVoltageThresholdLow(float _minVoltage)
+void LTC2943::setVoltageThresholdLow(float _minVoltage)
 {
-	int i_status = -1;
 	uint16_t minVoltageCode;
 
 	minVoltageCode = _minVoltage * 65535.0 / (FULLSCALE_VOLTAGE);
@@ -215,30 +192,21 @@ int LTC2943::setVoltageThresholdLow(float _minVoltage)
 
 	data.w = minVoltageCode;
 
-	i_status = batteryReader->WriteTwoDataByte(VOLTAGE_THRESH_LOW_MSB, data.b[1], data.b[0]);
-
-	if(i_status < 0)
+	try
 	{
-		perror("Writing to voltage low threshold register failed.");
-		exit(1);
+		this->batteryReader->WriteTwoDataByte(VOLTAGE_THRESH_LOW_MSB, data.b[1], data.b[0]);
+	}catch(int e)
+	{
+		throw e;
 	}
-
-	return i_status;
 }
 
 int LTC2943::readStatusRegister()
 {
-	unsigned char statusReg;
-	int i_status = -1;
-
-	i_status = batteryReader->ReadDataByte(CONTROL, statusReg);
-
-	if(i_status < 0)
-	{
-		perror("Read from status register failed.");
-		exit(1);
-	}
-
+	char statusReg;
+	int i_status = 1;
+	
+	statusReg = c_register_data[STATUS];
 	
 	return (int)statusReg;
 }
@@ -247,20 +215,8 @@ float LTC2943::readTemperature()
 {
 	float f_temperature = 0.0;
 	uint16_t temperatureADCCode;
-	int i_status = -1;
 
-	unsigned char u_c_temp_msb_byte = 0;
-	unsigned char u_c_temp_lsb_byte = 0;
-
-	i_status = batteryReader->ReadTwoDataByte(TEMPERATURE_MSB, u_c_temp_msb_byte, u_c_temp_lsb_byte);
-
-	if(i_status < 0)
-	{
-		perror("Read from temperature register failed.");
-		exit(1);
-	}
-
-	temperatureADCCode = (uint16_t)u_c_temp_msb_byte * 256 + (uint16_t)u_c_temp_lsb_byte;
+	temperatureADCCode = (uint16_t)c_register_data[TEMPERATURE_MSB] * 256 + (uint16_t)c_register_data[TEMPERATURE_LSB];
 
 	f_temperature = calculateTemperatureFromADCCode(temperatureADCCode);
 
@@ -280,20 +236,8 @@ float LTC2943::readCurrent()
 {
 	float f_current = 0.0;
 	uint16_t currentADCCode;
-	int i_status = -1;
 
-	unsigned char u_c_current_msb_byte = 0;
-	unsigned char u_c_current_lsb_byte = 0;
-
-	i_status = batteryReader->ReadTwoDataByte(CURRENT_MSB, u_c_current_msb_byte, u_c_current_lsb_byte);
-
-	if(i_status < 0)
-	{
-		perror("Read from current register failed.");
-		exit(1);
-	}
-
-	currentADCCode = (uint16_t)u_c_current_msb_byte * 256 + (uint16_t)u_c_current_lsb_byte;
+	currentADCCode = (uint16_t)c_register_data[CURRENT_MSB] * 256 + (uint16_t)c_register_data[CURRENT_LSB];
 
 	f_current = calculateCurrentFromADCCode(currentADCCode);
 
@@ -313,20 +257,8 @@ float LTC2943::readVoltage()
 {
 	float f_voltage = 0.0;
 	uint16_t voltageADCCode;
-	int i_status = -1;
 
-	unsigned char u_c_voltage_msb_byte = 0;
-	unsigned char u_c_voltage_lsb_byte = 0;
-
-	i_status = batteryReader->ReadTwoDataByte(VOLTAGE_MSB, u_c_voltage_msb_byte, u_c_voltage_lsb_byte);
-
-	if(i_status < 0)
-	{
-		perror("Read from voltage register failed.");
-		exit(1);
-	}
-
-	voltageADCCode = (uint16_t)u_c_voltage_msb_byte * 256 + (uint16_t)u_c_voltage_lsb_byte;
+	voltageADCCode = (uint16_t)c_register_data[VOLTAGE_MSB] * 256 + (uint16_t)c_register_data[VOLTAGE_LSB];
 
 	f_voltage = calculateVoltageFromADCCode(voltageADCCode);
 
@@ -347,20 +279,9 @@ float LTC2943::readAccumulatedCharge()
 {
 	float f_accumulatedCharge = 0.0;
 	uint16_t accumulatedChargeADCCode;
-	int i_status = -1;
+	int i_status = 1;
 
-	unsigned char u_c_accumulated_msb_byte = 0;
-	unsigned char u_c_accumulated_lsb_byte = 0;
-
-	i_status = batteryReader->ReadTwoDataByte(ACC_CHARGE_MSB, u_c_accumulated_msb_byte, u_c_accumulated_lsb_byte);
-
-	if(i_status < 0)
-	{
-		perror("Read from accumulated register failed.");
-		exit(1);
-	}
-
-	accumulatedChargeADCCode = (uint16_t)u_c_accumulated_msb_byte * 256 + (uint16_t)u_c_accumulated_lsb_byte;
+	accumulatedChargeADCCode = (uint16_t)c_register_data[ACC_CHARGE_MSB] * 256 + (uint16_t)c_register_data[ACC_CHARGE_LSB];
 
 	f_accumulatedCharge = calculateAccumulatedChargeFromADCCode(accumulatedChargeADCCode);
 
@@ -376,19 +297,18 @@ float LTC2943::calculateAccumulatedChargeFromADCCode(uint16_t _accChargeCode)
 	return calculatedAccValue;
 }
 
-int LTC2943::setControlRegister(unsigned char _mode, unsigned char _prescalerCode, unsigned char _alccConfiguration)
+void LTC2943::setControlRegister(unsigned char _mode, unsigned char _prescalerCode, unsigned char _alccConfiguration)
 {
-	int i_status = -1;
 	int8_t configuration = 0x00;
 
 	configuration = _mode | _prescalerCode | _alccConfiguration;
 
-	i_status = batteryReader->WriteDataByte(CONTROL, configuration);
-
-	if(i_status < 0)
+	try
 	{
-		perror("Writing to control register failed.");
-		exit(1);
+		this->batteryReader->WriteDataByte(CONTROL, configuration);
+	}catch(int e)
+	{
+		throw e;
 	}
 
 	switch(int(_prescalerCode))
@@ -421,7 +341,6 @@ int LTC2943::setControlRegister(unsigned char _mode, unsigned char _prescalerCod
 			this->prescalerValue = 4096;
 	}
 
-	return i_status;
 }
 
 LTC2943::LTC2943(unsigned char u_c_device_address,
@@ -445,3 +364,13 @@ LTC2943::~LTC2943()
 	delete this->batteryReader;
 }
 
+void LTC2943::readRegisters()
+{
+	try
+	{
+		this->batteryReader->ReadMultipleRegister(c_register_data, 24);	
+	}catch(int e)
+	{
+		throw e;
+	} 	
+}
