@@ -51,13 +51,13 @@ int millis()
     return (tv.tv_sec) * 1000 + (tv.tv_usec)/1000;
 }
 
-void streamRawValues(IMU& imu)
+void streamRawValues(IMU& imu, int count)
 {
     imu.enable();
-    while(1)
+    for(int i = 0; i < count; i++)
     {
         imu.read();
-        ROS_DEBUG("EvarobotIMU: %7d %7d %7d  %7d %7d %7d  %7d %7d %7d\n",
+        printf("%7d %7d %7d %7d %7d %7d %7d %7d %7d\n",
                imu.raw_m[0], imu.raw_m[1], imu.raw_m[2],
                imu.raw_a[0], imu.raw_a[1], imu.raw_a[2],
                imu.raw_g[0], imu.raw_g[1], imu.raw_g[2]
@@ -248,13 +248,12 @@ int main(int argc, char *argv[])
 	n.param<std::string>("evarobot_minimu9/i2cDevice", i2cDevice, "/dev/i2c-1");
 	n.param("evarobot_odometry/minFreq", d_min_freq, 0.2);
 	n.param("evarobot_odometry/maxFreq", d_max_freq, 10.0);
-	
-	if(!n.getParam("evarobot_minimu9/frequency", d_frequency))
-	{
+	n.param("evarobot_minimu9/frequency", d_frequency, 10.0);
+/*	{
 	    ROS_INFO(GetErrorDescription(-106).c_str());
         i_error_code = -106;
 	} 	
-	
+*/	
 	realtime_tools::RealtimePublisher<sensor_msgs::Imu> * imu_pub = new realtime_tools::RealtimePublisher<sensor_msgs::Imu>(n, "imu", 10);
 	
 	// Dynamic Reconfigure
@@ -273,12 +272,24 @@ int main(int argc, char *argv[])
 	
 	output_mode = "matrix";
 	mode = "normal";
+
+	MinIMU9 imu(i2cDevice.c_str());
+	
+	if (argc == 2 && atoi(argv[1]) > 0)
+        {
+	    ROS_DEBUG("raw mode");
+            streamRawValues(imu, atoi(argv[1]));
+	    return 0;
+        }
+
+
 	try
 	{
-		MinIMU9 imu(i2cDevice.c_str());
+		ROS_DEBUG("imu mode");
+//		MinIMU9 imu(i2cDevice.c_str());
 		
 		// void ahrs(IMU & imu, fuse_function * fuse, rotation_output_function * output)
-    	imu.loadCalibration();
+    		imu.loadCalibration();
 		imu.enable();
 		imu.measureOffsets();
 
