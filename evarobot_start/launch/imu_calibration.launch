@@ -1,0 +1,9 @@
+<launch>
+
+  <include file="$(find evarobot_odometry)/launch/evarobot_odometry.launch" />
+  <include file="$(find evarobot_controller)/launch/evarobot_controller.launch" />
+  <include file="$(find evarobot_driver)/launch/driver.launch" />
+
+  <node name="imu2dcalibrator" pkg="evarobot_start" type="imu2dcalibrator.py" output="screen"  />
+</launch>
+
