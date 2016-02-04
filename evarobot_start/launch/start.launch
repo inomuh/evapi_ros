@@ -2,6 +2,7 @@
 	<arg name="ns" default="/"/> 
 	<group ns="$(arg ns)">
 		<include file="$(find evarobot_eio)/launch/evarobot_rgb.launch" />
+		<include file="$(find evarobot_battery)/launch/evarobot_battery.launch" />
 		<include file="$(find evarobot_odometry)/launch/evarobot_odometry.launch" />
 		<include file="$(find evarobot_controller)/launch/evarobot_controller.launch" />
 		<include file="$(find evarobot_driver)/launch/driver.launch" />
