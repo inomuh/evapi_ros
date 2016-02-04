@@ -18,8 +18,8 @@ IMDRIVER::IMDRIVER(double d_limit_voltage,
                    unsigned int u_i_counts,
                    double d_duty,
                    int i_mode,
-                   IMGPIO ** m1_in,
-                   IMGPIO ** m2_in,
+                   boost::shared_ptr< IMGPIO > * m1_in,
+                   boost::shared_ptr< IMGPIO > * m2_in,
                    IMGPIO * m1_en,
                    IMGPIO * m2_en,
                    IMADC * adc,
@@ -82,8 +82,15 @@ IMDRIVER::~IMDRIVER()
         i_error_code = -77;
     }
 	
-	this->Disable();
-	delete pwm;
+    this->Disable();
+    delete pwm;
+    delete m1_en;
+    delete m2_en;
+    delete adc;
+//    delete [] m1_in;
+//    delete [] m2_in;
+
+
 }
 
 void IMDRIVER::UpdateParams()
@@ -498,8 +505,8 @@ int main(int argc, char **argv)
 	
 	IMSPI * p_im_spi;
 	IMADC * p_im_adc;
-	IMGPIO * gpio_m1_in[2];
-	IMGPIO * gpio_m2_in[2];
+	boost::shared_ptr<IMGPIO> gpio_m1_in[2];
+	boost::shared_ptr<IMGPIO> gpio_m2_in[2];
 	IMGPIO * gpio_m1_en;
 	IMGPIO * gpio_m2_en;
 
@@ -519,16 +526,16 @@ int main(int argc, char **argv)
 			ss1 << i_m1_in1;
 			ss2 << i_m1_in2;
 
-			gpio_m1_in[0] = new IMGPIO(ss1.str());
-			gpio_m1_in[1] = new IMGPIO(ss2.str());
+			gpio_m1_in[0] = boost::shared_ptr< IMGPIO >( new IMGPIO(ss1.str()) );
+			gpio_m1_in[1] = boost::shared_ptr< IMGPIO >( new IMGPIO(ss2.str()) );
 			
 ss1.str("");
 			ss2.str("");
 			ss1 << i_m2_in1;
 			ss2 << i_m2_in2;
 
-			gpio_m2_in[0] = new IMGPIO(ss1.str());
-			gpio_m2_in[1] = new IMGPIO(ss2.str());
+			gpio_m2_in[0] = boost::shared_ptr< IMGPIO >( new IMGPIO(ss1.str()) );
+			gpio_m2_in[1] = boost::shared_ptr< IMGPIO >( new IMGPIO(ss2.str()) );
 	
 ss1.str("");
 			ss2.str("");
