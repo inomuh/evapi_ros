@@ -62,19 +62,21 @@ bool IMSONAR::Check()
 
 	double start, stop;
 
-	start = ros::Time::now().toSec();
 
 	write(this->i_fd, ss.str().c_str(), sizeof(ss.str().c_str()));
+	usleep(40000);
+
+	start = ros::Time::now().toSec();
 
 	while(raw_dist < 0)
 	{
 		stop = ros::Time::now().toSec();
 
-		if(stop - start > 0.50)
+		if(stop - start > 0.02)
 		{
-		ROS_DEBUG("EvarobotSonar: Sonar[%d] is not ALIVE ", this->i_id);
-		this->b_is_alive = false;
-		return false;
+			ROS_DEBUG("EvarobotSonar: Sonar[%d] is not ALIVE ", this->i_id);
+			this->b_is_alive = false;
+			return false;
 		}
 
 		//ROS_INFO("Timeout[%d]: %f ", this->i_id, stop-start);
@@ -274,6 +276,16 @@ int main(int argc, char **argv)
 
 	while(ros::ok())
 	{
+/*		for(int i = 0; i < T_i_sonar_pins.size(); i++)
+		{
+			sonar[i]->Trigger();
+                        usleep(40000);
+			sonar[i]->Echo();
+                        sonar[i]->Publish();
+			sonar[i]->updater.update();
+		}
+		ros::spinOnce();*/
+
 		b_sonar_alive[i_check_sonar] = sonar[i_check_sonar]->Check();
 		i_check_sonar++;
 		if(i_check_sonar >= T_i_sonar_pins.size())
@@ -285,12 +297,11 @@ int main(int argc, char **argv)
 			{
 				if(b_sonar_alive[i])
 					sonar[i]->Trigger();
-				usleep(45000);
 			}
-
-			if(T_i_sonar_pins.size() > 0)
+			usleep(40000);
+/*			if(T_i_sonar_pins.size() > 0)
 				sonar[0]->Wait();
-
+*/
 			for(int i = (i_group_no * i_element_no); i < ((i_group_no+1) * i_element_no) && i < T_i_sonar_pins.size(); i++)
 			{
 				if(b_sonar_alive[i])
@@ -299,7 +310,7 @@ int main(int argc, char **argv)
 					sonar[i]->Publish();
 				}
 				sonar[i]->updater.update();
-				usleep(45000);
+//				usleep(500000);
 			}
 		}
 		
