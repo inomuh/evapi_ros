@@ -24,7 +24,7 @@
 //#define DEBUG
 //#endif
 
-#define MAX_IR 7
+#define MAX_IR 8
 
 using namespace std;
 
