@@ -4,9 +4,9 @@
 #include "ros/ros.h"
 #include <realtime_tools/realtime_publisher.h>
 
-#include "minimu9/vector.h"
-#include "minimu9/MinIMU9.h"
-#include "minimu9/version.h"
+#include "vector.h"
+#include "MinIMU9.h"
+#include "version.h"
 
 #include <iostream>
 #include <iomanip>
