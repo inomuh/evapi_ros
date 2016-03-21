@@ -1,0 +1,14 @@
+<launch>
+	<master auto="start"/>
+
+	<include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" > 
+		<arg name="port" value="9090"/>
+	</include>
+
+	<!-- Run evarobot_android -->
+	<node pkg="evarobot_android" type="evarobot_android" respawn="false" name="evarobot_android" output="screen">
+		<rosparam file="$(find evarobot_android)/params/evarobot_android.yaml" command="load"/>
+	</node>
+</launch>
+
+

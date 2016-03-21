@@ -25,6 +25,7 @@
   <run_depend>evarobot_start</run_depend>
   <run_depend>evarobot_teleop</run_depend>
   <run_depend>evarobot_battery</run_depend>
+  <run_depend>evarobot_android</run_depend>
   <run_depend>im_msgs</run_depend>
   <export>
     <metapackage/>
