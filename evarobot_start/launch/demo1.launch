@@ -4,6 +4,7 @@
   <include file="$(find evarobot_controller)/launch/evarobot_controller.launch" />
   <include file="$(find evarobot_driver)/launch/driver.launch" />
   <include file="$(find evarobot_infrared)/launch/evarobot_infrared.launch" />
+  <include file="$(find evarobot_eio)/launch/evarobot_gripper.launch" />
 
   <!-- multimaster_fkie -->
   <include file="$(find evarobot_start)/launch/master_discovery.launch" />

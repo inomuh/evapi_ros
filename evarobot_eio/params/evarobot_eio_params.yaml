@@ -1,2 +1,5 @@
 i2c_path: /dev/i2c-1
 frequency: 1.0
+servoMin: 300 # 245 # tiltUP
+servoMax: 510 # 460 # tiltDOWN
+servoFreq: 60.0
