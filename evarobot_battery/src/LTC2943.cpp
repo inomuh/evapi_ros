@@ -240,8 +240,8 @@ float LTC2943::readCurrent()
 	currentADCCode = (uint16_t)c_register_data[CURRENT_MSB] * 256 + (uint16_t)c_register_data[CURRENT_LSB];
 
 	f_current = calculateCurrentFromADCCode(currentADCCode);
-
-	return f_current;
+	
+	return f_current*10.0;
 }
 
 float LTC2943::calculateCurrentFromADCCode(uint16_t _currentCode)
