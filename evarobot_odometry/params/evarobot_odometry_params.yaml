@@ -1,5 +1,5 @@
 devicePath: /dev/evarobotEncoder
-wheelSeparation: 0.37
+wheelSeparation: 0.34
 height: 0.25
 frequency: 100
 minFreq: 80.0
@@ -7,4 +7,4 @@ maxFreq: 120.0
 
 gearRatio: 51
 CPR: 44
-wheelDiameter: 0.17
+wheelDiameter: 0.1735
