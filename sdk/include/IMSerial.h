@@ -31,7 +31,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <cstdlib>
-
+#include <stdint.h>
 using namespace std;
 
 //! Callback function pointer.
