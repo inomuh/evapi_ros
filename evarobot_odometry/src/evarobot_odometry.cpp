@@ -55,7 +55,8 @@ int main(int argc, char **argv)
     stringstream ss;
 	
 	string str_device_path;
-	
+	float f_lin_velR_pre = 0.0, f_lin_velL_pre = 0.0;
+
 	ros::init(argc, argv, "/evarobot_odometry");
 	ros::NodeHandle n;
 
@@ -248,15 +249,24 @@ int main(int argc, char **argv)
 
 		float f_lin_vel = 0, f_ang_vel = 0;
 		float f_lin_vel_right = 0, f_lin_vel_left = 0;
+		float f_raw_right_vel = 0.0, f_raw_left_vel = 0.0;
 
 		ROS_DEBUG_STREAM("EvarobotOdometry: dur_time: " << dur_time.toSec());
 
 		if(dur_time.toSec() > 0)
 		{		
-			f_lin_vel_right = f_delta_sr / dur_time.toSec();
-			f_lin_vel_left = f_delta_sl / dur_time.toSec();
-			
-			ROS_DEBUG_STREAM("EvarobotOdometry: VEl_LEFT: " << f_lin_vel_left << "  Vel_right: " << f_lin_vel_right << " dur: " << dur_time.toSec());
+		  f_raw_right_vel = f_delta_sr / dur_time.toSec();
+		  f_raw_left_vel = f_delta_sl / dur_time.toSec();
+
+		  // Low-Pass Filter
+		  f_lin_vel_left = (1 - 0.35)*f_raw_left_vel + 0.35*f_lin_velL_pre;
+		  f_lin_velL_pre = f_lin_vel_left;
+
+		  f_lin_vel_right = (1 - 0.35)*f_raw_right_vel + 0.35*f_lin_velR_pre;
+		  f_lin_velR_pre = f_lin_vel_right;
+		  // Low-Pass END
+
+		  ROS_DEBUG_STREAM("EvarobotOdometry: VEl_LEFT: " << f_lin_vel_left << "  Vel_right: " << f_lin_vel_right << " dur: " << dur_time.toSec());
 
 			
 			f_lin_vel = (f_lin_vel_right + f_lin_vel_left) / 2.0;

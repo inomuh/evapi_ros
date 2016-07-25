@@ -1,7 +1,7 @@
-  maxLinearVel: 1.2
-  maxAngularVel: 3.0
-  wheelSeparation: 0.35
-  wheelDiameter: 0.17 # evarobot50
+  maxLinearVel: 0.70
+  maxAngularVel: 3.8
+  wheelSeparation: 0.34
+  wheelDiameter: 0.1735 # evarobot50
   pwmFrequency: 1000.0
   pwmDuty: 14
   pwmCounts: 256
