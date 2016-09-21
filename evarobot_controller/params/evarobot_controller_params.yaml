@@ -1,4 +1,4 @@
-wheelSeparation: 0.34
+wheelSeparation: 0.35
 Frequency: 10.0
 timeout: 0.5
 minFreq: 0.2
@@ -10,9 +10,9 @@ controllerType: 0
 
 # Controller_1
 
-maxVel1: 0.70
-integralConst1: 1.0
-derivativeConst1: 0.4
+maxVel1: 2.70
+integralConst1: 1.5
+derivativeConst1: 0.1
 proportionalConst1: 0.8
 windupConst1: 0.6
 cntr1Name: LeftController
@@ -20,9 +20,9 @@ cntr1Name: LeftController
 
 # Controller_2
 
-maxVel2: 0.70
-integralConst2: 1.0
-derivativeConst2: 0.4
+maxVel2: 2.70
+integralConst2: 1.5
+derivativeConst2: 0.1
 proportionalConst2: 0.8
 windupConst2: 0.6
 cntr2Name: RightController
