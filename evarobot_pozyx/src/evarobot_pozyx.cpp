@@ -175,17 +175,36 @@ int8_t parseSerialData(list<char> & rx_data, PACKET_STRUCT * packet) {
   return 0;
 }
 
+inline float rejectOutliers(vector<float> data, int dataSize, int frameSize) {
+  float avg = 0, avg_dummy = 0;;
+  for ( int i = 0; i < dataSize; i++ ) {
+    float sum = 0;
+    for ( int j = i; j < i+frameSize; j++) {
+	sum += data[i%dataSize];
+    }
+    avg_dummy = sum / frameSize;
+    if ( i == 0 || avg > avg_dummy ) {
+      avg = avg_dummy;
+    }
+  }
+  return avg;
+}
+
 
 int main(int argc, char **argv) {
   // ROS PARAMS
   string str_device_id;
+  //  int i_data_size, i_frame_size;
 
   ros::init(argc, argv, "evarobot_pozyx");
   ros::NodeHandle n;
 
+  //  n.param("evarobot_pozyx/dataSize", i_data_size, 5);
+  //  n.param("evarobot_pozyx/dataSize", i_frame_size, 3);
+
   ros::Publisher pozyx_pub = n.advertise<nav_msgs::Odometry>("pozyx", 1);
 
-  ros::Rate loop_rate(20.0);
+  ros::Rate loop_rate(100.0);
 
   IMSerial serial("/dev/ttyACM0", B115200, CS8, 0, 0, 0);
   char rx_data[200];
@@ -199,6 +218,21 @@ int main(int argc, char **argv) {
   int16_t quatAll[4];
   bool isReceivedPos = false, isReceivedPosErr = false, isReceivedQuat = false;
   list<char> rx_datalist;
+  float pos_covariance[6] = {0.1, 0.1, 0.1, 0.1, 0.1, 0.1};
+
+  int packet_count = 0;
+ 
+ /*
+  vector<float> T_posX(i_data_size);
+  vector<float> T_posY(i_data_size);
+  vector<float> T_posZ(i_data_size);
+  
+  vector<float> T_oriX(i_data_size);
+  vector<float> T_oriY(i_data_size);
+  vector<float> T_oriZ(i_data_size);
+  vector<float> T_oriW(i_data_size);
+  */
+
   while(ros::ok()) {
     try {
       //      serial.WriteData(send_data, sizeof(send_data));
@@ -340,30 +374,57 @@ int main(int argc, char **argv) {
 	  isReceivedPosErr = false;
 	  isReceivedQuat = false;
 
-	  msg.header.frame_id = "pozyx_link";
+	  
+	  /*
+	  T_posX[packet_count] = (float)(posAll[0] * 0.001);
+	  T_posY[packet_count] = (float)(posAll[1] * 0.001);
+	  T_posZ[packet_count] = (float)(posAll[2] * 0.001);
+  
+	  T_oriX[packet_count] = (float)(quatAll[0] * 0.001);
+	  T_oriY[packet_count] = (float)(quatAll[1] * 0.001);
+	  T_oriZ[packet_count] = (float)(quatAll[2] * 0.001);
+	  T_oriW[packet_count] = (float)(quatAll[3] * 0.001);
 
-	  msg.pose.pose.position.x = posAll[0] * 0.001;
-	  msg.pose.pose.position.y = posAll[1] * 0.001;
-	  msg.pose.pose.position.z = posAll[2] * 0.001;
+	  ++packet_count;
 
-	  msg.pose.pose.orientation.x = quatAll[0] * 0.001;
-	  msg.pose.pose.orientation.y = quatAll[1] * 0.001;
-	  msg.pose.pose.orientation.z = quatAll[2] * 0.001;
-	  msg.pose.pose.orientation.w = quatAll[3] * 0.001;
+	  if ( packet_count == i_data_size ) {
 
-	float covariance[36] =	{posErrAll[0] * 0.001, 0, 0, 0, 0, 0,  // covariance on gps_x
-				 0, posErrAll[1] * 0.001, 0, 0, 0, 0,  // covariance on gps_y
-				 0, 0, posErrAll[2] * 0.001, 0, 0, 0,  // covariance on gps_z
-				 0, 0, 0, posErrAll[5] * 0.001, 0, 0,  // large covariance on rot x
-				 0, 0, 0, 0, posErrAll[4] * 0.001, 0,  // large covariance on rot y
-				 0, 0, 0, 0, 0, posErrAll[3] * 0.001};  // large covariance on rot z	
+	    packet_count = 0;
+	  */
+	    msg.header.frame_id = "map";
+	    msg.child_frame_id = "odom";
+	    msg.pose.pose.position.x = (float)(posAll[0] * 0.001); //  rejectOutliers(T_posX, i_data_size, i_frame_size);
+	    msg.pose.pose.position.y = (float)(posAll[1] * 0.001); //  rejectOutliers(T_posY, i_data_size, i_frame_size);
+	    msg.pose.pose.position.z = (float)(posAll[2] * 0.001); //  rejectOutliers(T_posZ, i_data_size, i_frame_size);
 
-	for ( int i = 0; i < 36; i++) {
-	  msg.pose.covariance[i] = covariance[i];
-	}		
+	    msg.pose.pose.orientation.x = (float)(quatAll[0] * 0.001); // T_oriX[9]; //  rejectOutliers(T_oriX, i_data_size, i_frame_size);
+	    msg.pose.pose.orientation.y = (float)(quatAll[1] * 0.001); // T_oriY[9]; //  rejectOutliers(T_oriY, i_data_size, i_frame_size);
+	    msg.pose.pose.orientation.z = (float)(quatAll[2] * 0.001); // T_oriZ[9]; //  rejectOutliers(T_oriZ, i_data_size, i_frame_size);
+	    msg.pose.pose.orientation.w = (float)(quatAll[3] * 0.001); // T_oriW[9]; //  rejectOutliers(T_oriW, i_data_size, i_frame_size);
 
-	pozyx_pub.publish(msg);
+	  
+	    for ( int i = 0; i < 6; i++ ) {
+	      pos_covariance[i] = 9999; // posErrAll[i] * 0.001;
+	      if ( pos_covariance[i] == 0.0 ) {
+		pos_covariance[i] = 1.0;
+	      }
+	    }
+
+	    float covariance[36] =	{pos_covariance[0], 0, 0, 0, 0, 0,  // covariance on gps_x
+					 0, pos_covariance[1], 0, 0, 0, 0,  // covariance on gps_y
+					 0, 0, pos_covariance[2], 0, 0, 0,  // covariance on gps_z
+					 0, 0, 0, pos_covariance[5], 0, 0,  // large covariance on rot x				 0, 0, 0, 0, pos_covariance[4], 0,  // large covariance on rot y
+					 0, 0, 0, 0, 0, pos_covariance[3]};  // large covariance on rot z	
+
+	    for ( int i = 0; i < 36; i++) {
+	      msg.pose.covariance[i] = covariance[i];
+	    }		
+	    pozyx_pub.publish(msg);
+	   
+	    // }
+
 	}
+
       } else {
 	#ifdef DEBUG
 	for (uint8_t i = 0; i < rx_length; i++)
@@ -379,7 +440,7 @@ int main(int argc, char **argv) {
     ros::spinOnce();
     loop_rate.sleep();
   }
-
+  //  serial.SerialClose();
   return 0;
 
 

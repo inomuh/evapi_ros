@@ -12,6 +12,7 @@
 #include "IMSerial.h"
 #include <iterator>
 #include <list>
+#include <vector>
 #include <sstream>
 
 #include "nav_msgs/Odometry.h"
