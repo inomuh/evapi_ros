@@ -55,6 +55,7 @@ public:
 	 */
 	#endif
 	IMSerial();
+	~IMSerial();
 
 	#ifdef English_dox
 	//! Constructor
