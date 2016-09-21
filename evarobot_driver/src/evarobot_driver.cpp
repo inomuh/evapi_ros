@@ -112,6 +112,7 @@ void IMDRIVER::UpdateParams()
 
 void IMDRIVER::ApplyVel(float f_left_wheel_velocity, float f_right_wheel_velocity)
 {
+  bool isStop = false;
     if(f_left_wheel_velocity > 0)
     {
         this->m1_in[0]->SetPinValue(IMGPIO::LOW);
@@ -142,6 +143,7 @@ void IMDRIVER::ApplyVel(float f_left_wheel_velocity, float f_right_wheel_velocit
     {
         this->m2_in[0]->SetPinValue(IMGPIO::LOW);
         this->m2_in[1]->SetPinValue(IMGPIO::LOW);
+	isStop = true;
     }
 
     int i_left_wheel_duty = int(fabs(f_left_wheel_velocity) * 255 / this->f_max_lin_vel);
@@ -151,11 +153,22 @@ void IMDRIVER::ApplyVel(float f_left_wheel_velocity, float f_right_wheel_velocit
     i_left_wheel_duty = i_left_wheel_duty>=this->u_i_counts ? this->u_i_counts - 1:i_left_wheel_duty;
     i_right_wheel_duty = i_right_wheel_duty>=this->u_i_counts ? this->u_i_counts - 1:i_right_wheel_duty;
 
-    if(i_left_wheel_duty != 0)
-        pwm->SetDutyCycleCount(i_left_wheel_duty, 0);
+    this->leftPWM = i_left_wheel_duty;
+    this->rightPWM = i_right_wheel_duty;
 
-    if(i_right_wheel_duty != 0)
-        pwm->SetDutyCycleCount(i_right_wheel_duty, 1);
+    if ( isStop ) {
+      pwm->SetDutyCycleCount(0, 0);
+      pwm->SetDutyCycleCount(0, 1);
+    } else {
+
+      // if(i_left_wheel_duty != 0)
+      pwm->SetDutyCycleCount(i_left_wheel_duty, 0);
+    
+	// if(i_right_wheel_duty != 0)
+      pwm->SetDutyCycleCount(i_right_wheel_duty, 1);
+
+    }
+
 
     /*	if(this->CheckError() == -1)
     	{
@@ -306,6 +319,10 @@ void IMDRIVER::ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &s
 
     stat.add("Right Motor Voltage", this->f_right_motor_voltage);
     stat.add("Left Motor Voltage", this->f_left_motor_voltage);
+
+    stat.add("Right PWM",this->rightPWM);
+    stat.add("Left PWM", this->leftPWM);
+
 }
 
 bool IMDRIVER::CheckTimeout()
@@ -529,7 +546,7 @@ int main(int argc, char **argv)
 			gpio_m1_in[0] = boost::shared_ptr< IMGPIO >( new IMGPIO(ss1.str()) );
 			gpio_m1_in[1] = boost::shared_ptr< IMGPIO >( new IMGPIO(ss2.str()) );
 			
-ss1.str("");
+			ss1.str("");
 			ss2.str("");
 			ss1 << i_m2_in1;
 			ss2 << i_m2_in2;
@@ -537,7 +554,7 @@ ss1.str("");
 			gpio_m2_in[0] = boost::shared_ptr< IMGPIO >( new IMGPIO(ss1.str()) );
 			gpio_m2_in[1] = boost::shared_ptr< IMGPIO >( new IMGPIO(ss2.str()) );
 	
-ss1.str("");
+			ss1.str("");
 			ss2.str("");
 			ss1 << i_m1_en;
 			ss2 << i_m2_en;
