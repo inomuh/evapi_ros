@@ -52,17 +52,18 @@ int main(int argc, char **argv)
 	int i_fd;
 	double d_frequency;
 	double d_min_freq, d_max_freq;
-	stringstream ss;
+    stringstream ss;
 	
 	string str_device_path;
-	
+	float f_lin_velR_pre = 0.0, f_lin_velL_pre = 0.0;
+
 	ros::init(argc, argv, "/evarobot_odometry");
 	ros::NodeHandle n;
 
 	n.param<string>("evarobot_odometry/devicePath", str_device_path, "/dev/evarobotEncoder");
 	n.param("evarobot_odometry/minFreq", d_min_freq, 0.2);
 	n.param("evarobot_odometry/maxFreq", d_max_freq, 10.0);
-
+	
 	if(!n.getParam("evarobot_odometry/wheelSeparation", d_wheel_separation))
 	{
 	  ROS_INFO(GetErrorDescription(-108).c_str());
@@ -102,7 +103,6 @@ int main(int argc, char **argv)
 	
   realtime_tools::RealtimePublisher<nav_msgs::Odometry> * pose_pub = new realtime_tools::RealtimePublisher<nav_msgs::Odometry>(n, "odom", 10);
   realtime_tools::RealtimePublisher<im_msgs::WheelVel> * vel_pub = new realtime_tools::RealtimePublisher<im_msgs::WheelVel>(n, "wheel_vel", 10);
-  realtime_tools::RealtimePublisher<im_msgs::WheelVel> * rotation_pub = new realtime_tools::RealtimePublisher<im_msgs::WheelVel>(n, "rotation", 10);
 
 
 	
@@ -140,12 +140,12 @@ int main(int argc, char **argv)
 	float f_left_read_last = 0.0, f_right_read_last = 0.0; 
 
 										
-	float covariance[36] =	{0.01, 0, 0, 0, 0, 0,  // covariance on gps_x
-										0, 0.01, 0, 0, 0, 0,  // covariance on gps_y
-										0, 0, 99999, 0, 0, 0,  // covariance on gps_z
-										0, 0, 0, 99999, 0, 0,  // large covariance on rot x
-										0, 0, 0, 0, 99999, 0,  // large covariance on rot y
-										0, 0, 0, 0, 0, 0.01};  // large covariance on rot z	
+	float covariance[36] =	{0.05, 0, 0, 0, 0, 0,  // covariance on gps_x
+				 0, 0.05, 0, 0, 0, 0,  // covariance on gps_y
+				 0, 0, 0.05, 0, 0, 0,  // covariance on gps_z
+				 0, 0, 0, 0.3, 0, 0,  // large covariance on rot x
+				 0, 0, 0, 0, 0.3, 0,  // large covariance on rot y
+				 0, 0, 0, 0, 0, 0.3};  // large covariance on rot z	
 	for(int i = 0; i < 36; i++)
 	{
 		pose_pub->msg_.pose.covariance[i] = covariance[i];
@@ -165,11 +165,6 @@ int main(int argc, char **argv)
         i_error_code = -114;
 		exit(-1);
 	}
-
-        double roll = 0.0;
-        double pitch = 0.0;
-        double yaw = 0.0;
-
 
 	while (ros::ok())
 	{
@@ -219,14 +214,10 @@ int main(int argc, char **argv)
 		}	
 
 		float f_delta_sr = 0.0, f_delta_sl = 0.0, f_delta_s = 0.0; 
-		float f_rotvel_left = 0.0, f_rotvel_right = 0.0;
 
 		// Dönüş sayısı değişimi hesaplanıyor.
 		f_delta_sr =  PI * d_wheel_diameter * (f_right_read - f_right_read_last) / (i_gear_ratio * i_cpr);
 		f_delta_sl =  PI * d_wheel_diameter * (f_left_read - f_left_read_last) / (i_gear_ratio * i_cpr);
-
-		f_rotvel_left = 2*PI * (f_left_read - f_left_read_last) / (i_gear_ratio * i_cpr);
-		f_rotvel_right = 2*PI * (f_right_read - f_right_read_last) / (i_gear_ratio * i_cpr);
 
 		// Oryantasyondaki değişim hesaplanıyor.
 		delta_odom_pose.theta = (f_delta_sr - f_delta_sl) / d_wheel_separation;
@@ -251,36 +242,32 @@ int main(int argc, char **argv)
 		pose_pub->msg_.pose.pose.position.y = odom_pose.y;
 		pose_pub->msg_.pose.pose.position.z = (float)d_height;
 
-
-		roll = 0.0;
-		pitch = 0.0;
-		yaw = odom_pose.theta;
-			
-		pose_pub->msg_.pose.pose.orientation.x = sin(roll*0.5) * cos(pitch*0.5) * cos(yaw*0.5) - cos(roll*0.5) * sin(pitch*0.5) * sin(yaw*0.5);
-		pose_pub->msg_.pose.pose.orientation.y = cos(roll*0.5) * sin(pitch*0.5) * cos(yaw*0.5) + sin(roll*0.5) * cos(pitch*0.5) * sin(yaw*0.5);
-		pose_pub->msg_.pose.pose.orientation.z = cos(roll*0.5) * cos(pitch*0.5) * sin(yaw*0.5) - sin(roll*0.5) * sin(pitch*0.5) * cos(yaw*0.5);
-		pose_pub->msg_.pose.pose.orientation.w = cos(roll*0.5) * cos(pitch*0.5) * cos(yaw*0.5) + sin(roll*0.5) * sin(pitch*0.5) * sin(yaw*0.5);
-
-
-//		pose_pub->msg_.pose.pose.orientation.x = 0.0;
-//		pose_pub->msg_.pose.pose.orientation.y = 0.0;
-//		pose_pub->msg_.pose.pose.orientation.z = sin(0.5 * odom_pose.theta); 
-//		pose_pub->msg_.pose.pose.orientation.w = cos(0.5 * odom_pose.theta);
+		pose_pub->msg_.pose.pose.orientation.x = 0.0;
+		pose_pub->msg_.pose.pose.orientation.y = 0.0;
+		pose_pub->msg_.pose.pose.orientation.z = sin(0.5 * odom_pose.theta); 
+		pose_pub->msg_.pose.pose.orientation.w = cos(0.5 * odom_pose.theta);
 
 		float f_lin_vel = 0, f_ang_vel = 0;
 		float f_lin_vel_right = 0, f_lin_vel_left = 0;
+		float f_raw_right_vel = 0.0, f_raw_left_vel = 0.0;
 
 		ROS_DEBUG_STREAM("EvarobotOdometry: dur_time: " << dur_time.toSec());
 
 		if(dur_time.toSec() > 0)
 		{		
-			f_lin_vel_right = f_delta_sr / dur_time.toSec();
-			f_lin_vel_left = f_delta_sl / dur_time.toSec();
-			
-			ROS_DEBUG_STREAM("EvarobotOdometry: VEl_LEFT: " << f_lin_vel_left << "  Vel_right: " << f_lin_vel_right << " dur: " << dur_time.toSec());
+		  f_raw_right_vel = f_delta_sr / dur_time.toSec();
+		  f_raw_left_vel = f_delta_sl / dur_time.toSec();
 
-			f_rotvel_left /= dur_time.toSec();
-	                f_rotvel_right /= dur_time.toSec();
+		  // Low-Pass Filter
+		  f_lin_vel_left = (1 - 0.35)*f_raw_left_vel + 0.35*f_lin_velL_pre;
+		  f_lin_velL_pre = f_lin_vel_left;
+
+		  f_lin_vel_right = (1 - 0.35)*f_raw_right_vel + 0.35*f_lin_velR_pre;
+		  f_lin_velR_pre = f_lin_vel_right;
+		  // Low-Pass END
+
+		  ROS_DEBUG_STREAM("EvarobotOdometry: VEl_LEFT: " << f_lin_vel_left << "  Vel_right: " << f_lin_vel_right << " dur: " << dur_time.toSec());
+
 			
 			f_lin_vel = (f_lin_vel_right + f_lin_vel_left) / 2.0;
 			f_ang_vel = (f_lin_vel_right - f_lin_vel_left) / d_wheel_separation;
@@ -299,21 +286,11 @@ int main(int argc, char **argv)
 		vel_pub->msg_.left_vel = f_lin_vel_left;
 		vel_pub->msg_.right_vel = f_lin_vel_right;
 
-		rotation_pub->msg_.header.frame_id = ss.str();
-		rotation_pub->msg_.header.stamp = ros::Time::now();
-                rotation_pub->msg_.left_vel = f_rotvel_left;
-                rotation_pub->msg_.right_vel = f_rotvel_right;
-
 		if (vel_pub->trylock())
 		{
 			vel_pub->unlockAndPublish();
 		}			
 		
-		if (rotation_pub->trylock())
-                {
-                        rotation_pub->unlockAndPublish();
-                }
-
 		// Yayınlacak Hız Verisi dolduruluyor.
 		pose_pub->msg_.twist.twist.linear.x = f_lin_vel;
 		pose_pub->msg_.twist.twist.linear.y = 0.0;
