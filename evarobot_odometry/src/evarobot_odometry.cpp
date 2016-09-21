@@ -140,12 +140,12 @@ int main(int argc, char **argv)
 	float f_left_read_last = 0.0, f_right_read_last = 0.0; 
 
 										
-	float covariance[36] =	{1, 0, 0, 0, 0, 0,  // covariance on gps_x
-										0, 1, 0, 0, 0, 0,  // covariance on gps_y
-										0, 0, 1, 0, 0, 0,  // covariance on gps_z
-										0, 0, 0, 1, 0, 0,  // large covariance on rot x
-										0, 0, 0, 0, 1, 0,  // large covariance on rot y
-										0, 0, 0, 0, 0, 1};  // large covariance on rot z	
+	float covariance[36] =	{0.05, 0, 0, 0, 0, 0,  // covariance on gps_x
+				 0, 0.05, 0, 0, 0, 0,  // covariance on gps_y
+				 0, 0, 0.05, 0, 0, 0,  // covariance on gps_z
+				 0, 0, 0, 0.3, 0, 0,  // large covariance on rot x
+				 0, 0, 0, 0, 0.3, 0,  // large covariance on rot y
+				 0, 0, 0, 0, 0, 0.3};  // large covariance on rot z	
 	for(int i = 0; i < 36; i++)
 	{
 		pose_pub->msg_.pose.covariance[i] = covariance[i];
