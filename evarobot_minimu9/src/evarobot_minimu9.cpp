@@ -332,8 +332,8 @@ int main(int argc, char *argv[])
 			euler_angles = (vector)(rotation.toRotationMatrix().eulerAngles(2, 1, 0));
 			
 			roll = euler_angles(2);
-			pitch = -euler_angles(1);
-			yaw = -euler_angles(0);
+			pitch = euler_angles(1); // -
+			yaw = euler_angles(0); // -
 			
 			qx = sin(roll*0.5) * cos(pitch*0.5) * cos(yaw*0.5) - cos(roll*0.5) * sin(pitch*0.5) * sin(yaw*0.5);
 			qy = cos(roll*0.5) * sin(pitch*0.5) * cos(yaw*0.5) + sin(roll*0.5) * cos(pitch*0.5) * sin(yaw*0.5);
@@ -358,6 +358,19 @@ int main(int argc, char *argv[])
 			imu_pub->msg_.orientation.z = qz; //rotation.z();
 			imu_pub->msg_.orientation.w = qw; //rotation.w();
 
+			
+			imu_pub->msg_.orientation_covariance[0] = 0.1;
+			imu_pub->msg_.orientation_covariance[1] = 0.0;
+			imu_pub->msg_.orientation_covariance[2] = 0.0;
+			
+			imu_pub->msg_.orientation_covariance[3] = 0.0;
+			imu_pub->msg_.orientation_covariance[4] = 0.1;
+			imu_pub->msg_.orientation_covariance[5] = 0.0;
+			
+			imu_pub->msg_.orientation_covariance[6] = 0.0;
+			imu_pub->msg_.orientation_covariance[7] = 0.0;
+			imu_pub->msg_.orientation_covariance[8] = 0.1;
+			
 			if (imu_pub->trylock())
 			{
 				imu_pub->unlockAndPublish();
