@@ -1,9 +1,4 @@
-/*
- * IMEIO.cpp
- *
- *  Created on: Jun 1, 2015
- *      Author: makcakoca
- */
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
 
 #include "../include/IMEIO.h"
 

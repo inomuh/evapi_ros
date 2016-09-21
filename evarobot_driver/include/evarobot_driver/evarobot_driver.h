@@ -1,3 +1,5 @@
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
+
 #ifndef INCLUDE_EVAROBOT_DRIVER_H_
 #define INCLUDE_EVAROBOT_DRIVER_H_
 
@@ -25,6 +27,7 @@
 
 #include <ros/console.h>
 #include "ErrorCodes.h"
+#include "im_msgs/EKBTest.h"
 
 #include <boost/shared_ptr.hpp>
 

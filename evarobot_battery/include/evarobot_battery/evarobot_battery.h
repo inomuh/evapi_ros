@@ -1,3 +1,5 @@
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
+
 #include "ros/ros.h"
 
 #include <iostream>
@@ -20,5 +22,6 @@
 #include <evarobot_minimu9/ParamsConfig.h>
 
 #include "ErrorCodes.h"
+#include "im_msgs/EKBTest.h"
 
 char SEM_NAME[]= "i2c";

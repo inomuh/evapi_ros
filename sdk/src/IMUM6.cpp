@@ -1,9 +1,4 @@
-/*
- * IMIMU_UM6.cpp
- *
- *  Created on: Mar 24, 2015
- *      Author: makcakoca
- */
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
 
 #include "../include/IMUM6.h"
 

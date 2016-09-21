@@ -1,34 +1,4 @@
-#ifdef English_dox
-/**
- * \file   IMGPIO.h
- * \author Mehmet Akcakoca (mehmet.akcakoca@inovasyonmuhendislik.com)
- * \date   Mar, 2015
- * \brief Controls GPIO's of Raspberry Pi.
- *
- * \details
- *
- * This class uses the "Linux approach" (sysfs).
- * Linux already has a built-in driver for safely accessing the GPIOs.
- * It basically views each property of each GPIO pin as a file.
- * This is the preferred method of GPIO access.
- * One disadvantage of this approach is that it tends to make for slower (but safer) GPIO pin toggling.
- *
- */
-#endif
-#ifdef Turkish_dox
-/**
- * \file   IMGPIO.h
- * \author Mehmet Akcakoca (mehmet.akcakoca@inovasyonmuhendislik.com)
- * \date   Mar, 2015
- * \brief Raspberry Pi üzerindeki GPIO'ları kontrol eden sınıftır.
- * \details
- * Bu sınıf "Linux yaklaşımı" adı verilen yöntem kullanılmaktadır.
- * Linux'te GPIO'lara güvenli erişebilmek için driver yazılmıştır.
- * Her bir GPIO için birer dosya üzerinden kontrol edilebilmektedir.
- * Bu yöntemin dezavantjı, GPIO seviye değiştirme hızının düşük olmasıdır.
- *
- */
-#endif
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
 
 #ifndef INCLUDE_IMGPIO_H_
 #define INCLUDE_IMGPIO_H_

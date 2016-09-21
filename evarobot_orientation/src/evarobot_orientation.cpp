@@ -1,3 +1,5 @@
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
+
 #include "evarobot_orientation/evarobot_orientation.h"
 
 int i_error_code = 0;

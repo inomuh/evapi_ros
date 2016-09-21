@@ -1,23 +1,4 @@
-#ifdef English_dox
-/**
- * \file   IMEIO.h
- * \author Mehmet Akcakoca (mehmet.akcakoca@inovasyonmuhendislik.com)
- * \date   Jun, 2015
- * \brief  Reads analog inputs through MCP3208 on evarobot sensorboard.
- * \details
- *
- */
-#endif
-#ifdef Turkish_dox
-/**
- * \file   IMEIO.h
- * \author Mehmet Akcakoca (mehmet.akcakoca@inovasyonmuhendislik.com)
- * \date   Haz, 2015
- * \brief
- * \details
- *
- */
-#endif
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
 
 #ifndef INCLUDE_IMEIO_H_
 #define INCLUDE_IMEIO_H_

@@ -1,13 +1,4 @@
-/*
- * IMGPIO.cpp
- *
- *  Created on: Mar 18, 2015
- *      Author: makcakoca
- */
-//!  A test class.
-/*!
-  A more elaborate class description.
-*/
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
 
 #include "../include/IMGPIO.h"
 

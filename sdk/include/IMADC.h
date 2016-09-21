@@ -1,32 +1,4 @@
-#ifdef English_dox
-/**
- * \file   IMADC.h
- * \author Mehmet Akcakoca (mehmet.akcakoca@inovasyonmuhendislik.com)
- * \date   Mar, 2015
- * \brief  Reads analog inputs through MCP3208 on evarobot sensorboard.
- * \details
- * There are two types reading mode which are single-ended and differantial.
- * Reference voltage in single-ended mode is 5V.
- * Max. of adc bits is 16 bits.
- * It is used for reading infrared sensors on evarobot.
- */
-#endif
-#ifdef Turkish_dox
-/**
- * \file   IMADC.h
- * \author Mehmet Akcakoca (mehmet.akcakoca@inovasyonmuhendislik.com)
- * \date   Mar, 2015
- * \brief  Sensör Kartında bulunan analog girdileri okumaktadır.
- * \details
- * MCP3208 ADC üzerinden analog bilgileri okuyan sınıftır.
- * Sensör Kartında bulunan analog girdileri okumaktadır.
- * Maksimum 8 kanal okuyabilmektedir.
- * Referans değeri 5V'tur.
- * Pinler teker teker veya differansiyel olarak okunabilmektedir.
- * Entegre ile SPI üzerinden haberleşilmektedir.
- * Evarobot üzerindeki kızılötesi sensörleri okuyan sınıftır.
- */
-#endif
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
 
 
 #ifndef INCLUDE_IMADC_H_

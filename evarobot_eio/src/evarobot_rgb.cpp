@@ -1,3 +1,5 @@
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
+
 #include "evarobot_eio/evarobot_rgb.h"
 
 const int IMRGB::LEDOFF    = 0;

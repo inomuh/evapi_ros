@@ -1,3 +1,5 @@
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
+
 #ifndef INCLUDE_EVAROBOT_RGB_H_
 #define INCLUDE_EVAROBOT_RGB_H_
 

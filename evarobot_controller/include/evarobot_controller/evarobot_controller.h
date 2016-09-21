@@ -1,3 +1,5 @@
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
+
 #ifndef INCLUDE_EVAROBOT_CONTROLLER_H_
 #define INCLUDE_EVAROBOT_CONTROLLER_H_
 
@@ -21,6 +23,7 @@
 
 #include <ros/console.h>
 #include <ErrorCodes.h>
+#include "im_msgs/EKBTest.h"
 
 float g_f_left_desired = 0.0;
 float g_f_right_desired = 0.0;

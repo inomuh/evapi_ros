@@ -1,8 +1,9 @@
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
+
 #include "evarobot_bumper/evarobot_bumper.h"
 
 #include <dynamic_reconfigure/server.h>
 #include <evarobot_bumper/ParamsConfig.h>
-
 
 using namespace std;
 
@@ -10,6 +11,7 @@ int i_error_code = 0;
 bool b_always_on;
 bool b_is_received_params = false;
 bool b_collision[3] = {true, true, true};
+bool b_ekb_test_status = false;
 
 void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
 {
@@ -51,8 +53,17 @@ void CallbackReconfigure(evarobot_bumper::ParamsConfig &config, uint32_t level)
     b_always_on = config.alwaysOn;
 }
 
+bool CallbackEKBTest(im_msgs::EKBTest::Request& request, im_msgs::EKBTest::Response& response)
+{
+	ROS_DEBUG("EvarobotBumper: EKB Test");
+	b_ekb_test_status = request.b_on_off;
+	response.b_success = true;
+	return true;
+}
+
 int main(int argc, char **argv)
 {
+
     key_t key;
     sem_t *mutex;
     FILE * fd;
@@ -106,6 +117,15 @@ int main(int argc, char **argv)
 
     // Define frequency
     ros::Rate loop_rate(d_frequency);
+    
+    ros::ServiceServer service = n.advertiseService("evarobot_bumper/ekb_test", CallbackEKBTest);
+	
+	while(!b_ekb_test_status && ros::ok())
+	{
+		ros::spinOnce();
+		loop_rate.sleep();
+	}
+    
     IMEIO * eio;
     try {
         eio = new IMEIO(0b00100000, string("/dev/i2c-1"),  mutex);

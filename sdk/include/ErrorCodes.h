@@ -1,3 +1,5 @@
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
+
 std::string GetErrorDescription(int i_error_code)
 {
 	std::string str_error_description = "An unhandled exception is occured";

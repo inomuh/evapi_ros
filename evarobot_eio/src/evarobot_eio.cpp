@@ -1,7 +1,12 @@
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
+
 #include "evarobot_eio/evarobot_eio.h"
 
 int i_error_code = 0;
 
+int i_test_code = 0;
+
+IMEIO * eio ;
 
 void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
 {
@@ -16,10 +21,59 @@ void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
     }
 }
 
+bool CallbackEKBTest(im_msgs::EIOTest::Request& request, im_msgs::EIOTest::Response& response)
+{
+	ROS_DEBUG("EvarobotEIO: EKB Test");
+	int i_pin = request.pin;
+	int i_mod = request.mode;
+	bool b_success = true;
+	bool b_data = false;
+	bool b_value = request.value;
+
+	// porta
+	if(request.portno == 0)
+	{
+	        try
+		{
+        	        eio->SetPinADirection(i_pin, IMEIO::OUTPUT);
+                        eio->SetPinAValue(i_pin, b_value);
+                }catch(int e){
+                	b_success = false;
+                }
+
+	}
+	// portb
+	else
+	{
+		if(i_mod==0)
+		{
+			try{
+				eio->SetPinBDirection(i_pin, IMEIO::INPUT);
+				usleep(1000000);
+				eio->GetPinBValue(i_pin, b_data);
+			}catch(int e){
+				b_success = false;
+			}
+		}
+		else
+		{
+			try{
+				eio->SetPinBDirection(i_pin, IMEIO::OUTPUT);
+				eio->SetPinBValue(i_pin, b_value);
+			}catch(int e){
+				b_success = false;
+			}
+		}
+	}
+
+	response.b_data = b_data;
+	response.b_success = b_success;
+	return true;
+}
 
 int main(int argc, char **argv)
 {
-	
+
 	key_t key;
 	sem_t *mutex;
 	FILE * fd;
@@ -43,9 +97,7 @@ int main(int argc, char **argv)
 	string str_i2c_path;
 	// rosparams end
 	
-	
-	
-	
+
 		
 	ros::init(argc, argv, "evarobot_eio");
 	ros::NodeHandle n;
@@ -58,15 +110,15 @@ int main(int argc, char **argv)
         i_error_code = -99;
 	} 
 
-		
+	ros::ServiceServer service = n.advertiseService("evarobot_eio/ekb_test", CallbackEKBTest);	
 
 	// Define frequency
 	ros::Rate loop_rate(d_frequency);
 	
-	IMEIO * eio ;
+	
+	
 	try{
-		eio = new IMEIO(0b00100000, string("/dev/i2c-1"),  mutex);
-		
+		eio = new IMEIO(0b00100000, string("/dev/i2c-1"),  mutex);		
 		eio->SetPinBDirection(IMEIO::EIO0, IMEIO::OUTPUT);
 		eio->SetPinBDirection(IMEIO::EIO1, IMEIO::OUTPUT);
 		eio->SetPinBDirection(IMEIO::EIO2, IMEIO::OUTPUT);
@@ -74,11 +126,7 @@ int main(int argc, char **argv)
 		eio->SetPinBDirection(IMEIO::EIO4, IMEIO::OUTPUT);
 		eio->SetPinBDirection(IMEIO::EIO5, IMEIO::OUTPUT);
 		eio->SetPinBDirection(IMEIO::EIO6, IMEIO::OUTPUT);
-		eio->SetPinBDirection(IMEIO::SWR_RESET, IMEIO::OUTPUT);
-
-		eio->SetPinADirection(IMEIO::RGB_LED1, IMEIO::OUTPUT);
-		eio->SetPinADirection(IMEIO::RGB_LED2, IMEIO::OUTPUT);
-		eio->SetPinADirection(IMEIO::RGB_LED3, IMEIO::OUTPUT);
+		eio->SetPinBDirection(IMEIO::SWR_RESET, IMEIO::INPUT);
 		eio->SetPinADirection(IMEIO::BUZZER, IMEIO::OUTPUT);
 		eio->SetPinADirection(IMEIO::USER_LED, IMEIO::OUTPUT);
 	}catch(int e){
@@ -102,35 +150,10 @@ int main(int argc, char **argv)
             diagnostic_updater::FrequencyStatusParam(&d_min_freq, &d_max_freq, 0.1, 10));
             
 	while(ros::ok())
-	{		
-		
-
-						
-			b_data = !b_data;
-			ROS_DEBUG("EvarobotEIO: value: %x \n", b_data);
-			try{
-				eio->SetPinBValue(IMEIO::EIO0, b_data);
-				eio->SetPinBValue(IMEIO::EIO1, b_data);
-				eio->SetPinBValue(IMEIO::EIO2, b_data);
-				eio->SetPinBValue(IMEIO::EIO3, b_data);
-				eio->SetPinBValue(IMEIO::EIO4, b_data);
-				eio->SetPinBValue(IMEIO::EIO5, b_data);
-				eio->SetPinBValue(IMEIO::EIO6, b_data);
-				eio->SetPinBValue(IMEIO::SWR_RESET, b_data);
-
-				//eio->SetPinAValue(IMEIO::RGB_LED1, b_data);
-				eio->SetPinAValue(IMEIO::RGB_LED2, b_data);
-				//eio->SetPinAValue(IMEIO::RGB_LED3, b_data);
-				eio->SetPinAValue(IMEIO::USER_LED, b_data);
-				eio->SetPinAValue(IMEIO::BUZZER, b_data);
-			}catch(int e){
-				ROS_INFO(GetErrorDescription(e).c_str());
-				i_error_code = e;
-			}
-
-			updater.update();
-			loop_rate.sleep();	
-	
+	{					
+		updater.update();
+		loop_rate.sleep();	
+		ros::spinOnce();
 	}
 	
 	

@@ -1,9 +1,14 @@
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
+
 #include "evarobot_minimu9/evarobot_minimu9.h"
 
 #include <dynamic_reconfigure/server.h>
 #include <evarobot_minimu9/ParamsConfig.h>
 
 int i_error_code = 0;
+
+bool b_ekb_test_status = false;
+
 
 std::ostream & operator << (std::ostream & os, const vector & vector)
 {
@@ -201,6 +206,14 @@ void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
 }
 
 
+bool CallbackEKBTest(im_msgs::EKBTest::Request& request, im_msgs::EKBTest::Response& response)
+{
+	ROS_DEBUG("EvarobotIMU: EKB Test");
+	b_ekb_test_status = request.b_on_off;
+	response.b_success = true;
+	return true;
+}
+
 int main(int argc, char *argv[])
 {
 	// Semaphore
@@ -243,7 +256,17 @@ int main(int argc, char *argv[])
 		d_frequency = 10.0;
 	}
 	
-	ros::Rate loop_rate(d_frequency);*/
+	*/
+	
+	ros::Rate loop_rate(10.0);
+	
+	ros::ServiceServer service = n.advertiseService("evarobot_minimu9/ekb_test", CallbackEKBTest);
+	
+	while(!b_ekb_test_status && ros::ok())
+	{
+		ros::spinOnce();
+		loop_rate.sleep();
+	}
 		
 	n.param<std::string>("evarobot_minimu9/i2cDevice", i2cDevice, "/dev/i2c-1");
 	n.param("evarobot_odometry/minFreq", d_min_freq, 0.2);

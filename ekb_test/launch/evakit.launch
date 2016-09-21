@@ -1,0 +1,18 @@
+<launch>
+	<master auto="start"/>
+	
+	<arg name="ns" default="/"/> 
+	<group ns="$(arg ns)">
+		<include file="$(find evarobot_sonar)/launch/evarobot_sonar.launch" />
+		<include file="$(find evarobot_infrared)/launch/evarobot_infrared.launch" />
+		<include file="$(find evarobot_bumper)/launch/evarobot_bumper.launch" />
+		<include file="$(find evarobot_odometry)/launch/evarobot_odometry_evakit.launch" />
+		<include file="$(find evarobot_controller)/launch/evarobot_controller_evakit.launch" />
+		<include file="$(find evarobot_driver)/launch/driver_evakit.launch" />
+	</group>
+	
+	<!-- Run ekb_test -->
+	<node pkg="ekb_test" type="evakit" respawn="false" name="evakit" output="screen">
+	</node>
+	
+</launch>

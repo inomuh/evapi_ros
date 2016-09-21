@@ -1,23 +1,4 @@
-#ifdef English_dox
-/**
- * \file   IMI2C.h
- * \author Mehmet Akcakoca (mehmet.akcakoca@inovasyonmuhendislik.com)
- * \date   Mar, 2015
- * \brief
- * \details
- *
- */
-#endif
-#ifdef Turkish_dox
-/**
- * \file   IMI2C.h
- * \author Mehmet Akcakoca (mehmet.akcakoca@inovasyonmuhendislik.com)
- * \date   Mar, 2015
- * \brief
- * \details
- *
- */
-#endif
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
 
 #ifndef INCLUDE_IMI2C_H_
 #define INCLUDE_IMI2C_H_

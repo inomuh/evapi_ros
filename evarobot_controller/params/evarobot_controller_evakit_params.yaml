@@ -1,0 +1,15 @@
+wheelSeparation: 0.35
+Frequency: 10.0
+timeout: 0.5
+maxVel: 1
+minFreq: 0.2
+maxFreq: 10.0
+
+# evarobot50 controller parameters
+integralConstLeft: 0.03
+derivativeConstLeft: 0.001
+proportionalConstLeft: 0.01
+
+integralConstRight: 0.03
+derivativeConstRight: 0.001
+proportionalConstRight: 0.01

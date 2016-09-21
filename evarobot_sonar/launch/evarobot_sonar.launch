@@ -2,7 +2,7 @@
 	<master auto="start"/>
 	
 	<!-- Run evarobot_sonar -->
-	<node pkg="evarobot_sonar" type="evarobot_sonar" respawn="false" name="evarobot_sonar">
+	<node pkg="evarobot_sonar" type="evarobot_sonar" respawn="false" name="evarobot_sonar" output="screen">
 		<rosparam file="$(find evarobot_sonar)/params/evarobot_sonar_params.yaml" command="load"/>
 	</node>
 	

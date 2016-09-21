@@ -1,3 +1,5 @@
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
+
 #include "evarobot_odometry/evarobot_odometry.h"
 
 #include <dynamic_reconfigure/server.h>
@@ -13,7 +15,9 @@ int i_cpr;
 double d_wheel_diameter;
 
 int i_error_code = 0;
-	
+
+bool b_ekb_test_status = false;
+
 void CallbackReconfigure(evarobot_odometry::ParamsConfig &config, uint32_t level)
 {
    b_is_received_params = true;        
@@ -45,6 +49,14 @@ void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
     {
 		stat.summary(diagnostic_msgs::DiagnosticStatus::OK, "EvarobotOdometry: No problem.");
     }
+}
+
+bool CallbackEKBTest(im_msgs::EKBTest::Request& request, im_msgs::EKBTest::Response& response)
+{
+	ROS_DEBUG("EvarobotOdometry: EKB Test");
+	b_ekb_test_status = request.b_on_off;
+	response.b_success = true;
+	return true;
 }
 
 int main(int argc, char **argv)
@@ -108,6 +120,14 @@ int main(int argc, char **argv)
 	ros::ServiceServer service = n.advertiseService("evarobot_odometry/reset_odom", CallbackResetOdom);
 	
 	ros::Rate loop_rate(d_frequency);
+	
+	ros::ServiceServer service_ = n.advertiseService("evarobot_odometry/ekb_test", CallbackEKBTest);
+	
+	while(!b_ekb_test_status && ros::ok())
+	{
+		ros::spinOnce();
+		loop_rate.sleep();
+	}
 
 	ros::Time read_time = ros::Time::now();
 	ros::Duration dur_time;

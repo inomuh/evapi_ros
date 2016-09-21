@@ -1,13 +1,12 @@
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
+
 #include "evarobot_sonar/evarobot_sonar.h"
 
-/*
- * 
- * IMSONAR
- * 
- * 
- * */
  
 int i_error_code = 0;
+
+bool b_ekb_test_status = false;
+
 
 IMSONAR::IMSONAR(int fd, 
 								 int id, 
@@ -134,11 +133,8 @@ void IMSONAR::Wait()
 
 void IMSONAR::Publish()
 {
-	if(this->pub_sonar.getNumSubscribers() > 0 || this->dynamic_params->b_always_on)
-	{
-		this->pub_sonar.publish(this->sonar_msg);
-		this->pub_sonar_freq->tick();
-	}
+	this->pub_sonar.publish(this->sonar_msg);
+	this->pub_sonar_freq->tick();
 }
 
 void IMSONAR::ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
@@ -198,7 +194,14 @@ IMDynamicReconfig::IMDynamicReconfig():n_private("~")
 }
 
 
-	
+bool CallbackEKBTest(im_msgs::EKBTest::Request& request, im_msgs::EKBTest::Response& response)
+{
+	ROS_DEBUG("EvarobotSonar: EKB Test");
+	b_ekb_test_status = request.b_on_off;
+	response.b_success = true;
+	return true;
+}
+
 
 int main(int argc, char **argv)
 {
@@ -252,6 +255,15 @@ int main(int argc, char **argv)
 	// create objects
 	boost::shared_ptr<IMDynamicReconfig> dyn_params(new IMDynamicReconfig);
 	
+	ros::ServiceServer service = n.advertiseService("evarobot_sonar/ekb_test", CallbackEKBTest);
+	
+	while(!b_ekb_test_status && ros::ok())
+	{
+		ros::spinOnce();
+		loop_rate.sleep();
+	}
+	
+
 	for(uint i = 0; i < T_i_sonar_pins.size(); i++)
 	{
 		b_sonar_alive.push_back(true);
@@ -266,57 +278,43 @@ int main(int argc, char **argv)
 			i_error_code = -122;
 		}
 	}
+	
 	double d_dummy = (double)T_i_sonar_pins.size() / (double)i_element_no;
 	int i_group_max = (int)ceil(d_dummy);
 	ROS_DEBUG("Group MAX -> %d", i_group_max);
 	ROS_DEBUG("Pins -> %d", T_i_sonar_pins.size());
 	ROS_DEBUG("element -> %d", i_element_no);
-
+	
 	int i_check_sonar = 0;
 
 	while(ros::ok())
 	{
-/*		for(int i = 0; i < T_i_sonar_pins.size(); i++)
-		{
-			sonar[i]->Trigger();
-                        usleep(40000);
-			sonar[i]->Echo();
-                        sonar[i]->Publish();
-			sonar[i]->updater.update();
-		}
-		ros::spinOnce();*/
+			b_sonar_alive[i_check_sonar] = sonar[i_check_sonar]->Check();
+			i_check_sonar++;
+			if(i_check_sonar >= T_i_sonar_pins.size())
+				i_check_sonar = 0;
 
-		b_sonar_alive[i_check_sonar] = sonar[i_check_sonar]->Check();
-		i_check_sonar++;
-		if(i_check_sonar >= T_i_sonar_pins.size())
-			i_check_sonar = 0;
-
-		for(int i_group_no = 0; i_group_no < i_group_max; i_group_no++)
-		{
-			for(int i = (i_group_no * i_element_no); i < ((i_group_no+1) * i_element_no) && i < T_i_sonar_pins.size(); i++)
+			for(int i_group_no = 0; i_group_no < i_group_max; i_group_no++)
 			{
-				if(b_sonar_alive[i])
-					sonar[i]->Trigger();
-			}
-			usleep(40000);
-/*			if(T_i_sonar_pins.size() > 0)
-				sonar[0]->Wait();
-*/
-			for(int i = (i_group_no * i_element_no); i < ((i_group_no+1) * i_element_no) && i < T_i_sonar_pins.size(); i++)
-			{
-				if(b_sonar_alive[i])
+				for(int i = (i_group_no * i_element_no); i < ((i_group_no+1) * i_element_no) && i < T_i_sonar_pins.size(); i++)
 				{
-					sonar[i]->Echo();
-					sonar[i]->Publish();
+					if(b_sonar_alive[i])
+						sonar[i]->Trigger();
 				}
-				sonar[i]->updater.update();
-//				usleep(500000);
+				usleep(40000);
+
+				for(int i = (i_group_no * i_element_no); i < ((i_group_no+1) * i_element_no) && i < T_i_sonar_pins.size(); i++)
+				{
+					if(b_sonar_alive[i])
+					{
+						sonar[i]->Echo();
+						sonar[i]->Publish();
+					}
+
+					sonar[i]->updater.update();
+				}
 			}
-		}
-		
 		ros::spinOnce();
-//		loop_rate.sleep();	
-	
 	}
 	
 	close(i_fd);

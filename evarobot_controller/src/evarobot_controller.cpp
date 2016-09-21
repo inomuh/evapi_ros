@@ -1,9 +1,15 @@
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
+
 #include "evarobot_controller/evarobot_controller.h"
 
 #include <dynamic_reconfigure/server.h>
 #include <evarobot_controller/ParamsConfig.h>
 
+
 int i_error_code = 0;
+
+bool b_ekb_test_status = false;
+
 
 void PIDController::Reset()
 {
@@ -154,8 +160,18 @@ bool CallbackResetController(std_srvs::Empty::Request& request, std_srvs::Empty:
 	return true;
 }
 
+bool CallbackEKBTest(im_msgs::EKBTest::Request& request, im_msgs::EKBTest::Response& response)
+{
+	ROS_DEBUG("EvarobotController: EKB Test");
+	b_ekb_test_status = request.b_on_off;
+	response.b_success = true;
+	return true;
+}
+
+
 int main(int argc, char **argv)
 {
+
   // ROS PARAMS
   double d_integral_constant_left;
   double d_derivative_constant_left;
@@ -264,7 +280,15 @@ int main(int argc, char **argv)
 											diagnostic_updater::FrequencyStatusParam(&d_min_freq, &d_max_freq, 0.1, 10));
   		
   
-  ros::Rate loop_rate(d_frequency);
+	ros::Rate loop_rate(d_frequency);
+  
+	ros::ServiceServer service_ = n.advertiseService("evarobot_controller/ekb_test", CallbackEKBTest);
+  
+	while(!b_ekb_test_status && ros::ok())
+	{
+		ros::spinOnce();
+		loop_rate.sleep();
+	}
   
   while(ros::ok())
   {

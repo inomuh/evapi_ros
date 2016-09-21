@@ -1,13 +1,9 @@
-/**
-* @file evarobot_driver.cpp
-* @Author Me (mehmet.akcakoca@inovasyonmuhendislik.com)
-* @date April 2, 2015
-*
-*/
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
 
 #include "evarobot_driver/evarobot_driver.h"
-
 int i_error_code;
+
+bool b_ekb_test_status = false;
 
 IMDRIVER::IMDRIVER(double d_limit_voltage,
                    float f_max_lin_vel,
@@ -81,7 +77,7 @@ IMDRIVER::~IMDRIVER()
         ROS_INFO(GetErrorDescription(-77).c_str());
         i_error_code = -77;
     }
-	
+    cout << "IMDRIVER Kapatiliyor... " << endl;
     this->Disable();
     delete pwm;
     delete m1_en;
@@ -360,9 +356,20 @@ void CallbackReconfigure(evarobot_driver::ParamsConfig &config, uint32_t level)
 
 }
 
+
+bool CallbackEKBTest(im_msgs::EKBTest::Request& request, im_msgs::EKBTest::Response& response)
+{
+	ROS_DEBUG("EvarobotDriver: EKB Test");
+	b_ekb_test_status = request.b_on_off;
+	response.b_success = true;
+	return true;
+}
+
+
 int main(int argc, char **argv)
 {
-	unsigned char u_c_spi_mode;
+
+  unsigned char u_c_spi_mode;
 	
   ros::init(argc, argv, "/evarobot_driver");
   ros::NodeHandle n;
@@ -572,9 +579,18 @@ ss1.str("");
 
 	// Define frequency
 	ros::Rate loop_rate(10.0);
+	
+	
+    ros::ServiceServer service = n.advertiseService("evarobot_driver/ekb_test", CallbackEKBTest);
+	
+	while(!b_ekb_test_status && ros::ok())
+	{
+		ros::spinOnce();
+		loop_rate.sleep();
+	}
 
 	while(ros::ok())
-	{		
+	{
 			imdriver.CheckMotorCurrent();
 			imdriver.CheckTimeout();
 			pub.publish(imdriver.GetMotorVoltage());

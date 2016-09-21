@@ -1,3 +1,5 @@
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
+
 #ifndef INCLUDE_EVAROBOT_SONAR_H_
 #define INCLUDE_EVAROBOT_SONAR_H_
 
@@ -27,6 +29,8 @@
 
 #include <ros/console.h>
 #include "ErrorCodes.h"
+#include "std_srvs/Empty.h"
+#include "im_msgs/EKBTest.h"
 
 // In order to change max number of sonar, MAX_SONAR macros 
 // in evarobot_sonar.cpp(ROS) and driver_sonar.h(MODULE)

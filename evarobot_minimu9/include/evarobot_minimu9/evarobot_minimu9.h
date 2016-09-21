@@ -1,3 +1,5 @@
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
+
 #ifndef INCLUDE_EVAROBOT_MINIMU_H_
 #define INCLUDE_EVAROBOT_MINIMU_H_
 
@@ -33,7 +35,7 @@
 
 #include <ros/console.h>
 #include "ErrorCodes.h"
-
+#include "im_msgs/EKBTest.h"
 //#include <string.h>
 
 

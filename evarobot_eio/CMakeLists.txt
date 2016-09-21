@@ -32,6 +32,7 @@ include_directories(
 )
 
 add_executable(evarobot_eio src/evarobot_eio.cpp ${EVAPI_LIB_SDK_SRC})
+add_dependencies(evarobot_eio im_msgs_generate_messages_cpp)
  target_link_libraries(evarobot_eio 
    ${catkin_LIBRARIES}
    pthread

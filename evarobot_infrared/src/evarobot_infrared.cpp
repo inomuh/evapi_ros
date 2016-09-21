@@ -1,6 +1,10 @@
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
+
 #include "evarobot_infrared/evarobot_infrared.h"
 
 int i_error_code = 0;
+
+bool b_ekb_test_status = false;
 
 /*
  * 
@@ -157,6 +161,15 @@ IMDynamicReconfig::IMDynamicReconfig():n_private("~")
 }
 
 
+bool CallbackEKBTest(im_msgs::EKBTest::Request& request, im_msgs::EKBTest::Response& response)
+{
+	ROS_DEBUG("EvarobotInfrared: EKB Test");
+	b_ekb_test_status = request.b_on_off;
+	response.b_success = true;
+	return true;
+}
+
+
 int main(int argc, char **argv)
 {
 	unsigned char u_c_spi_mode;
@@ -210,6 +223,13 @@ int main(int argc, char **argv)
 	// Define frequency
 	ros::Rate loop_rate(d_frequency);
 
+	ros::ServiceServer service = n.advertiseService("evarobot_infrared/ekb_test", CallbackEKBTest);
+	
+	while(!b_ekb_test_status && ros::ok())
+	{
+		ros::spinOnce();
+		loop_rate.sleep();
+	}
 	
 	switch(i_spi_mode)
 	{
@@ -289,4 +309,3 @@ int main(int argc, char **argv)
 	
 	return 0;
 }
-

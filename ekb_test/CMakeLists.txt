@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(evarobot_sonar)
+project(ekb_test)
 
 set(EVAPI_LIB_SDK_PATH "../sdk/")
 
@@ -7,12 +7,9 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   sensor_msgs
-  std_msgs
-  dynamic_reconfigure
   diagnostic_updater
+  im_msgs
 )
-
-generate_dynamic_reconfigure_options(cfg/evarobot_sonar.cfg)
 
 catkin_package(
   INCLUDE_DIRS include
@@ -31,8 +28,16 @@ include_directories(
 )
 
 
-add_executable(evarobot_sonar src/evarobot_sonar.cpp)
-add_dependencies(evarobot_sonar evarobot_sonar_gencfg)
-target_link_libraries(evarobot_sonar
+add_executable(ekb_test src/ekb_test.cpp)
+add_dependencies(ekb_test ekb_test_gencfg)
+add_dependencies(ekb_test im_msgs_generate_messages_cpp)
+target_link_libraries(ekb_test
+   ${catkin_LIBRARIES}
+)
+
+add_executable(evakit src/evakit.cpp)
+add_dependencies(evakit ekb_test_gencfg)
+add_dependencies(evakit im_msgs_generate_messages_cpp)
+target_link_libraries(evakit
    ${catkin_LIBRARIES}
 )

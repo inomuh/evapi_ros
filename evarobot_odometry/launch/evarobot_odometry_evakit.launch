@@ -1,0 +1,9 @@
+<launch>
+	<master auto="start"/>
+	
+	<!-- Run evarobot_odometry -->
+	<node pkg="evarobot_odometry" type="evarobot_odometry" respawn="false" name="evarobot_odometry">
+		<rosparam file="$(find evarobot_odometry)/params/evarobot_odometry_evakit_params.yaml" command="load"/>
+	</node>
+	
+</launch>

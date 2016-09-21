@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   diagnostic_updater
   realtime_tools
+  im_msgs
 )
 
 generate_dynamic_reconfigure_options(cfg/evarobot_odometry.cfg)

@@ -1,10 +1,3 @@
-/*
- * LTC2943.cpp
- *
- *  Created on: Oct 20, 2015
- *      Author: veli
- */
-
 #include "evarobot_battery/LTC2943.h"
 #include <inttypes.h>
 #include <stdint.h>

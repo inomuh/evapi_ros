@@ -1,27 +1,4 @@
-#ifdef English_dox
-/**
- * \file   IMPWM.h
- * \author Mehmet Akcakoca (mehmet.akcakoca@inovasyonmuhendislik.com)
- * \date   Mar, 2015
- * \brief
- * \details
- *
- * Source: This code can access to the PWM1 and PWM2 subsystems which output the PWM signal on
- * GPIO18(ALT5) and GPIO13(ALT0) respectively. Only the code(http://hertaville.com/rpipwm.html)
- * for PWM1 subsystem was upgrated.
- *
- */
-#endif
-#ifdef Turkish_dox
-/**
- * \file   IMPWM.h
- * \author Mehmet Akcakoca (mehmet.akcakoca@inovasyonmuhendislik.com)
- * \date   Mar, 2015
- * \brief
- * \details
- *
- */
-#endif
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
 
 #ifndef INCLUDE_IMPWM_H_
 #define INCLUDE_IMPWM_H_

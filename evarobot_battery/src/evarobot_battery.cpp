@@ -1,3 +1,5 @@
+//! Bu sınıfa ait dokümantasyon evapi_ros 85rpm altındaki dokümantasyon ile aynıdır.
+
 #include "evarobot_battery/evarobot_battery.h"
 
 #include "IMI2C.h"
@@ -27,6 +29,7 @@ using namespace std;
 
 int i_error_code = 0;
 
+bool b_ekb_test_status = false;
 
 void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
 {
@@ -39,6 +42,15 @@ void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
     {
         stat.summary(diagnostic_msgs::DiagnosticStatus::OK, "No collision!");
     }
+}
+
+
+bool CallbackEKBTest(im_msgs::EKBTest::Request& request, im_msgs::EKBTest::Response& response)
+{
+	ROS_DEBUG("EvarobotBattery: EKB Test");
+	b_ekb_test_status = request.b_on_off;
+	response.b_success = true;
+	return true;
 }
 
 int main(int argc, char *argv[])
@@ -118,6 +130,16 @@ int main(int argc, char *argv[])
 	
 	// Define frequency
 	ros::Rate loop_rate(10.0);	
+	
+	ros::ServiceServer service = n.advertiseService("evarobot_battery/ekb_test", CallbackEKBTest);
+	
+	while(!b_ekb_test_status && ros::ok())
+	{
+		ros::spinOnce();
+		loop_rate.sleep();
+	}
+	
+	
 	while(ros::ok())
 	{
 		
