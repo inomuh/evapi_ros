@@ -7,4 +7,4 @@ maxFreq: 120.0
 
 gearRatio: 51
 CPR: 44
-wheelDiameter: 0.1735
+wheelDiameter: 0.1735 # evarobot50
