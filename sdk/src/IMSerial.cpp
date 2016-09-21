@@ -195,14 +195,14 @@ int IMSerial::ReadData(char * p_c_data, unsigned int u_i_size)
 	i_status_value = read(this->i_serial_fd, p_c_data, u_i_size);
 
 
-	if(i_status_value < 0)
+	/*	if(i_status_value < 0)
 	{
 		throw -2;
 	}
 	else if(i_status_value == 0)
 	{
 		throw -3;
-	}
+		}*/
 
 	return i_status_value;
 }
@@ -214,7 +214,7 @@ int IMSerial::ReadDataAsync(char * p_c_data, unsigned int u_i_size)
 	while(1)
 	{
 		while(!this->isReadyRead());
-		i_status_value = this->ReadData(p_c_data, u_i_size);
+		//	i_status_value = this->ReadData(p_c_data, u_i_size);
 	}
 
 	return i_status_value;
@@ -332,6 +332,9 @@ int IMSerial::SerialConfig()
 
 void IMSerial::SignalHandlerIO(int i_status)
 {
-	b_signal_received = true;
+  b_signal_received = true;
 }
 
+IMSerial::~IMSerial() {
+  SerialClose();
+}
