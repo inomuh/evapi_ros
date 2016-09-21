@@ -56,14 +56,19 @@ float PIDController::RunController(float f_desired, float f_measured) {
   float f_cutoff = 0.85;	
 
   double d_current_error = (double)(f_desired - f_measured);
-  /*
-  if ( (this->d_integral_error < 0.0 && f_desired >= 0.0)
+  
+  /*  if ( (this->d_integral_error < 0.0 && f_desired >= 0.0)
        || (this->d_integral_error > 0.0 && f_desired <= 0.0) ) {
     this->d_integral_error = 0.0;
-  }
-  */
-  if ( fabs(d_current_error) <= 0.10 ) {
+    }*/
+  
+  if ( fabs(d_current_error) <= 0.01 ) {
     d_current_error = 0.0;
+  }
+
+  if ( (this->d_integral_error < 0.0 && f_desired > 0.0) 
+       || (this->d_integral_error > 0.0 && f_desired < 0.0) ) {
+    this->d_integral_error = 0;
   }
 
   this->dur_time = ros::Time::now() - this->read_time;
@@ -72,7 +77,7 @@ float PIDController::RunController(float f_desired, float f_measured) {
   this->d_proportional_error = d_current_error;
   this->d_derivative_error = -(f_measured - d_pre_error) / dur_time.toSec();
   this->d_integral_error += d_current_error * dur_time.toSec();
-
+  
   f_ret = this->d_proportional_constant *  this->d_proportional_error
       + this->d_integral_constant *  this->d_integral_error
       + this->d_derivative_constant * this->d_derivative_error;
@@ -91,9 +96,17 @@ float PIDController::RunController(float f_desired, float f_measured) {
   }
 
   // First Order Low-Pass Filter
-  f_raw_data = f_ret;
+  if ( f_desired == 0.0 ) {
+    this->Reset();
+    f_raw_data = 0.0;
+  } else {
+    f_raw_data = f_ret;
+  }
+
   f_filtered_data = (1 - f_cutoff)*f_raw_data + f_cutoff*this->f_filtered_data_pre;
   this->f_filtered_data_pre = f_filtered_data;
+
+
 
   return f_filtered_data;
 }
@@ -202,6 +215,9 @@ int main(int argc, char **argv) {
   string str_cntr_1, str_cntr_2;
 
   double d_timeout;
+
+  float f_left_desired_pre = 0.0, f_right_desired_pre = 0.0;
+
   //---------------
 
   ros::init(argc, argv, "/evarobot_controller");
@@ -322,6 +338,19 @@ int main(int argc, char **argv) {
 				      + f_angVel * g_d_wheel_separation);  // m/s
     } else {
       ctrl_pub->msg_.header.stamp = ros::Time::now();
+
+      /* if ( (f_right_desired_pre < 0.0 && g_f_right_desired > 0.0) 
+	   || (f_right_desired_pre > 0.0 && g_f_right_desired < 0.0)
+	   || (f_left_desired_pre < 0.0 && g_f_left_desired > 0.0) 
+	   || (f_left_desired_pre > 0.0 && g_f_left_desired < 0.0)
+	   || (g_f_left_desired == 0.0 && g_f_right_desired == 0.0) ) {
+	controller1.Reset();
+	controller2.Reset();
+      }
+
+      f_right_desired_pre = g_f_right_desired;
+      f_left_desired_pre = g_f_left_desired;
+      */
       ctrl_pub->msg_.left_vel = controller1.RunController(g_f_left_desired, g_f_left_measured);
       ctrl_pub->msg_.right_vel = controller2.RunController(g_f_right_desired, g_f_right_measured);
     }
