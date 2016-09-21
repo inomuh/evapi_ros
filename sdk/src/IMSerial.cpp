@@ -332,6 +332,9 @@ int IMSerial::SerialConfig()
 
 void IMSerial::SignalHandlerIO(int i_status)
 {
-	b_signal_received = true;
+  b_signal_received = true;
 }
 
+IMSerial::~IMSerial() {
+  SerialClose();
+}
