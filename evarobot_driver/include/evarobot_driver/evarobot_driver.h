@@ -104,6 +104,8 @@ private:
 	unsigned int u_i_counts;
 	int i_mode;    
 	int i_const_count;
+
+	int rightPWM, leftPWM;
 	
 	ros::Time curr_vel_time;
 };
