@@ -3,7 +3,7 @@
  * \file   IMSerial.h
  * \author Mehmet Akcakoca (mehmet.akcakoca@inovasyonmuhendislik.com)
  * \date   Mar, 2015
- * \brief
+ * \brief  Controls serial communication.
  * \details
  *
  */
@@ -13,7 +13,7 @@
  * \file   IMSerial.h
  * \author Mehmet Akcakoca (mehmet.akcakoca@inovasyonmuhendislik.com)
  * \date   Mar, 2015
- * \brief
+ * \brief  Seri haberleşmeyi kontrol eder.
  * \details
  *
  */
@@ -34,28 +34,19 @@
 #include <stdint.h>
 using namespace std;
 
-//! Callback function pointer.
-typedef void(*CallbackFunctionPtr)(void*);
-
+//! Controls serial communication.
 class IMSerial
 {
 public:
 
 	#ifdef English_dox
-	//! Constructor
-	/**
-	 *
-	 */
+	//! Default Constructor
 	#endif
 
 	#ifdef Turkish_dox
-	//! Constructor
-	/**
-	 *
-	 */
+	//! Default Constructor
 	#endif
 	IMSerial();
-	~IMSerial();
 
 	#ifdef English_dox
 	//! Constructor
@@ -68,7 +59,6 @@ public:
 	 * \param stop_bits i.e. 0
 	 */
 	#endif
-
 	#ifdef Turkish_dox
 	//! Constructor
 	/**
@@ -87,14 +77,16 @@ public:
 	//! Sets Baudrate
 	/**
 	 * \param baudrate i.e. B115200
-	 * \return
+	 * \retval <0 if there is an error
+	 * \retval >=0 if everthing is OK
 	 */
 	#endif
 	#ifdef Turkish_dox
 	//! Baudrate değerini atar.
 	/**
 	 * \param baudrate ör. B115200
-	 * \return
+	 * \retval <0 hata varsa
+	 * \retval >=0 hata yoksa
 	 */
 	#endif
 	int SetBaudrate(speed_t baudrate);
@@ -103,14 +95,16 @@ public:
 	//! Sets DataBits
 	/**
 	 * \param data_bits i.e. CS8
-	 * \return
+	 * \retval <0 if there is an error
+	 * \retval >=0 if everthing is OK
 	 */
 	#endif
 	#ifdef Turkish_dox
 	//! DataBits değerini atar.
 	/**
 	 * \param data_bits ör. CS8
-	 * \return
+	 * \retval <0 hata varsa
+	 * \retval >=0 hata yoksa
 	 */
 	#endif
 	int SetDataBits(tcflag_t data_bits);
@@ -120,7 +114,8 @@ public:
 	/**
 	 * \param parity i.e. PARODD
 	 * \param parity_on i.e. PARENB
-	 * \return
+	 * \retval <0 if there is an error
+	 * \retval >=0 if everthing is OK
 	 */
 	#endif
 	#ifdef Turkish_dox
@@ -128,7 +123,8 @@ public:
 	/**
 	 * \param parity ör. PARODD
 	 * \param parity_on ör. PARENB
-	 * \return
+	 * \retval <0 hata varsa
+	 * \retval >=0 hata yoksa
 	 */
 	#endif
 	int SetParity(tcflag_t parity, tcflag_t parity_on);
@@ -136,16 +132,17 @@ public:
 	#ifdef English_dox
 	//! Sets Stop Bits
 	/**
-	 * \param stop_bits
-	 * \return
+	 * \param stop_bits Stop bit value.
+	 * \retval <0 if there is an error
+	 * \retval >=0 if everthing is OK
 	 */
 	#endif
 	#ifdef Turkish_dox
-	//! Kısa bilgi
+	//! Stop bitini ayarlar
 	/**
-	 * Detaylı bilgi
-	 * \param i_channel_no
-	 * \return
+	 * \param stop_bits Stop biti değeridir.
+	 * \retval <0 hata varsa
+	 * \retval >=0 hata yoksa
 	 */
 	#endif
 	int SetStopBits(tcflag_t stop_bits);
@@ -153,13 +150,13 @@ public:
 	#ifdef English_dox
 	//! Returns Baudrate
 	/**
-	 * \return
+	 * \return Baudrate
 	 */
 	#endif
 	#ifdef Turkish_dox
 	//! Baudrate'i döndürür.
 	/**
-	 * \return
+	 * \return Baudrate
 	 */
 	#endif
 	speed_t GetBaudrate() const;
@@ -167,13 +164,13 @@ public:
 	#ifdef English_dox
 	//! Returns DataBits
 	/**
-	 * \return
+	 * \return DataBits
 	 */
 	#endif
 	#ifdef Turkish_dox
 	//! DataBits değerini döndürür.
 	/**
-	 * \return
+	 * \return DataBits
 	 */
 	#endif
 	tcflag_t GetDataBits() const;
@@ -181,13 +178,13 @@ public:
 	#ifdef English_dox
 	//! Returns Parity
 	/**
-	 * \return
+	 * \return Parity
 	 */
 	#endif
 	#ifdef Turkish_dox
 	//! Parity değerinin döndürür.
 	/**
-	 * \return
+	 * \return Parity
 	 */
 	#endif
 	tcflag_t GetParity() const;
@@ -195,13 +192,13 @@ public:
 	#ifdef English_dox
 	//! Returns StopBits
 	/**
-	 * \return
+	 * \return StopBits
 	 */
 	#endif
 	#ifdef Turkish_dox
 	//! StopBit değerini döndürür.
 	/**
-	 * \return
+	 * \return StopBits
 	 */
 	#endif
 	tcflag_t GetStopBits() const;
@@ -209,91 +206,92 @@ public:
 	#ifdef English_dox
 	//! Reads serial data.
 	/**
-	 * \param * p_c_data
-	 * \param u_i_size
-	 * \return
+	 * \param *p_c_data Data from serial port
+	 * \param u_i_size Size of data
+	 * \retval <0 if there is an error
+	 * \retval >=0 if everthing is OK
 	 */
 	#endif
 	#ifdef Turkish_dox
 	//! Seri porttan gelen veriyi okur.
 	/**
-	 * \param * p_c_data okunan veri
+	 * \param *p_c_data okunan veri
 	 * \param u_i_size okunacak veri boyutu
-	 * \return
+	 * \retval <0 hata varsa
+	 * \retval >=0 hata yoksa
 	 */
 	#endif
 	int ReadData(char * p_c_data, unsigned int u_i_size);
 
 	#ifdef English_dox
-	//! Brief
+	//! Reads serial data asynchronously
 	/**
-	 * Detailed
-	 * \param
-	 * \return
+	 * \param *p_c_data Data from serial port
+	 * \param u_i_size Size of data
+	 * \retval <0 if there is an error
+	 * \retval >=0 if everthing is OK
 	 */
 	#endif
 	#ifdef Turkish_dox
-	//! Kısa bilgi
+	//! Asenkron olarak veriyi okur.
 	/**
-	 * Detaylı bilgi
-	 * \param i_channel_no
-	 * \return
+	 * \param *p_c_data okunan veri
+	 * \param u_i_size okunacak verinin boyutu
+	 * \retval <0 hata varsa
+	 * \retval >=0 hata yoksa
 	 */
 	#endif
 	int ReadDataAsync(char * p_c_data, unsigned int u_i_size);
 
-	//int WriteData(const char * p_c_data, unsigned int u_i_size);
-
 	#ifdef English_dox
-	//! Writes serial data.
+	//! Writes data to serial port.
 	/**
-	 * \param * p_c_data
-	 * \param u_i_size
-	 * \return
+	 * \param *p_data Data to write
+	 * \param size Size of data
+	 * \retval <0 if there is an error
+	 * \retval >=0 if everthing is OK
 	 */
 	#endif
 	#ifdef Turkish_dox
 	//! Seri porta veri yazar.
 	/**
-	 * \param * p_c_data yazılacak veri
-	 * \param u_i_size yazılacak veri boyutu
-	 * \return
+	 * \param *p_data yazılacak veri
+	 * \param size yazılacak veri boyutu
+	 * \retval <0 hata varsa
+	 * \retval >=0 hata yoksa
 	 */
 	#endif
 	int WriteData(const void * p_data, size_t size);
 
 	#ifdef English_dox
-	//! Brief
+	//! Returns data is ready or not.
 	/**
-	 * Detailed
-	 * \param
-	 * \return
+	 * \return data ready or not
 	 */
 	#endif
 	#ifdef Turkish_dox
-	//! Kısa bilgi
+	//! Verinin hazır olup olmadığını döndürür.
 	/**
-	 * Detaylı bilgi
-	 * \param i_channel_no
-	 * \return
+	 * \return veri hazır ya da değil
 	 */
 	#endif
 	bool isReadyRead() const;
 
 private:
-
 	#ifdef English_dox
 	//! Opens serial port
 	/**
 	 * \param _str_name serial driver name
-	 * \return
+	 * \retval <0 if there is an error
+	 * \retval >=0 if everthing is OK
 	 */
 	#endif
 	#ifdef Turkish_dox
 	//! Seri bağlantıyı açar.
 	/**
 	 * \param _str_name seri sürücünün adı
-	 * \return
+	 * \retval <0 hata varsa
+	 * \retval >=0 hata yoksa
 	 */
 	#endif
 	int SerialOpen(std::string _str_name);
@@ -301,13 +299,15 @@ private:
 	#ifdef English_dox
 	//! Closes serial port
 	/**
-	 * \return
+	 * \retval <0 if there is an error
+	 * \retval >=0 if everthing is OK
 	 */
 	#endif
 	#ifdef Turkish_dox
 	//! Seri bağlantıyı kapatır.
 	/**
-	 * \return
+	 * \retval <0 hata varsa
+	 * \retval >=0 hata yoksa
 	 */
 	#endif
 	int SerialClose();
@@ -315,50 +315,70 @@ private:
 	#ifdef English_dox
 	//! Function to configurate and initialize Serial Communication Peripheral
 	/**
-	 * \return
+	 * \retval <0 if there is an error
+	 * \retval >=0 if everthing is OK
 	 */
 	#endif
 	#ifdef Turkish_dox
 	//! Seri ahberleşmenin ayarlarını ve ilklendirmesi yapan fpnksiyondur.
 	/**
-	 * \return
+	 * \retval <0 hata varsa
+	 * \retval >=0 hata yoksa
 	 */
 	#endif
 	int SerialConfig();
 
 	#ifdef English_dox
 	//! Signal handler
-	/**
-	 * \param i_status
-	 * \return
-	 */
 	#endif
 	#ifdef Turkish_dox
-	//!
-	/**
-	 * \return
-	 */
+	//! Sinyal yakalayıcı
 	#endif
 	static void SignalHandlerIO(int i_status);
 
+	#ifdef Turkish_dox
+	//! Name of serial port
+	#endif
 	std::string str_name;
+	#ifdef Turkish_dox
+	//! Specifies how fast data is sent over a serial line.
+	#endif
 	speed_t baudrate;
+	#ifdef Turkish_dox
+	//! A bit mask specifying flag for data bits.
+	#endif
 	tcflag_t data_bits;
+	#ifdef Turkish_dox
+	//! A bit mask specifying flag for parity.
+	#endif
 	tcflag_t parity;
+	#ifdef Turkish_dox
+	//! A bit mask specifying flag for parity on.
+	#endif
 	tcflag_t parity_on;
+	#ifdef Turkish_dox
+	//! A bit mask specifying flag for stop bits.
+	#endif
 	tcflag_t stop_bits;
 
+	#ifdef Turkish_dox
+	//! File descriptor for serial port.
+	#endif
 	int i_serial_fd;
 
-	bool b_read_data_available;
-
+	#ifdef Turkish_dox
+	//! Signal handler.
+	#endif
 	struct sigaction signal_action_io;
+	#ifdef Turkish_dox
+	//! Port setting for serial communication.
+	#endif
 	struct termios port_settings;
 
+	#ifdef Turkish_dox
+	//! Stores new signal is handled or not.
+	#endif
 	static bool b_signal_received;
-
 };
-
-
 
 #endif /* INCLUDE_IMSERIAL_H_ */

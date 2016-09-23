@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(evarobot_teleop)
 
 set(EVAPI_LIB_SDK_PATH "../sdk/")
+FILE(GLOB EVAPI_LIB_SDK_SRC "${EVAPI_LIB_SDK_PATH}/src/*.cpp")
 
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
@@ -15,19 +16,17 @@ find_package(catkin REQUIRED COMPONENTS
 
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES evarobot_teleop
   CATKIN_DEPENDS im_msgs # geometry_msgs roscpp rospy sensor_msgs std_msgs
-
-#  DEPENDS system_lib
 )
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
+  ${EVAPI_LIB_SDK_PATH}/src
   ${EVAPI_LIB_SDK_PATH}/include
   include
 )
 
-add_executable(evarobot_ps3 src/ps3.cpp)
+add_executable(evarobot_ps3 src/ps3.cpp ${EVAPI_LIB_SDK_SRC})
 add_dependencies(evarobot_ps3 im_msgs_generate_messages_cpp)
 target_link_libraries(evarobot_ps3 ${catkin_LIBRARIES})
 

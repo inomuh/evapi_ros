@@ -1,16 +1,9 @@
 #include "evarobot_bumper/evarobot_bumper.h"
 
-#include <dynamic_reconfigure/server.h>
-#include <evarobot_bumper/ParamsConfig.h>
-
-
-using namespace std;
-
-int i_error_code = 0;
-bool b_always_on;
-bool b_is_received_params = false;
-bool b_collision[3] = {true, true, true};
-
+/**
+ * If an error occurs publishes it.
+ * If there are any collision, publishes a warning.
+ */
 void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
 {
     stringstream ss;
@@ -42,23 +35,31 @@ void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
     }
 }
 
+/**
+ * Callback function to change b_always_on variable at runtime.
+ */
 void CallbackReconfigure(evarobot_bumper::ParamsConfig &config, uint32_t level)
 {
-    ROS_DEBUG("EvarobotBumper: Bumper Param Callback Function...");
-
-    b_is_received_params = true;
-
+	ROS_DEBUG("EvarobotBumper: Bumper Param Callback Function...");
+	b_is_received_params = true;
     b_always_on = config.alwaysOn;
 }
 
+/**
+ * Program starts from here.
+ */
 int main(int argc, char **argv)
 {
-    key_t key;
+	/**
+	 * Semaphore variables.
+	 */
+    key_t key = 1005;
     sem_t *mutex;
     FILE * fd;
 
-    key = 1005;
-
+    /**
+	 * create & initialize semaphore
+	 */
     mutex = sem_open(SEM_NAME,O_CREAT,0644,1);
     if(mutex == SEM_FAILED)
     {
@@ -70,20 +71,35 @@ int main(int argc, char **argv)
         return(-1);
     }
 
-
-    // ROS PARAMS
+    /**
+	 * Frequency, minimum frequency and maximum frequency variables.
+	 */
     double d_frequency;
     double d_min_freq, d_max_freq;
-    string str_i2c_device_address;
-    string str_i2c_path;
-    // rosparams end
 
-    ros::Publisher pub_bumper;
+    /**
+     * i2c device path.
+     */
+    string str_i2c_path;
+
+    /**
+     * ROS message that holds bumper data.
+     */
     im_msgs::Bumper bumpers;
 
+    /**
+	 * Initializes ROS node with evarobot_bumper name.
+	 */
     ros::init(argc, argv, "/evarobot_bumper");
+
+    /**
+	 * Creates ROS node handler.
+	 */
     ros::NodeHandle n;
 
+    /**
+	 * Gets parameters from configuration file.
+	 */
     n.param<string>("evarobot_bumper/i2c_path", str_i2c_path, "/dev/i2c-1");
     n.param("evarobot_bumper/alwaysOn", b_always_on, false);
     n.param("evarobot_bumper/minFreq", d_min_freq, 0.2);
@@ -94,29 +110,42 @@ int main(int argc, char **argv)
         i_error_code = -27;
     }
 
-    // Set publisher
-    pub_bumper = n.advertise<im_msgs::Bumper>("bumper", 10);
+    /**
+	 * Publisher topic is created with bumper topic name and im_msgs::Bumper message type.
+	 */
+    ros::Publisher pub_bumper = n.advertise<im_msgs::Bumper>("bumper", 10);
 
-    // Dynamic Reconfigure
+    /**
+     * Dynamic reconfigure is set to provide changing variables at runtime.
+     */
     dynamic_reconfigure::Server<evarobot_bumper::ParamsConfig> srv;
     dynamic_reconfigure::Server<evarobot_bumper::ParamsConfig>::CallbackType f;
     f = boost::bind(&CallbackReconfigure, _1, _2);
     srv.setCallback(f);
-    ///////////////
 
-    // Define frequency
+    /**
+	 * Define frequency
+	 */
     ros::Rate loop_rate(d_frequency);
+
+    /**
+     * Object is created from IMEIO class and bumper pins are set as input.
+     */
     IMEIO * eio;
     try {
         eio = new IMEIO(0b00100000, string("/dev/i2c-1"),  mutex);
 		eio->SetPinADirection(IMEIO::BUMPER0, IMEIO::INPUT);
         eio->SetPinADirection(IMEIO::BUMPER1, IMEIO::INPUT);
         eio->SetPinADirection(IMEIO::BUMPER2, IMEIO::INPUT);
-    } catch(int i) {
-	ROS_INFO(GetErrorDescription(i).c_str());
+    }
+    catch(int i) {
+    	ROS_INFO(GetErrorDescription(i).c_str());
         i_error_code = i;
     }
 
+    /**
+     * This vector stores bumper numbers.
+     */
     vector<int> T_i_bumper_no;
 
     T_i_bumper_no.resize(MAX_BUMPER);
@@ -125,8 +154,9 @@ int main(int argc, char **argv)
     T_i_bumper_no[1] = IMEIO::BUMPER1;
     T_i_bumper_no[2] = IMEIO::BUMPER2;
 
-
-    // Diagnostics
+    /**
+	 * Set diagnostics to handle and publish error.
+	 */
     diagnostic_updater::Updater updater;
     updater.setHardwareID("IM-BMP10");
     updater.add("bumper", &ProduceDiagnostics);
@@ -136,24 +166,30 @@ int main(int argc, char **argv)
 
     while(ros::ok())
     {
-        if(b_is_received_params)
-        {
-            ROS_DEBUG("EvarobotBumper: Updating Bumper Params...");
+    	/**
+    	 * If new parameters are set, information message is written.
+    	 */
+    	if(b_is_received_params)
+		{
+			ROS_DEBUG("EvarobotBumper: Updating Bumper Params...");
 
-            b_is_received_params = false;
-        }
+			b_is_received_params = false;
+		}
 
+        /**
+         * Reads bumper state from eio pins.
+         */
         for(uint i = 0; i < T_i_bumper_no.size(); i++)
         {
             im_msgs::BumperState bumper_state;
 
             bool b_data;
-	    try{
-                eio->GetPinAValue(T_i_bumper_no[i], b_data);
-	    } catch(int e) {
-        	ROS_INFO(GetErrorDescription(e).c_str());
-        	i_error_code = e;
-	    }
+			try{
+					eio->GetPinAValue(T_i_bumper_no[i], b_data);
+			} catch(int e) {
+				ROS_INFO(GetErrorDescription(e).c_str());
+				i_error_code = e;
+			}
 
             b_collision[i] = b_data;
             bumper_state.bumper_state = b_data;
@@ -162,14 +198,24 @@ int main(int argc, char **argv)
 
         bumpers.header.stamp = ros::Time::now();
 
-        // Publish Data
+        /**
+		 * If there are any subscriber or b_always_on is set as true, message is published.
+		 * Else, message is not published.
+		 */
         if(pub_bumper.getNumSubscribers() > 0 || b_always_on)
         {
             pub_bumper.publish(bumpers);
             pub_freq.tick();
         }
 
+        /**
+         * Clears data for future usages.
+         */
         bumpers.state.clear();
+
+        /**
+         * Loop is slept to hold frequency.
+         */
         updater.update();
         ros::spinOnce();
         loop_rate.sleep();

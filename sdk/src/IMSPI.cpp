@@ -1,21 +1,14 @@
-/*
- * IMSPI.cpp
- *
- *  Created on: Mar 23, 2015
- *      Author: makcakoca
- */
-
 #include "../include/IMSPI.h"
 
 using namespace std;
-/**********************************************************
- * spiOpen() :function is called by the constructor.
+
+/*
+ * Function is called by the constructor.
  * It is responsible for opening the spidev device
  * "devspi" and then setting up the spidev interface.
  * private member variables are used to configure spidev.
- * They must be set appropriately by constructor before calling
- * this function.
- * *********************************************************/
+ * They must be set appropriately by constructor before calling this function.
+ */
 int IMSPI::SpiOpen(std::string devspi)
 {
 	int i_status_value = -1;
@@ -64,11 +57,10 @@ int IMSPI::SpiOpen(std::string devspi)
 	return i_status_value;
 }
 
-/***********************************************************
- * spiClose(): Responsible for closing the spidev interface.
+/*
+ * Responsible for closing the spidev interface.
  * Called in destructor
- * *********************************************************/
-
+ */
 int IMSPI::SpiClose()
 {
     int i_status_value = -1;
@@ -81,22 +73,25 @@ int IMSPI::SpiClose()
     return i_status_value;
 }
 
-/********************************************************************
+/**
  * This function writes data "data" of length "length" to the spidev
  * device. Data shifted in from the spidev device is saved back into
  * "data".
- * ******************************************************************/
+ */
 int IMSPI::SpiWriteRead(unsigned char *p_u_c_data, int i_length)
 {
+	struct spi_ioc_transfer spi[i_length];
+	int i = 0;
+	int i_return_value = -1;
 
-  struct spi_ioc_transfer spi[i_length];
-  int i = 0;
-  int i_return_value = -1;
+	/**
+	 * ioctl struct must be zeroed
+	 */
+	bzero(spi, sizeof spi);
 
-  bzero(spi, sizeof spi); // ioctl struct must be zeroed
-
-// one spi transfer for each byte
-
+	/**
+	 * one spi transfer for each byte
+	 */
 	for (i = 0 ; i < i_length ; i++)
 	{
 			spi[i].tx_buf        = (unsigned long)(p_u_c_data + i); // transmit from "data"
@@ -116,17 +111,14 @@ int IMSPI::SpiWriteRead(unsigned char *p_u_c_data, int i_length)
 	}
 
 	return i_return_value;
-
 }
 
-/*************************************************
- * Default constructor. Set member variables to
- * default values and then call spiOpen()
- * ***********************************************/
-
+/**
+ * Default constructor. Set member variables to default values and then call spiOpen()
+ */
 IMSPI::IMSPI()
 {
-	this->u_c_mode = SPI_MODE_0 ;
+	this->u_c_mode = SPI_MODE_0;
 	this->u_c_bits_per_word = 8;
 	this->u_i_speed = 1000000;
 	this->i_spifd = -1;
@@ -138,10 +130,9 @@ IMSPI::IMSPI()
 	}
 }
 
-/*************************************************
- * overloaded constructor. let user set member variables to
- * and then call spiOpen()
- * ***********************************************/
+/**
+ * overloaded constructor. let user set member variables to and then call spiOpen()
+ */
 IMSPI::IMSPI(std::string str_devspi, unsigned char u_c_spi_mode, unsigned int u_i_spi_speed,
              unsigned char u_c_spi_bits_per_word)
 {
@@ -158,9 +149,9 @@ IMSPI::IMSPI(std::string str_devspi, unsigned char u_c_spi_mode, unsigned int u_
 	}
 }
 
-/**********************************************
+/**
  * Destructor: calls spiClose()
- * ********************************************/
+ */
 IMSPI::~IMSPI()
 {
 	try {

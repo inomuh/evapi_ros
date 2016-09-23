@@ -1,8 +1,9 @@
 #include "evarobot_eio/evarobot_eio.h"
 
-int i_error_code = 0;
-
-
+/**
+ *  If an error occurs publishes it.
+ *  Else publishes both "EvarobotEIO: No problem" message.
+ */
 void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
 {
     if(i_error_code<0)
@@ -16,16 +17,21 @@ void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
     }
 }
 
-
+/**
+ * Program starts here.
+ */
 int main(int argc, char **argv)
 {
-	
-	key_t key;
+	/**
+	 * Semaphore variables.
+	 */
+	key_t key = 1005;
 	sem_t *mutex;
 	FILE * fd;
 
-	key = 1005;
-
+	/**
+	 * create & initialize semaphore
+	 */
 	mutex = sem_open(SEM_NAME,O_CREAT,0644,1);
 	if(mutex == SEM_FAILED)
 	{
@@ -36,33 +42,47 @@ int main(int argc, char **argv)
 		return(-1);
 	}
 
-
-	// ROS PARAMS
+	/**
+	 * Frequency, minimum frequency and maximum frequency variables.
+	 */
 	double d_frequency;
+	double d_min_freq = 0.2;
+	double d_max_freq = 10.0;
 	
+	/**
+	 * i2c device path.
+	 */
 	string str_i2c_path;
-	// rosparams end
 	
-	
-	
-	
-		
+	/**
+	 * Initializes ROS node with evarobot_eio name.
+	 */
 	ros::init(argc, argv, "evarobot_eio");
+	
+	/**
+	 * Creates ROS node handler.
+	 */
 	ros::NodeHandle n;
 	
+	/**
+	 * Gets i2c device path and ROS frequency parameters from configuration file.
+	 */
 	n.param<string>("evarobot_eio/i2c_path", str_i2c_path, "/dev/i2c-1");
 	
 	if(!n.getParam("evarobot_eio/frequency", d_frequency))
 	{
 		ROS_INFO(GetErrorDescription(-99).c_str());
         i_error_code = -99;
-	} 
+	}
 
-		
-
-	// Define frequency
+	/**
+	 * Define frequency
+	 */
 	ros::Rate loop_rate(d_frequency);
 	
+	/**
+	 * Creates IMEIO class reference and sets EIO pins as output.
+	 */
 	IMEIO * eio ;
 	try{
 		eio = new IMEIO(0b00100000, string("/dev/i2c-1"),  mutex);
@@ -86,14 +106,9 @@ int main(int argc, char **argv)
         i_error_code = e;
 	}
      
-	bool b_data = false;
-	
-	
-	// ROS PARAMS
-    double d_min_freq = 0.2;
-	double d_max_freq = 10.0;
-
-	// Diagnostics
+	/**
+	 * Set diagnostics to handle and publish error.
+	 */
 	diagnostic_updater::Updater updater;
 	updater.setHardwareID("EvarobotEIO");
 	updater.add("eio", &ProduceDiagnostics);
@@ -102,35 +117,12 @@ int main(int argc, char **argv)
             diagnostic_updater::FrequencyStatusParam(&d_min_freq, &d_max_freq, 0.1, 10));
             
 	while(ros::ok())
-	{		
-		
-
-						
-			b_data = !b_data;
-			ROS_DEBUG("EvarobotEIO: value: %x \n", b_data);
-			try{
-				eio->SetPinBValue(IMEIO::EIO0, b_data);
-				eio->SetPinBValue(IMEIO::EIO1, b_data);
-				eio->SetPinBValue(IMEIO::EIO2, b_data);
-				eio->SetPinBValue(IMEIO::EIO3, b_data);
-				eio->SetPinBValue(IMEIO::EIO4, b_data);
-				eio->SetPinBValue(IMEIO::EIO5, b_data);
-				eio->SetPinBValue(IMEIO::EIO6, b_data);
-				eio->SetPinBValue(IMEIO::SWR_RESET, b_data);
-
-				//eio->SetPinAValue(IMEIO::RGB_LED1, b_data);
-				eio->SetPinAValue(IMEIO::RGB_LED2, b_data);
-				//eio->SetPinAValue(IMEIO::RGB_LED3, b_data);
-				eio->SetPinAValue(IMEIO::USER_LED, b_data);
-				eio->SetPinAValue(IMEIO::BUZZER, b_data);
-			}catch(int e){
-				ROS_INFO(GetErrorDescription(e).c_str());
-				i_error_code = e;
-			}
-
-			updater.update();
-			loop_rate.sleep();	
-	
+	{
+		/**
+		 * Loop is slept to hold frequency.
+		 */
+		updater.update();
+		loop_rate.sleep();
 	}
 	
 	
