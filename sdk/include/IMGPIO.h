@@ -50,69 +50,54 @@
 
 using namespace std;
 
-
-//bool g_b_exit_signal = false;
-
-// Callback function pointer.
-typedef void(*CallbackFunctionPtr)(void*, int);
-void CatchSignal(int i_sig);
-
+//! Controls GPIO's of Raspberry Pi.
 class IMGPIO
 {
 public:
 	#ifdef English_dox
-	//! Constructor
-	/**
-	 *
-	 */
+	//! Default Constructor
 	#endif
 
 	#ifdef Turkish_dox
-	//! Constructor
-	/**
-	 *
-	 */
+	//! Default Constructor
 	#endif
 	IMGPIO();
 
 	#ifdef English_dox
 	//! Constructor
 	/**
-	 * \param str_pin_number
+	 * \param str_pin_number Pin number of GPIO.
 	 */
 	#endif
 
 	#ifdef Turkish_dox
 	//! Constructor
 	/**
-	 * \param str_pin_number
+	 * \param str_pin_number GPIO pin numarasıdır.
 	 */
 	#endif
 	IMGPIO(string str_pin_number);
 
+	//! Destructor
 	~IMGPIO();
 
 	#ifdef English_dox
 	//! Sets pin direction
 	/**
-	 * Detailed
 	 * \param str_direction IMGPIO::INPUT or IMGPIO::OUTPUT
 	 * \retval <0 if there is an error
 	 * \retval >=0 no error
 	 */
 	#endif
 	#ifdef Turkish_dox
-	//! Costructor'da girilen pin girdi yada çıktı olarak ayarlayan fonksiyondur.
+	//! Costructor'da girilen pini girdi yada çıktı olarak ayarlayan fonksiyondur.
 	/**
-	 *
 	 * \param str_direction Giriş için; IMGPIO::INPUT ya da Çıkış için; IMGPIO::OUTPUT
 	 * \retval <0 hata varsa
 	 * \retval >=0 hata yoksa
 	 */
 	#endif
 	int SetPinDirection(string str_direction);
-
-//	int SetInterruptMode(string str_int_mode);
 
 	#ifdef English_dox
 	//! Sets pin value
@@ -136,8 +121,7 @@ public:
 	#ifdef English_dox
 	//! Gets pin value
 	/**
-	 * Detailed
-	 * \param & str_value is pin value read.  (IMGPIO::HIGH or IMGPIO::LOW)
+	 * \param &str_value pin value.  (IMGPIO::HIGH or IMGPIO::LOW)
 	 * \retvat <0 if there ise an error
 	 * \retval >=0 no error
 	 */
@@ -153,7 +137,7 @@ public:
 	int GetPinValue(string & str_value);
 
 	#ifdef English_dox
-	//! Returns pin number is set in Constructor.
+	//! Returns pin number which set in Constructor.
 	/**
 	 *
 	 * \return pin number
@@ -167,33 +151,80 @@ public:
 	#endif
 	string GetPinNumber() const;
 
-//	void SetCallback(CallbackFunctionPtr _callback_function, void *p);
-
-	//! Constant Değişkenler.
-
 	static const string RISING;
 	static const string FALLING;
 	static const string BOTH;
 
 	static const string OUTPUT;
+	#ifdef English_dox
+		//! Value to set GPIO pin as input.
+	#endif
 	static const string INPUT;
 
+	#ifdef English_dox
+		//! GPIO pin value for high.
+	#endif
 	static const string HIGH;
+	#ifdef English_dox
+		//! GPIO pin value for low.
+	#endif
 	static const string LOW;
 
+	#ifdef English_dox
+		//! GPIO0 pin number.
+	#endif
 	static const string GPIO0;
+	#ifdef English_dox
+		//! GPIO1 pin number.
+	#endif
 	static const string GPIO1;
+	#ifdef English_dox
+		//! GPIO2 pin number.
+	#endif
 	static const string GPIO2;
+	#ifdef English_dox
+		//! GPIO3 pin number.
+	#endif
 	static const string GPIO3;
+	#ifdef English_dox
+		//! GPIO4 pin number.
+	#endif
 	static const string GPIO4;
+	#ifdef English_dox
+		//! GPIO5 pin number.
+	#endif
 	static const string GPIO5;
+	#ifdef English_dox
+		//! GPIO6 pin number.
+	#endif
 	static const string GPIO6;
+	#ifdef English_dox
+		//! GPIO7 pin number.
+	#endif
 	static const string GPIO7;
+	#ifdef English_dox
+		//! GPIO8 pin number.
+	#endif
 	static const string GPIO8;
+	#ifdef English_dox
+		//! GPIO9 pin number.
+	#endif
 	static const string GPIO9;
+	#ifdef English_dox
+		//! GPIO10 pin number.
+	#endif
 	static const string GPIO10;
+	#ifdef English_dox
+		//! GPIO11 pin number.
+	#endif
 	static const string GPIO11;
+	#ifdef English_dox
+		//! GPIO12 pin number.
+	#endif
 	static const string GPIO12;
+	#ifdef English_dox
+		//! GPIO13 pin number.
+	#endif
 	static const string GPIO13;
 
 private:
@@ -201,7 +232,7 @@ private:
 	#ifdef English_dox
 	//! Exports GPIO pin
 	/**
-	 * \retvat <0 if there ise an error
+	 * \retvat <0 if there is an error
 	 * \retval >=0 no error
 	 */
 	#endif
@@ -230,22 +261,30 @@ private:
 	#endif
 	int UnexportGpio();
 
-//	int PollGpio();
-
+	#ifdef English_dox
+		//! File description of file to write value.
+	#endif
 	int i_value_fd;
+	#ifdef English_dox
+		//! File description of file to set direction.
+	#endif
 	int i_direction_fd;
+	#ifdef English_dox
+		//! File description of file to export.
+	#endif
 	int i_export_fd;
+	#ifdef English_dox
+		//! File description of file to import.
+	#endif
 	int i_unexport_fd;
+	#ifdef English_dox
+		//! File description of file to set signal edge.
+	#endif
 	int i_edge_fd;
+	#ifdef English_dox
+		//! GPIO pin number.
+	#endif
 	string str_pin_number;
-//	CallbackFunctionPtr callback_function;
-//	void *p_v_callback_pointer;
-//	string str_interrupt_mode;
-
-//	bool b_exit_signal;
-//	void CatchSignal(int i_sig);
-
-
 };
 
 #endif /* INCLUDE_IMGPIO_H_ */

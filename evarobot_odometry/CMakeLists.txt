@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(evarobot_odometry)
 
 set(EVAPI_LIB_SDK_PATH "../sdk/")
+FILE(GLOB EVAPI_LIB_SDK_SRC "${EVAPI_LIB_SDK_PATH}/src/*.cpp")
 
 find_package(catkin REQUIRED COMPONENTS
   nav_msgs
@@ -33,7 +34,7 @@ include_directories(
 )
 
 
-add_executable(evarobot_odometry src/evarobot_odometry.cpp)
+add_executable(evarobot_odometry src/evarobot_odometry.cpp ${EVAPI_LIB_SDK_SRC})
 add_dependencies(evarobot_odometry im_msgs_generate_messages_cpp)
 add_dependencies(evarobot_odometry evarobot_odometry_gencfg)
 target_link_libraries(evarobot_odometry

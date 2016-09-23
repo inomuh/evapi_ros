@@ -3,7 +3,7 @@
  * \file   IMI2C.h
  * \author Mehmet Akcakoca (mehmet.akcakoca@inovasyonmuhendislik.com)
  * \date   Mar, 2015
- * \brief
+ * \brief  Controls I2C of Raspberry Pi.
  * \details
  *
  */
@@ -13,7 +13,7 @@
  * \file   IMI2C.h
  * \author Mehmet Akcakoca (mehmet.akcakoca@inovasyonmuhendislik.com)
  * \date   Mar, 2015
- * \brief
+ * \brief  Raspberry Pi üzerindeki I2C'yi kontrol eder.
  * \details
  *
  */
@@ -31,7 +31,6 @@
 #include <sys/ioctl.h>
 #include <string.h>
 
-//#include <sys/types.h>
 #include <sys/ipc.h>
 #include <semaphore.h>
 #include <sys/stat.h>
@@ -40,22 +39,17 @@
 
 using namespace std;
 
+//! Controls I2C of Raspberry Pi.
 class IMI2C
 {
 public:
 
 	#ifdef English_dox
-	//! Constructor
-	/**
-	 *
-	 */
+	//! Default Constructor
 	#endif
 
 	#ifdef Turkish_dox
-	//! Constructor
-	/**
-	 *
-	 */
+	//! Default Constructor
 	#endif
 	IMI2C();
 
@@ -64,7 +58,7 @@ public:
 	/**
 	 * \param u_c_device_address i2c device address
 	 * \param str_i2c_file_name i2c device driver name
-	 * \param * mutex
+	 * \param *mutex mutex to synchronize i2c device driver
 	 */
 	#endif
 
@@ -73,7 +67,7 @@ public:
 	/**
 	 * \param u_c_device_address i2c aygıt adresi
 	 * \param str_i2c_file_name i2c aygıt sürücüsü adı
-	 * \param * mutex i2c sürücüsünün kullanımını senkronlaştırmak için mutex.
+	 * \param *mutex i2c sürücüsünün kullanımını senkronlaştırmak için mutex
 	 */
 	#endif
 	IMI2C(unsigned char u_c_device_address, string str_i2c_file_name, sem_t * mutex);
@@ -84,55 +78,66 @@ public:
 	#ifdef English_dox
 	//! Function to write byte data into a register of an I2C device
 	/**
-	 * \param u_c_register_address
-	 * \param u_c_data
-	 * \retvat <0 if there ise an error
+	 * \param c_register_address Register address in the I2C device to write data
+	 * \param c_data Data to write specified register
+	 * \retval <0 if there is an error
 	 * \retval >=0 no error
 	 */
 	#endif
-	#ifdef Turkish_dox
-	//! I2C aygıtının ilgili registerına veri yazan fonksiyondur.
+	int WriteDataByte(char c_register_address, char c_data);
+
+	#ifdef English_dox
+	//! Function to write two bytes of data into a register of an I2C device
 	/**
-	 * \param u_c_register_address
-	 * \param u_c_data
-	 * \retval <0 hata varsa
-	 * \retval >=0 hata yoksa
+	 * \param c_register_address Register address in the I2C device to write data
+	 * \param c_msb_data Data to write low byte of specified register
+	 * \param c_lsb_data Data to write high byte of specified register
+	 * \retval <0 if there is an error
+	 * \retval >=0 no error
 	 */
 	#endif
-	int WriteDataByte(char c_register_address, char c_data);
 	int WriteTwoDataByte(char c_register_address, char c_msb_data, char c_lsb_data);
+
+	#ifdef English_dox
+	//! Function to write only one byte data.
+	/**
+	 * This function writes only one byte.
+	 * \param u_c_byte Data to write
+	 * \retval <0 if there is an error
+	 * \retval >=0 no error
+	 */
+	#endif
 	int WriteByte(unsigned char u_c_register_address);
 	
 	#ifdef English_dox
 	//! Function to read byte data from a register of an I2C device
 	/**
-	 * Detailed
-	 * \param u_c_register_address
-	 * \param & u_c_data Okunan değerdir.
-	 * \retvat <0 if there ise an error
+	 * \param c_register_address Register address in the I2C device to read data
+	 * \param &c_data Data of specified register.
+	 * \retval <0 if there ise an error
 	 * \retval >=0 no error
 	 */
 	#endif
-	#ifdef Turkish_dox
-	//! I2C aygıtının ilgili registerından veri okuyan fonksiyondur.
+	int ReadDataByte(char c_register_address, char & c_data);
+
+	#ifdef English_dox
+	//! Function to read multiple bytes of data from I2C device
 	/**
-	 * Detaylı bilgi
-	 * \param u_c_register_address
-	 * \param & u_c_data Okunan değerdir.
-	 * \retval <0 hata varsa
-	 * \retval >=0 hata yoksa
+	 * \param *c_data Data of registers.
+	 * \param i_reg_size Number of registers to read.
 	 */
 	#endif
-	int ReadDataByte(char c_register_address, char & c_data);
-	int ReadTwoDataByte(char c_register_address, char & c_msb_data, char & c_lsb_data);
 	void ReadMultipleRegister(char * c_data, int i_reg_size);
+
+	int ReadTwoDataByte(char c_register_address, char & c_msb_data, char & c_lsb_data);
+	int WriteDataByte(char c_register_address, char c_data);
 
 private:
 
 	#ifdef English_dox
 	//! Open an I2C device.
 	/**
-	 * \retvat <0 if there ise an error
+	 * \retval <0 if there ise an error
 	 * \retval >=0 no error
 	 */
 	#endif
@@ -148,27 +153,34 @@ private:
 	#ifdef English_dox
 	//! Close an I2C device.
 	/**
-	 * \param i_i2cfd
-	 * \retvat <0 if there ise an error
+	 * \param i_i2cfd I2C file descriptor to close.
+	 * \retval <0 if there ise an error
 	 * \retval >=0 no error
 	 */
 	#endif
 	#ifdef Turkish_dox
 	//! I2C aygıtını kapatır.
 	/**
-	 * \param i_i2cfd
+	 * \param i_i2cfd Kapatılacak I2C'nin dosya tanımlayıcısıdır.
 	 * \retval <0 hata varsa
 	 * \retval >=0 hata yoksa
 	 */
 	#endif
 	int CloseI2C(int i_i2cfd);
 
-	//! i2c device name e.g."/dev/i2c-0" or "/dev/i2c-1"
+	#ifdef English_dox
+		//! Name of i2c device. e.g."/dev/i2c-0" or "/dev/i2c-1"
+	#endif
 	string  str_i2c_file_name;
-	//int i_i2cfd;  // i2c device descriptor
 
+	#ifdef English_dox
+		//! Address of i2c device.
+	#endif
 	unsigned char u_c_device_adress;
 
+	#ifdef English_dox
+		//! mutex to synchronize i2c device driver
+	#endif
 	sem_t * mutex;
 };
 

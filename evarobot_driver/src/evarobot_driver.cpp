@@ -1,14 +1,8 @@
-/**
-* @file evarobot_driver.cpp
-* @Author Me (mehmet.akcakoca@inovasyonmuhendislik.com)
-* @date April 2, 2015
-*
-*/
-
 #include "evarobot_driver/evarobot_driver.h"
 
-int i_error_code;
-
+/**
+ * Constructor with custom parameters.
+ */
 IMDRIVER::IMDRIVER(double d_limit_voltage,
                    float f_max_lin_vel,
                    float f_max_ang_vel,
@@ -34,8 +28,10 @@ IMDRIVER::IMDRIVER(double d_limit_voltage,
     this->f_right_motor_voltage = 0.0;
 
 	this->u_i_counts = u_i_counts;
-	this->i_const_count =  (u_i_counts - 1) / this->f_max_lin_vel;
 	
+	/**
+	 * PWM controller to control motors.
+	 */
 	this->pwm = new IMPWM(d_frequency, u_i_counts, d_duty, i_mode);
 
 	this->m1_in = m1_in;
@@ -43,12 +39,18 @@ IMDRIVER::IMDRIVER(double d_limit_voltage,
 	this->m1_en = m1_en;
 	this->m2_en = m2_en;
 
+	/**
+	 * Sets pin direction as output.
+	 */
     for(int i = 0; i < 2; i++)
         this->m1_in[i]->SetPinDirection(IMGPIO::OUTPUT);
 
     for(int i = 0; i < 2; i++)
         this->m2_in[i]->SetPinDirection(IMGPIO::OUTPUT);
 
+    /**
+     * Turns on leds.
+     */
     im_msgs::SetRGB srv;
 
     srv.request.times = -1;
@@ -62,11 +64,16 @@ IMDRIVER::IMDRIVER(double d_limit_voltage,
         i_error_code = -77;
     }
 
-    // enable motors
+	/**
+	 * Enables motors.
+	 */
     this->Enable();
 
 }
 
+/**
+ * Destructor clears data and turns off leds.
+ */
 IMDRIVER::~IMDRIVER()
 {
     im_msgs::SetRGB srv;
@@ -87,12 +94,11 @@ IMDRIVER::~IMDRIVER()
     delete m1_en;
     delete m2_en;
     delete adc;
-//    delete [] m1_in;
-//    delete [] m2_in;
-
-
 }
 
+/**
+ * Sets new parameters and prints information message at debug level.
+ */
 void IMDRIVER::UpdateParams()
 {
     if(b_is_received_params)
@@ -110,9 +116,16 @@ void IMDRIVER::UpdateParams()
     }
 }
 
+/**
+ * Applies input velocities to motors if velocities are in limits.
+ */
 void IMDRIVER::ApplyVel(float f_left_wheel_velocity, float f_right_wheel_velocity)
 {
-  bool isStop = false;
+  	bool isStop = false;
+
+	/**
+	 * Set pin values according to f_left_wheel_velocity parameter.
+	 */
     if(f_left_wheel_velocity > 0)
     {
         this->m1_in[0]->SetPinValue(IMGPIO::LOW);
@@ -129,6 +142,9 @@ void IMDRIVER::ApplyVel(float f_left_wheel_velocity, float f_right_wheel_velocit
         this->m1_in[1]->SetPinValue(IMGPIO::LOW);
     }
 
+    /**
+	 * Set pin values according to f_right_wheel_velocity parameter.
+	 */
     if(f_right_wheel_velocity > 0)
     {
         this->m2_in[0]->SetPinValue(IMGPIO::HIGH);
@@ -143,12 +159,14 @@ void IMDRIVER::ApplyVel(float f_left_wheel_velocity, float f_right_wheel_velocit
     {
         this->m2_in[0]->SetPinValue(IMGPIO::LOW);
         this->m2_in[1]->SetPinValue(IMGPIO::LOW);
-	isStop = true;
+		isStop = true;
     }
 
+    /**
+     * Compute left and right wheel duty cycles.
+     */
     int i_left_wheel_duty = int(fabs(f_left_wheel_velocity) * 255 / this->f_max_lin_vel);
     int i_right_wheel_duty = int(fabs(f_right_wheel_velocity) * 255 / this->f_max_lin_vel);
-
 
     i_left_wheel_duty = i_left_wheel_duty>=this->u_i_counts ? this->u_i_counts - 1:i_left_wheel_duty;
     i_right_wheel_duty = i_right_wheel_duty>=this->u_i_counts ? this->u_i_counts - 1:i_right_wheel_duty;
@@ -156,17 +174,16 @@ void IMDRIVER::ApplyVel(float f_left_wheel_velocity, float f_right_wheel_velocit
     this->leftPWM = i_left_wheel_duty;
     this->rightPWM = i_right_wheel_duty;
 
+    /**
+     * Apply calculated duty cycles.
+     */
     if ( isStop ) {
       pwm->SetDutyCycleCount(0, 0);
       pwm->SetDutyCycleCount(0, 1);
     } else {
 
-      // if(i_left_wheel_duty != 0)
       pwm->SetDutyCycleCount(i_left_wheel_duty, 0);
-    
-	// if(i_right_wheel_duty != 0)
       pwm->SetDutyCycleCount(i_right_wheel_duty, 1);
-
     }
 
 
@@ -184,6 +201,9 @@ void IMDRIVER::ApplyVel(float f_left_wheel_velocity, float f_right_wheel_velocit
     	}*/
 }
 
+/**
+ * Enables motor driver pins.
+ */
 void IMDRIVER::Enable()
 {
     this->m1_en->SetPinDirection(IMGPIO::OUTPUT);
@@ -191,11 +211,11 @@ void IMDRIVER::Enable()
 
     this->m1_en->SetPinValue(IMGPIO::HIGH);
     this->m2_en->SetPinValue(IMGPIO::HIGH);
-
-    /*		this->m1_en->SetPinDirection(IMGPIO::INPUT);
-    	this->m2_en->SetPinDirection(IMGPIO::INPUT);*/
 }
 
+/**
+ * Disable motor driver pins.
+ */
 void IMDRIVER::Disable()
 {
     this->m1_en->SetPinDirection(IMGPIO::OUTPUT);
@@ -203,9 +223,12 @@ void IMDRIVER::Disable()
 
     this->m1_en->SetPinValue(IMGPIO::LOW);
     this->m2_en->SetPinValue(IMGPIO::LOW);
-
 }
 
+/**
+ * Controls are there any error in related GPIO pins. 
+ * If there is an error returns negative, else returns 0;
+ */
 int IMDRIVER::CheckError()
 {
     int i_ret = 0;
@@ -229,6 +252,9 @@ int IMDRIVER::CheckError()
     return i_ret;
 }
 
+/**
+ * Returns left and right motor voltages.
+ */
 im_msgs::Voltage IMDRIVER::GetMotorVoltage() const
 {
     im_msgs::Voltage ret;
@@ -238,10 +264,16 @@ im_msgs::Voltage IMDRIVER::GetMotorVoltage() const
     return ret;
 }
 
+/**
+ * Controls motor current is in limits or not.
+ */
 bool IMDRIVER::CheckMotorCurrent()
 {
     bool b_ret = true;
 
+    /**
+     * Calculetes current and controls value is in limits or not.
+     */
     this->f_left_motor_voltage = (float)(this->adc->ReadMotorChannel(0)*5.0/4096.0);
     this->f_right_motor_voltage = (float)(this->adc->ReadMotorChannel(1)*5.0/4096.0);
 
@@ -266,6 +298,9 @@ bool IMDRIVER::CheckMotorCurrent()
         this->b_right_motor_error = true;
     }
 
+    /**
+     * If there is an error, turns on leds ERROR mode.
+     */
     if(!b_ret)
     {
         im_msgs::SetRGB srv;
@@ -283,28 +318,14 @@ bool IMDRIVER::CheckMotorCurrent()
 
         this->Disable();
     }
-    /*	else if(b_ret & this->b_motor_error)
-    	{
-    		this->b_motor_error = false;
-    		im_msgs::SetRGB srv;
-
-    		srv.request.times = -1;
-    		srv.request.mode = 0;
-    		srv.request.frequency = 1.0;
-    		srv.request.color = 0;
-
-    		if(this->client.call(srv) == 0)
-    		{
-    			ROS_ERROR("Failed to call service evarobot_rgb/SetRGB");
-    		}
-
-    		//this->Enable();
-
-    	}*/
 
     return b_ret;
 }
 
+/**
+ *  If an error occurs publishes it.
+ *  Else publishes both left and right motor voltages.
+ */
 void IMDRIVER::ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
 {
     if(i_error_code < 0)
@@ -325,11 +346,15 @@ void IMDRIVER::ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &s
 
 }
 
+/**
+ * Controls time difference between two consecutive data from cntr_wheel_vel topic.
+ */
 bool IMDRIVER::CheckTimeout()
 {
-    double dt;
-
-    dt = (ros::Time::now() - this->curr_vel_time).toSec();
+	/**
+	 * Time difference is calculated and controlled for limit overflow.
+	 */
+    double dt = (ros::Time::now() - this->curr_vel_time).toSec();
 
     if(dt > this->d_timeout)
     {
@@ -353,78 +378,130 @@ bool IMDRIVER::CheckTimeout()
     return this->b_timeout_err;
 }
 
+/**
+ * Callback function for cntr_wheel_vel topic.
+ */
 void IMDRIVER::CallbackWheelVel(const im_msgs::WheelVel::ConstPtr & msg)
 {
+	/**
+	 * Applies velocity according to input msg parameter.
+	 */
     float f_left_wheel_velocity = msg->left_vel;
     float f_right_wheel_velocity = msg->right_vel;
     this->curr_vel_time = msg->header.stamp;
-
-    // UpdateParams
     this->UpdateParams();
-
-    // ApplyVel
     this->ApplyVel(f_left_wheel_velocity, f_right_wheel_velocity);
 }
 
+/**
+ * Callback function to change pid parameters at runtime.
+ */
 void CallbackReconfigure(evarobot_driver::ParamsConfig &config, uint32_t level)
 {
-    b_is_received_params = true;
-
-    g_d_max_lin = config.maxLinearVel;
+	b_is_received_params = true;
+	g_d_max_lin = config.maxLinearVel;
     g_d_max_ang = config.maxAngularVel;
     g_d_wheel_separation = config.wheelSeparation;
     g_d_wheel_diameter = config.wheelDiameter;
-
 }
 
+/**
+ * Program starts here.
+ */
 int main(int argc, char **argv)
 {
+	/**
+	 * SPI mode between SPI_MODE_0 and SPI_MODE_3
+	 */
 	unsigned char u_c_spi_mode;
 	
-  ros::init(argc, argv, "/evarobot_driver");
-  ros::NodeHandle n;
-  
-  string str_driver_path;
-  
-  double d_max_lin_vel;
-  double d_max_ang_vel;
-  
-  double d_wheel_diameter;
-  double d_wheel_separation;
-  
-  double d_frequency;
-  double d_duty;
-  double d_limit_voltage;
-  
-  double d_timeout;
-    
-  int i_counts;
-  int i_mode;
-  int i_m1_in1, i_m1_in2, i_m1_en;
-  int i_m2_in1, i_m2_in2, i_m2_en;
-  
-  int i_spi_mode, i_spi_speed, i_spi_bits, i_adc_bits;
-  
-  // ADC & SPI Params
-  n.param<string>("evarobot_driver/driverPath", str_driver_path, "/dev/spidev0.1");
-  n.param("evarobot_driver/spiMode", i_spi_mode, 0);
-  n.param("evarobot_driver/spiSpeed", i_spi_speed, 1000000);
-  n.param("evarobot_driver/spiBits", i_spi_bits, 8);
-  n.param("evarobot_driver/adcBits", i_adc_bits, 12);
-  // ------ ---- --- -- - -
-  
-  n.param<int>("evarobot_driver/M1_IN1", i_m1_in1, 1);
-  n.param<int>("evarobot_driver/M1_IN2", i_m1_in2, 12);
-  n.param<int>("evarobot_driver/M1_EN", i_m1_en, 5);
+	/**
+	 * Initializes ROS node with evarobot_driver name.
+	 */
+	ros::init(argc, argv, "/evarobot_driver");
 
-  
-  n.param<int>("evarobot_driver/M2_IN1", i_m2_in1, 0);
-  n.param<int>("evarobot_driver/M2_IN2", i_m2_in2, 19);
-  n.param<int>("evarobot_driver/M2_EN", i_m2_en, 6);
+	/**
+	 * Creates ROS node handler.
+	 */
+	ros::NodeHandle n;
 
-  n.param<double>("evarobot_driver/limitVoltage", d_limit_voltage, 0.63);
-  n.param<double>("evarobot_driver/timeout", d_timeout, 0.5);
-  
+	/**
+	 * SPI driver path.
+	 */
+	string str_driver_path;
+
+	/**
+	 * Maximum linear velocity.
+	 */
+	double d_max_lin_vel;
+	/**
+	 * Maximum angular velocity.
+	 */
+	double d_max_ang_vel;
+
+	/**
+	 * Diameter of wheels.
+	 */
+	double d_wheel_diameter;
+
+	/**
+	 * Separation between left and right wheels.
+	 */
+	double d_wheel_separation;
+
+	/**
+	 * PWM frequency.
+	 */
+	double d_frequency;
+	/**
+	 * PWM duty cycle.
+	 */
+	double d_duty;
+	/**
+	 * Voltage limit for both left and right wheels.
+	 */
+	double d_limit_voltage;
+
+	/**
+	 * Time limit between two consecutive data from cntr_wheel_vel topic.
+	 */
+	double d_timeout;
+
+	/**
+	 * PWM resolution.
+	 */
+	int i_counts;
+
+	/**
+	 * PWM mode (IMPWM::MSMODE or IMPWM::PWMMODE)
+	 */
+	int i_mode;
+
+	/**
+	 * Motor input and enable pins are declared.
+	 */
+	int i_m1_in1, i_m1_in2, i_m1_en;
+	int i_m2_in1, i_m2_in2, i_m2_en;
+
+	int i_spi_mode, i_spi_speed, i_spi_bits, i_adc_bits;
+
+	/**
+	 * Gets parameters from configuration file.
+	 */
+	n.param<string>("evarobot_driver/driverPath", str_driver_path, "/dev/spidev0.1");
+	n.param("evarobot_driver/spiMode", i_spi_mode, 0);
+	n.param("evarobot_driver/spiSpeed", i_spi_speed, 1000000);
+	n.param("evarobot_driver/spiBits", i_spi_bits, 8);
+	n.param("evarobot_driver/adcBits", i_adc_bits, 12);
+	n.param<int>("evarobot_driver/M1_IN1", i_m1_in1, 1);
+	n.param<int>("evarobot_driver/M1_IN2", i_m1_in2, 12);
+	n.param<int>("evarobot_driver/M1_EN", i_m1_en, 5);
+	n.param<int>("evarobot_driver/M2_IN1", i_m2_in1, 0);
+	n.param<int>("evarobot_driver/M2_IN2", i_m2_in2, 19);
+	n.param<int>("evarobot_driver/M2_EN", i_m2_en, 6);
+	n.param<double>("evarobot_driver/limitVoltage", d_limit_voltage, 0.63);
+	n.param<double>("evarobot_driver/timeout", d_timeout, 0.5);
+
 	if(!n.getParam("evarobot_driver/maxLinearVel", d_max_lin_vel))
 	{
 			ROS_INFO(GetErrorDescription(-82).c_str());
@@ -473,20 +550,21 @@ int main(int argc, char **argv)
 			i_error_code = -91;
 	}
   
-  // PWMMODE = 1; --- MSMODE = 2
 	if(i_mode != IMPWM::PWMMODE && i_mode != IMPWM::MSMODE)
 	{
 			ROS_INFO(GetErrorDescription(-89).c_str());
 			i_error_code = -89;
 	}
-  
-  // Dynamic Reconfigure
-  dynamic_reconfigure::Server<evarobot_driver::ParamsConfig> srv;
-  dynamic_reconfigure::Server<evarobot_driver::ParamsConfig>::CallbackType f;
-  f = boost::bind(&CallbackReconfigure, _1, _2);
-  srv.setCallback(f);
-  ///////////////
 
+	// Dynamic Reconfigure
+	dynamic_reconfigure::Server<evarobot_driver::ParamsConfig> srv;
+	dynamic_reconfigure::Server<evarobot_driver::ParamsConfig>::CallbackType f;
+	f = boost::bind(&CallbackReconfigure, _1, _2);
+	srv.setCallback(f);
+
+	/**
+	 * SPI mode is set.
+	 */
 	switch(i_spi_mode)
 	{	
 		case 0:
@@ -520,86 +598,125 @@ int main(int argc, char **argv)
 		}
 	}
 	
+	/**
+	 * SPI and ADC class references.
+	 */
 	IMSPI * p_im_spi;
 	IMADC * p_im_adc;
+
+	/**
+	 * Motor input and enable pins are declared.
+	 */
 	boost::shared_ptr<IMGPIO> gpio_m1_in[2];
 	boost::shared_ptr<IMGPIO> gpio_m2_in[2];
 	IMGPIO * gpio_m1_en;
 	IMGPIO * gpio_m2_en;
 
+	/**
+	 * Creating spi and adc objects.
+	 */
 	try {
-			// Creating spi and adc objects.
-			p_im_spi = new IMSPI(str_driver_path, u_c_spi_mode, i_spi_speed, i_spi_bits);
-			p_im_adc = new IMADC(p_im_spi, i_adc_bits);
+		p_im_spi = new IMSPI(str_driver_path, u_c_spi_mode, i_spi_speed, i_spi_bits);
+		p_im_adc = new IMADC(p_im_spi, i_adc_bits);
 	} catch(int e) {
-			ROS_INFO(GetErrorDescription(e).c_str());
-			i_error_code = e;
-			return 0;
+		ROS_INFO(GetErrorDescription(e).c_str());
+		i_error_code = e;
+		return 0;
 	}
 
 	try {
-			stringstream ss1, ss2;
+		/**
+		 * Motor input and enable pins are created from GPIO class.
+		 */
+		stringstream ss1, ss2;
 
-			ss1 << i_m1_in1;
-			ss2 << i_m1_in2;
+		ss1 << i_m1_in1;
+		ss2 << i_m1_in2;
 
-			gpio_m1_in[0] = boost::shared_ptr< IMGPIO >( new IMGPIO(ss1.str()) );
-			gpio_m1_in[1] = boost::shared_ptr< IMGPIO >( new IMGPIO(ss2.str()) );
-			
-			ss1.str("");
-			ss2.str("");
-			ss1 << i_m2_in1;
-			ss2 << i_m2_in2;
+		gpio_m1_in[0] = boost::shared_ptr< IMGPIO >( new IMGPIO(ss1.str()) );
+		gpio_m1_in[1] = boost::shared_ptr< IMGPIO >( new IMGPIO(ss2.str()) );
 
-			gpio_m2_in[0] = boost::shared_ptr< IMGPIO >( new IMGPIO(ss1.str()) );
-			gpio_m2_in[1] = boost::shared_ptr< IMGPIO >( new IMGPIO(ss2.str()) );
-	
-			ss1.str("");
-			ss2.str("");
-			ss1 << i_m1_en;
-			ss2 << i_m2_en;
+		ss1.str("");
+		ss2.str("");
+		ss1 << i_m2_in1;
+		ss2 << i_m2_in2;
 
-			gpio_m1_en = new IMGPIO(ss1.str());
-			gpio_m2_en = new IMGPIO(ss2.str());
+		gpio_m2_in[0] = boost::shared_ptr< IMGPIO >( new IMGPIO(ss1.str()) );
+		gpio_m2_in[1] = boost::shared_ptr< IMGPIO >( new IMGPIO(ss2.str()) );
+
+		ss1.str("");
+		ss2.str("");
+		ss1 << i_m1_en;
+		ss2 << i_m2_en;
+
+		gpio_m1_en = new IMGPIO(ss1.str());
+		gpio_m2_en = new IMGPIO(ss2.str());
 	} catch(int e) {
-			ROS_INFO(GetErrorDescription(e).c_str());
-			i_error_code = e;
-			return 0;
+		ROS_INFO(GetErrorDescription(e).c_str());
+		i_error_code = e;
+		return 0;
 	}
 
+	/**
+	 * evarobot_rgb/SetRGB service client is created to change mode of rgb leds.
+	 */
 	ros::ServiceClient client = n.serviceClient<im_msgs::SetRGB>("evarobot_rgb/SetRGB");
 
+	/**
+	 * imdriver object is created to apply velocities.
+	 */
 	IMDRIVER imdriver(d_limit_voltage, (float)d_max_lin_vel, (float)d_max_ang_vel,
 										(float)d_wheel_separation, (float)d_wheel_diameter,
 										d_frequency, i_counts, d_duty, i_mode,
 										gpio_m1_in, gpio_m2_in, gpio_m1_en, gpio_m2_en, p_im_adc, client, d_timeout);
 
+	/**
+	 * Subscriber for cntr_wheel_vel topic.
+	 */
 	ros::Subscriber sub = n.subscribe("cntr_wheel_vel", 2, &IMDRIVER::CallbackWheelVel, &imdriver);
+
+	/**
+	 * Publisher topic is created with motor_voltages topic name and im_msgs::Voltage message type.
+	 */
 	ros::Publisher pub = n.advertise<im_msgs::Voltage>("motor_voltages", 1);
 
-	// Diagnostics
+	/**
+	 * Set diagnostics to handle and publish error.
+	 */
 	diagnostic_updater::Updater updater;
 	updater.setHardwareID("None");
 	updater.add("MotorVoltages", &imdriver, &IMDRIVER::ProduceDiagnostics);
 
+	/**
+	 * If there is no publisher, writes warning.
+	 */
 	if(sub.getNumPublishers() < 1)
 	{
-			ROS_WARN("No appropriate subscriber.");
+		ROS_WARN("No appropriate subscriber.");
 	}
 
-	// Define frequency
+	/**
+	 * Define frequency
+	 */
 	ros::Rate loop_rate(10.0);
 
 	while(ros::ok())
 	{		
-			imdriver.CheckMotorCurrent();
-			imdriver.CheckTimeout();
-			pub.publish(imdriver.GetMotorVoltage());
+		/**
+		 * Checks mottor current error or timeout error occured.
+		 * Publishes motor voltages.
+		 */
+		imdriver.CheckMotorCurrent();
+		imdriver.CheckTimeout();
+		pub.publish(imdriver.GetMotorVoltage());
 
-			updater.update();
-			ros::spinOnce();
-			loop_rate.sleep();
+		/**
+		 * Loop is slept to hold frequency.
+		 */
+		updater.update();
+		ros::spinOnce();
+		loop_rate.sleep();
 	}
   
-  return 0;
+	return 0;
 }

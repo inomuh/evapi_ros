@@ -3,7 +3,7 @@
  * \file   IMADC.h
  * \author Mehmet Akcakoca (mehmet.akcakoca@inovasyonmuhendislik.com)
  * \date   Mar, 2015
- * \brief  Reads analog inputs through MCP3208 on evarobot sensorboard.
+ * \brief  Reads analog inputs through MCP3202 & MCP3208 on evarobot sensorboard.
  * \details
  * There are two types reading mode which are single-ended and differantial.
  * Reference voltage in single-ended mode is 5V.
@@ -34,6 +34,7 @@
 
 #include "IMSPI.h"
 
+//! Reads analog inputs through MCP3202 & MCP3208 on evarobot sensorboard.
 class IMADC
 {
 public:
@@ -42,7 +43,7 @@ public:
 	//! Constructor
 	/**
 	 * \param p_imspi pointer of IMSPI class.
-	 * \param i_adc_bits number of adc bits. It depends ADC hardware.
+	 * \param i_adc_bits number of ADC bits. It depends ADC hardware.
 	 */
 	#endif
 
@@ -99,7 +100,7 @@ public:
 	//! Reads differential Analog to Digital Converter Channel (MCP3208).
 	/**
 	 * \param i_channel_plus is channel number to read in range of 0-7
-	 * \param i_channel_negative
+	 * \param i_channel_negative is reference channel number in range of 0-7
 	 * \return value of data on the difference(i_channel_plus - i_channel_negative)
 	 */
 	#endif
