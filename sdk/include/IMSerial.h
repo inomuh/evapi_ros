@@ -74,6 +74,15 @@ public:
 			tcflag_t parity, tcflag_t parity_on, tcflag_t stop_bits);
 
 	#ifdef English_dox
+	//! Destructor
+	#endif
+
+	#ifdef Turkish_dox
+	//! Destructor
+	#endif
+	~IMSerial();
+
+	#ifdef English_dox
 	//! Sets Baudrate
 	/**
 	 * \param baudrate i.e. B115200
