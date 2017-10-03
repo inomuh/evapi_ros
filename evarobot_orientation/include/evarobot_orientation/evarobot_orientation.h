@@ -18,36 +18,24 @@
 #include <ros/console.h>
 #include <ErrorCodes.h>
 
-#ifdef English_dox
-//! Driver path of um6 IMU
-#endif
+//#ifndef DEBUG
+//#define DEBUG
+//#endif
+
+//#ifndef TEST
+//#define TEST
+//#endif
+
 #define SERIAL_PATH "/dev/ttyAMA0"
-
-#ifdef English_dox
-//! Baudrate of um6
-#endif
 #define BAUDRATE B115200
-
-#ifdef English_dox
-//! Databits of um6 IMU
-#endif
 #define DATABITS CS8
 
-#ifdef English_dox
-//! Parity mode selection for message control. 0: No Parity, 1: ODD Parity, 2: Even Parity.
-#endif
+// 0: No Parity; 
+// 1: ODD Parity; 
+// 2: Even Parity
 #define PARITY 0 
-
-#ifdef English_dox
-//! Stop bits for message control
-#endif
 #define STOP_BITS 0
 
 using namespace std;
-
-#ifdef English_dox
-//! If an error occurs, shows its code number.
-#endif
-int i_error_code = 0;
 
 #endif

@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 2.8.3)
 project(evarobot_sonar)
 
 set(EVAPI_LIB_SDK_PATH "../sdk/")
-FILE(GLOB EVAPI_LIB_SDK_SRC "${EVAPI_LIB_SDK_PATH}/src/*.cpp")
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -31,7 +30,7 @@ include_directories(
 )
 
 
-add_executable(evarobot_sonar src/evarobot_sonar.cpp ${EVAPI_LIB_SDK_SRC})
+add_executable(evarobot_sonar src/evarobot_sonar.cpp)
 add_dependencies(evarobot_sonar evarobot_sonar_gencfg)
 target_link_libraries(evarobot_sonar
    ${catkin_LIBRARIES}

@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 2.8.3)
 project(evarobot_controller)
 
 set(EVAPI_LIB_SDK_PATH "../sdk/")
-FILE(GLOB EVAPI_LIB_SDK_SRC "${EVAPI_LIB_SDK_PATH}/src/*.cpp")
 
 find_package(catkin REQUIRED COMPONENTS
   nav_msgs
@@ -38,7 +37,7 @@ include_directories(
 
 
 
- add_executable(evarobot_controller src/evarobot_controller.cpp ${EVAPI_LIB_SDK_SRC})
+ add_executable(evarobot_controller src/evarobot_controller.cpp)
  add_dependencies(evarobot_controller im_msgs_generate_messages_cpp)
  add_dependencies(evarobot_controller evarobot_controller_gencfg)
  target_link_libraries(evarobot_controller

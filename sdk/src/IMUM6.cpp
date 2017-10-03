@@ -1,12 +1,16 @@
+/*
+ * IMIMU_UM6.cpp
+ *
+ *  Created on: Mar 24, 2015
+ *      Author: makcakoca
+ */
+
 #include "../include/IMUM6.h"
 
-/**
- * IMUM6 constructor with default parameters.
- * Initializes required variables.
- */
 IMUM6::IMUM6(IMSerial * p_imserial)
 {
 	this->p_imserial = p_imserial;
+	this->i_buffer_read_index = 0;
 
 	this->c_start_bits[0] = 's';
 	this->c_start_bits[1] = 'n';
@@ -20,9 +24,6 @@ IMUM6::IMUM6(IMSerial * p_imserial)
 	this->i_misc_config_register   = 0xF0000000;
 }
 
-/**
- * Parses data and writes it to T_c_stored_data
- */
 bool IMUM6::ParseData()
 {
 
@@ -35,9 +36,6 @@ bool IMUM6::ParseData()
 		throw i;
 	}
 
-	/**
-	 * Controls data is received or not
-	 */
 	if(!this->b_incomplete_packet)
 	{
 		try{
@@ -53,9 +51,6 @@ bool IMUM6::ParseData()
 		this->i_incomplete_no = 0;
 	}
 
-	/**
-	 * If data is received, parse it.
-	 */
 	if(this->b_incomplete_packet || b_received_data)
 	{
 		int i_m = 0;
@@ -68,46 +63,41 @@ bool IMUM6::ParseData()
 
 			if(this->i_incomplete_no == 1)
 			{
-				/**
-				 * Packet Type
-				 */
+				// Packet Type
+
 				this->um6_data.c_PT = (*it);
+
 				this->um6_data.packet_type.i_packet_has_data = (this->um6_data.c_PT >> 7) & 0x01;
 				this->um6_data.packet_type.i_packet_is_batch = (this->um6_data.c_PT >> 6) & 0x01;
 				this->um6_data.packet_type.i_batch_length = (this->um6_data.c_PT >> 2) & 0x0F;
 				this->um6_data.packet_type.i_command_failed = this->um6_data.c_PT & 0x01;
 
+
+
 				if(this->um6_data.packet_type.i_packet_has_data == 0x00)
 				{
-					/**
-					 * No Data
-					 */
+					// No Data
 					this->um6_data.packet_type.i_size_of_data = 0;
 				}
 				else if(this->um6_data.packet_type.i_packet_has_data == 0x01
 						&& this->um6_data.packet_type.i_packet_is_batch == 0x00)
 				{
-					/**
-					 * only 4 bytes data
-					 */
+					// only 4 bytes data
 					this->um6_data.packet_type.i_size_of_data = 4;
 
 				}
 				else if(this->um6_data.packet_type.i_packet_has_data == 0x01
 						&& this->um6_data.packet_type.i_packet_is_batch == 0x01)
 				{
-					/**
-					 * (4 * batch_length) bytes data
-					 */
+					// (4 * batch_length) bytes data
 					this->um6_data.packet_type.i_size_of_data = 4 * this->um6_data.packet_type.i_batch_length;
 
 				}
+
 			}
 			else if(this->i_incomplete_no == 2)
 			{
-				/**
-				 * Get address
-				 */
+				// Address
 				this->um6_data.c_adress = (*it);
 
 			}
@@ -115,50 +105,52 @@ bool IMUM6::ParseData()
 					&& this->i_incomplete_no <= 2 + this->um6_data.packet_type.i_size_of_data
 					&& this->um6_data.packet_type.i_packet_has_data != 0x00)
 			{
-				/**
-				 * Get data bytes
-				 */
+				// Data Bytes
 				this->um6_data.c_databytes[this->i_incomplete_no - 3] = (*it);
 
 			}
 			else if(this->i_incomplete_no == 3 + this->um6_data.packet_type.i_size_of_data)
 			{
-				/**
-				 * Get checksum 0
-				 */
+				// Checksum 0
 				this->um6_data.c_checksum[0] = *(it);
 			}
 			else if(this->i_incomplete_no == 4 + this->um6_data.packet_type.i_size_of_data)
 			{
-				/**
-				 * Get checksum 1
-				 */
+				// Checksum 1
 				this->um6_data.c_checksum[1] = *(it);
 				this->b_incomplete_packet = false;
+				//this->i_incomplete_no = 0;
 				break;
 			}
 			else
 			{
+				//this->b_incomplete_packet = false;
+				//this->i_incomplete_no = 0;
 				throw -38;
+				//break;
 			}
 		}
 
+
+		//printf("parse_dataCleaning: ");
+
 		for(int i = 0; i < i_m; i++)
 		{
+			//printf("%x_", this->T_c_stored_data.front());
 			this->T_c_stored_data.pop_front();
 		}
+		//printf("\n");
 	}
 
+//	printf("StatusNumber: %d\n", this->i_incomplete_no);
 	b_return = !this->b_incomplete_packet;
 
 	return b_return;
 }
 
-/**
- * Gets raw data.
- */
 bool IMUM6::GetRawData(IMUM6::UM6_DATA & data)
 {
+	
 	bool b_status = false;
 	
 	try{
@@ -175,49 +167,54 @@ bool IMUM6::GetRawData(IMUM6::UM6_DATA & data)
 	return b_status;
 }
 
-/**
- * Controls data is received or not.
- */
 bool IMUM6::isReceivedData(char * p_c_start_bits, int i_length)
 {
 	bool b_received_data = false;
 
-	try{
-		int i_k = 0;
+try{
+	int i_k = 0;
 
-		for(list<char>::iterator it = this->T_c_stored_data.begin(); it != this->T_c_stored_data.end(); it++)
+	for(list<char>::iterator it = this->T_c_stored_data.begin(); it != this->T_c_stored_data.end(); it++)
+	{
+		++i_k;
+		if((*it) == p_c_start_bits[this->i_start_bit_counter])
 		{
-			++i_k;
-			if((*it) == p_c_start_bits[this->i_start_bit_counter])
-			{
-				++this->i_start_bit_counter;
+			++this->i_start_bit_counter;
 
-				if(this->i_start_bit_counter == i_length)
-				{
-					b_received_data = true;
-					this->i_start_bit_counter = 0;
-					break;
-				}
-			}
-			else
+			if(this->i_start_bit_counter == i_length)
 			{
+				b_received_data = true;
 				this->i_start_bit_counter = 0;
+				break;
 			}
+
+		}
+		else
+		{
+			this->i_start_bit_counter = 0;
 		}
 
-		for(int i = 0; i < i_k; i++)
-		{
-			this->T_c_stored_data.pop_front();
-		}
-	}catch(...){
-		throw -119;
 	}
+
+//	if(b_received_data)
+//		printf("received_dataCleaning: %d  ", i_k);
+
+	for(int i = 0; i < i_k; i++)
+	{
+//		if(b_received_data)
+//			printf("%x_", this->T_c_stored_data.front());
+		this->T_c_stored_data.pop_front();
+
+	}
+
+//	if(b_received_data)
+//		printf("\n");
+}catch(...){
+	throw -119;
+}
 	return b_received_data;
 }
 
-/**
- * Stores data from serial port to T_c_stored_data.
- */
 void IMUM6::StoreData()
 {
 	if(this->p_imserial->isReadyRead())
@@ -232,12 +229,18 @@ void IMUM6::StoreData()
 
 		for(int i = 0; i < i_size; i++)
 		{
+			//printf("%x_", c_data[i]);
 			this->T_c_stored_data.push_back(c_data[i]);
+			//this->T_c_serial_log.push_back(c_data[i]);
 		}
+		//printf("\n");
+
 	}
+
+
 }
 
-/**
+/*
  * Checks if the checksums are correct.
  */
 bool IMUM6::CheckData()
@@ -247,27 +250,20 @@ bool IMUM6::CheckData()
 	int i_received_checksum = 0;
 	int i_computed_checksum = 0;
 
-	/**
-	 * Sum of start bits
-	 */
+
+	// Sum of start bits
 	for(uint i = 0; i < sizeof(this->c_start_bits); i++)
 	{
 		i_computed_checksum += this->c_start_bits[i];
 	}
 
-	/**
-	 * Add packet type byte
-	 */
+	// Add packet type byte
 	i_computed_checksum += this->um6_data.c_PT;
 
-	/**
-	 * Add address byte
-	 */
+	// Add address byte
 	i_computed_checksum += this->um6_data.c_adress;
 
-	/**
-	 * Add sum of data bytes
-	 */
+	// Add sum of data bytes
 	for(int i = 0; i < this->um6_data.packet_type.i_size_of_data; i++)
 	{
 		i_computed_checksum += this->um6_data.c_databytes[i];
@@ -290,12 +286,26 @@ bool IMUM6::CheckData()
 	return b_right_data;
 }
 
-/**
- * Used to set sensor serial port frequency.
+/*
+ * Prints
+ */
+/*void IMUM6::PrintLogData()
+{
+	printf("LOG DATA:\n");
+
+	for(list<char>::iterator it = this->T_c_serial_log.begin(); it != this->T_c_serial_log.end(); it++)
+	{
+		printf("%x_", (*it));
+	}
+}*/
+
+
+
+/*ParseData
  * When in broadcast mode, these bits specify how often a data
  * packets are automatically transmitted over the serial port. The actual
  * broadcast frequency is given by
- * freq = (280/255)*broadcast_rate + 20
+ * 		freq = (280/255)*broadcast_rate + 20
  */
 int IMUM6::SetFrequency(int i_frequency)
 {
@@ -943,9 +953,7 @@ int IMUM6::SetEKFMagnetometerUpdates(bool b_status)
 	return i_status_value;
 }
 
-/**
- * Sets values of register pins.
- */
+
 void IMUM6::SetRegisterPinValue(
 				int32_t & i_register,
 				int i_pin_no,
@@ -977,16 +985,19 @@ void IMUM6::SetRegisterPinValue(
 }
 
 /*
- * Sets register value.
- * Example: float var = 0.0f;
+ * Example:
+ * float var = 0.0f;
  * Notice the lowercase f to indicate the literal should be interpreted as a 32-bit floating point number.
  */
 int IMUM6::SetRegister32bitValue(int i_register, float f_data)
 {
 	int i_status_value = -1;
 	int i_computed_checksum = 0;
+
 	char c_data[11];
+
 	UNION32 union32;
+
 	union32.f = f_data;
 
 	c_data[0] = this->c_start_bits[0];
@@ -1000,9 +1011,8 @@ int IMUM6::SetRegister32bitValue(int i_register, float f_data)
 	c_data[7] = union32.c[1];
 	c_data[8] = union32.c[0];
 
-	/**
-	 * Sum of
-	 */
+
+	// Sum of
 	for(uint i = 0; i < sizeof(c_data)-2; i++)
 	{
 		i_computed_checksum += c_data[i];
@@ -1023,9 +1033,6 @@ int IMUM6::SetRegister32bitValue(int i_register, float f_data)
 	return i_status_value;
 }
 
-/**
- * Sets register value.
- */
 int IMUM6::SetRegister32bitValue(int i_register, int32_t i_data)
 {
 	int i_status_value = -1;
@@ -1048,9 +1055,7 @@ int IMUM6::SetRegister32bitValue(int i_register, int32_t i_data)
 	c_data[7] = union32.c[1];
 	c_data[8] = union32.c[0];
 
-	/**
-	 * Sum of
-	 */
+	// Sum of
 	for(uint i = 0; i < sizeof(c_data)-2; i++)
 	{
 		i_computed_checksum += c_data[i];
@@ -1072,18 +1077,13 @@ int IMUM6::SetRegister32bitValue(int i_register, int32_t i_data)
 
 }
 
-/**
- * Sets register value.
- */
 int IMUM6::SetRegister16bitValue(int i_register, int16_t * p_i_data)
 {
 	int i_status_value = -1;
 
 	UNION32 union32;
 
-	/**
-	 * Two's complement
-	 */
+	// Two's complement
 	union32.i = -(unsigned int)p_i_data[0];
 	union32.i |= (-(unsigned int)p_i_data[1]) << 16;
 
@@ -1096,18 +1096,14 @@ int IMUM6::SetRegister16bitValue(int i_register, int16_t * p_i_data)
 	return i_status_value;
 }
 
-/**
- * Sets register value.
- */
+
 int IMUM6::SetRegister16bitValue(int i_register, int16_t i_data)
 {
 	int i_status_value = -1;
 
 	UNION32 union32;
 
-	/**
-	 * Two's complement
-	 */
+	// Two's complement
 	union32.i = 0x0000;
 	union32.i |= (-(unsigned int)i_data) << 16;
 
@@ -1120,9 +1116,7 @@ int IMUM6::SetRegister16bitValue(int i_register, int16_t i_data)
 	return i_status_value;
 }
 
-/**
- * Gets received data to a vector.
- */
+
 int IMUM6::ProcessData(vector<int> & T_i_registers)
 {
 	int i_status_value = -1;
@@ -1185,17 +1179,11 @@ int IMUM6::ProcessData(vector<int> & T_i_registers)
 	return i_status_value;
 }
 
-/**
- * Returns data at specified register.
- */
 int32_t IMUM6::GetDataRegister(int i_register) const
 {
 	return this->i_data_registers[i_register - 85];
 }
 
-/**
- * Sets specified register.
- */
 int IMUM6::SetCommand(int i_register)
 {
 	int i_status_value = -1;
@@ -1209,9 +1197,8 @@ int IMUM6::SetCommand(int i_register)
 	c_data[3] = 0b00000000; //PT
 	c_data[4] = i_register;  // Address
 
-	/**
-	 * Sum of
-	 */
+
+	// Sum of
 	for(uint i = 0; i < sizeof(c_data)-2; i++)
 	{
 		i_computed_checksum += c_data[i];
@@ -1232,10 +1219,38 @@ int IMUM6::SetCommand(int i_register)
 	return i_status_value;
 }
 
-/**
- * Returns command is completed or not.
- */
+
+int IMUM6::CalculateChecksum()
+{
+	int i_status_value = -1;
+
+	return i_status_value;
+}
+
+
 bool IMUM6::isCommandCompleted() const
 {
 	return this->b_command_complete;
 }
+
+/*void IMUM6::CBReadData()
+{
+	char c_read_dummy[1];
+	this->p_imserial->ReadData(c_read_dummy, sizeof(c_read_dummy));
+	this->c_input_buffer[this->i_buffer_read_index] = c_read_dummy[0];
+
+	if(this->i_buffer_read_index + sizeof(c_read_dummy) > sizeof(this->c_input_buffer))
+	{
+		perror("IMIMU_UM6: Buffer is FULL");
+		exit(1);
+	}
+
+	this->i_buffer_read_index += sizeof(c_read_dummy);
+}
+
+void IMUM6::StaticCallback(void *p)
+{
+	((IMIMU_UM6 *)p)->CBReadData();
+}
+*/
+

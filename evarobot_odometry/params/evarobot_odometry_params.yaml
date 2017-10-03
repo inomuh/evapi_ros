@@ -5,6 +5,6 @@ frequency: 100
 minFreq: 80.0
 maxFreq: 120.0
 
-gearRatio: 51
+gearRatio: 90
 CPR: 44
 wheelDiameter: 0.1735 # evarobot50

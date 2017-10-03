@@ -4,6 +4,93 @@
  * If an error occurs publishes it.
  * If there are any collision, publishes a warning.
  */
+ class LinuxFile
+ {
+ private:
+    int m_Handle;
+ 
+ public:
+     LinuxFile(const char *pFile, int flags = O_RDWR)
+     {
+         m_Handle = open(pFile, flags);
+     }
+ 
+     ~LinuxFile()
+     {
+        if (m_Handle != -1)
+             close(m_Handle);
+     }
+ 
+     size_t Write(const void *pBuffer, size_t size)
+     {
+         return write(m_Handle, pBuffer, size);
+     }
+ 
+     size_t Read(void *pBuffer, size_t size)
+     {
+         return read(m_Handle, pBuffer, size);
+     }
+ 
+     size_t Write(const char *pText)
+     {
+         return Write(pText, strlen(pText));
+     }
+ 
+     size_t Write(int number)
+     {
+         char szNum[32];
+         snprintf(szNum, sizeof(szNum), "%d", number);
+         return Write(szNum);
+     }
+ };
+ 
+ class LinuxGPIOExporter
+ {
+ protected:
+    int m_Number;
+ 
+ public:
+     LinuxGPIOExporter(int number)
+         : m_Number(number)
+     {
+         LinuxFile("/sys/class/gpio/export", O_WRONLY).Write(number);
+     }
+ 
+     ~LinuxGPIOExporter()
+     {
+         LinuxFile("/sys/class/gpio/unexport", O_WRONLY).Write(m_Number);
+     }
+ };
+ 
+ class LinuxGPIO : public LinuxGPIOExporter
+ {
+ public:
+     LinuxGPIO(int number)
+         : LinuxGPIOExporter(number)
+     {
+     }
+ 
+    void SetValue(bool value)
+     {
+         char szFN[128];
+         snprintf(szFN, sizeof(szFN), "/sys/class/gpio/gpio%d/value", m_Number);
+         LinuxFile(szFN).Write(value ? "1" : "0");
+     }
+ 
+    void SetDirection(bool isOutput)
+     {
+        char szFN[128];
+         snprintf(szFN, sizeof(szFN), 
+            "/sys/class/gpio/gpio%d/direction", m_Number);
+         LinuxFile(szFN).Write(isOutput ? "out" : "in");
+     }
+     void GetValue(char pBuffer2[])
+     {
+         char szFN[128];
+         snprintf(szFN, sizeof(szFN), "/sys/class/gpio/gpio%d/value", m_Number);
+         LinuxFile(szFN).Read(pBuffer2,2);
+     }
+ };
 void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
 {
     stringstream ss;
@@ -11,14 +98,14 @@ void ProduceDiagnostics(diagnostic_updater::DiagnosticStatusWrapper &stat)
 
     ss << "Collision: ";
 
-    for(int i = 0; i < MAX_BUMPER; i++)
-    {
-        if(!b_collision[i])
+    
+    
+        if(!b_collision)
         {
-            ss << "Bumper[" << i << "] ";
+            ss << "Bumper[" << 0 << "] ";
             b_any_coll = true;
         }
-    }
+    
 
     if(i_error_code<0)
     {
@@ -50,26 +137,14 @@ void CallbackReconfigure(evarobot_bumper::ParamsConfig &config, uint32_t level)
  */
 int main(int argc, char **argv)
 {
+    LinuxGPIO gpio27(21);
+    gpio27.SetDirection(false);
+    bool on = true;
+    char pBuffer2[2];
 	/**
 	 * Semaphore variables.
 	 */
-    key_t key = 1005;
-    sem_t *mutex;
-    FILE * fd;
-
-    /**
-	 * create & initialize semaphore
-	 */
-    mutex = sem_open(SEM_NAME,O_CREAT,0644,1);
-    if(mutex == SEM_FAILED)
-    {
-        ROS_INFO(GetErrorDescription(-44).c_str());
-        i_error_code = -44;
-
-        sem_unlink(SEM_NAME);
-
-        return(-1);
-    }
+    
 
     /**
 	 * Frequency, minimum frequency and maximum frequency variables.
@@ -80,12 +155,12 @@ int main(int argc, char **argv)
     /**
      * i2c device path.
      */
-    string str_i2c_path;
+    
 
     /**
      * ROS message that holds bumper data.
      */
-    im_msgs::Bumper bumpers;
+    
 
     /**
 	 * Initializes ROS node with evarobot_bumper name.
@@ -100,7 +175,7 @@ int main(int argc, char **argv)
     /**
 	 * Gets parameters from configuration file.
 	 */
-    n.param<string>("evarobot_bumper/i2c_path", str_i2c_path, "/dev/i2c-1");
+    
     n.param("evarobot_bumper/alwaysOn", b_always_on, false);
     n.param("evarobot_bumper/minFreq", d_min_freq, 0.2);
     n.param("evarobot_bumper/maxFreq", d_max_freq, 10.0);
@@ -113,7 +188,7 @@ int main(int argc, char **argv)
     /**
 	 * Publisher topic is created with bumper topic name and im_msgs::Bumper message type.
 	 */
-    ros::Publisher pub_bumper = n.advertise<im_msgs::Bumper>("bumper", 10);
+    ros::Publisher pub_bumper = n.advertise<std_msgs::Bool>("bumper", 10);
 
     /**
      * Dynamic reconfigure is set to provide changing variables at runtime.
@@ -131,17 +206,7 @@ int main(int argc, char **argv)
     /**
      * Object is created from IMEIO class and bumper pins are set as input.
      */
-    IMEIO * eio;
-    try {
-        eio = new IMEIO(0b00100000, string("/dev/i2c-1"),  mutex);
-		eio->SetPinADirection(IMEIO::BUMPER0, IMEIO::INPUT);
-        eio->SetPinADirection(IMEIO::BUMPER1, IMEIO::INPUT);
-        eio->SetPinADirection(IMEIO::BUMPER2, IMEIO::INPUT);
-    }
-    catch(int i) {
-    	ROS_INFO(GetErrorDescription(i).c_str());
-        i_error_code = i;
-    }
+    
 
     /**
      * This vector stores bumper numbers.
@@ -175,28 +240,31 @@ int main(int argc, char **argv)
 
 			b_is_received_params = false;
 		}
-
+        std_msgs::Bool bumper_state;
+        
+        bool b_data;
         /**
          * Reads bumper state from eio pins.
          */
-        for(uint i = 0; i < T_i_bumper_no.size(); i++)
-        {
-            im_msgs::BumperState bumper_state;
+         gpio27.GetValue(pBuffer2);
+         
+         if(pBuffer2[0]=='1')
+         {  
+            b_data=true;
+         }
+         else
+         {
+            b_data=false;
+         }
+        
+            
+			
 
-            bool b_data;
-			try{
-					eio->GetPinAValue(T_i_bumper_no[i], b_data);
-			} catch(int e) {
-				ROS_INFO(GetErrorDescription(e).c_str());
-				i_error_code = e;
-			}
+            b_collision= b_data;
+            bumper_state.data = b_data;
+    
+        
 
-            b_collision[i] = b_data;
-            bumper_state.bumper_state = b_data;
-            bumpers.state.push_back(bumper_state);
-        }
-
-        bumpers.header.stamp = ros::Time::now();
 
         /**
 		 * If there are any subscriber or b_always_on is set as true, message is published.
@@ -204,14 +272,13 @@ int main(int argc, char **argv)
 		 */
         if(pub_bumper.getNumSubscribers() > 0 || b_always_on)
         {
-            pub_bumper.publish(bumpers);
+            pub_bumper.publish(bumper_state);
             pub_freq.tick();
         }
 
         /**
          * Clears data for future usages.
          */
-        bumpers.state.clear();
 
         /**
          * Loop is slept to hold frequency.

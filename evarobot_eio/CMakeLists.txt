@@ -43,3 +43,11 @@ add_dependencies(evarobot_rgb im_msgs_generate_messages_cpp)
    ${catkin_LIBRARIES}
    pthread
  )
+
+
+add_executable(evarobot_gripper src/evarobot_gripper.cpp ${EVAPI_LIB_SDK_SRC})
+add_dependencies(evarobot_gripper im_msgs_generate_messages_cpp)
+ target_link_libraries(evarobot_gripper 
+   ${catkin_LIBRARIES}
+   pthread
+ )

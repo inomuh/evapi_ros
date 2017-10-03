@@ -1,4 +1,4 @@
-#include "evarobot_infrared/evarobot_infrared.h"
+l#include "evarobot_infrared/evarobot_infrared.h"
 
 int i_error_code = 0;
 
@@ -53,7 +53,6 @@ bool IMInfrared::ReadRange()
 	
 	try{		
 		i_raw_data = this->adc->ReadMotorChannel(this->i_id);
-		ROS_INFO("raw_value=%d",i_raw_data);
 	}catch(int e){
 		ROS_INFO(GetErrorDescription(e).c_str());
         i_error_code = e;

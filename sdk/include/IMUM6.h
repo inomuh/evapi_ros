@@ -1,10 +1,21 @@
 #ifdef English_dox
 /**
- * \file   IMUM6.h
+ * \file   IMI2C.h
  * \author Mehmet Akcakoca (mehmet.akcakoca@inovasyonmuhendislik.com)
  * \date   Mar, 2015
- * \brief  Performs IMU operations like transformation, communication etc.
+ * \brief
  * \details
+ *
+ */
+#endif
+#ifdef Turkish_dox
+/**
+ * \file   IMI2C.h
+ * \author Mehmet Akcakoca (mehmet.akcakoca@inovasyonmuhendislik.com)
+ * \date   Mar, 2015
+ * \brief
+ * \details
+ *
  */
 #endif
 
@@ -17,16 +28,10 @@
 #include <list>
 #include <vector>
 
-#ifdef English_dox
-//! Performs IMU operations like transformation, communication etc.
-#endif
 class IMUM6
 {
 public:
 
-	#ifdef English_dox
-	//! Information about packet type.
-	#endif
 	struct PACKET_TYPE
 	{
 		int i_packet_has_data;
@@ -36,9 +41,6 @@ public:
 		int i_size_of_data;
 	};
 
-	#ifdef English_dox
-	//! Information about raw data.
-	#endif
 	struct UM6_DATA
 	{
 		PACKET_TYPE packet_type;
@@ -51,364 +53,605 @@ public:
 	#ifdef English_dox
 	//! Constructor
 	/**
-	 * \param *p_imserial pointer of IMSerial class.
+	 * \param
+	 * \param
+	 */
+	#endif
+
+	#ifdef Turkish_dox
+	//! Constructor
+	/**
+	 * \param
+	 * \param
 	 */
 	#endif
 	IMUM6(IMSerial * p_imserial);
 
 	#ifdef English_dox
-	//! Controls data is received or not.
+	//! Brief
 	/**
-	 * \param *p_c_start_bits Control start from this bit.
-	 * \param i_length Control from start to start+length
-	 * \return Data is received or not.
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	bool isReceivedData(char * p_c_start_bits, int i_length);
 
 	#ifdef English_dox
-	//! Returns command is completed or not.
+	//! Brief
 	/**
-	 * \return Command is completed or not.
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	bool isCommandCompleted() const;
 
 	#ifdef English_dox
-	//! Checks if the checksums are correct.
+	//! Brief
 	/**
-	 * \return checksums are correct or not.
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	bool CheckData();
 
 	#ifdef English_dox
-	//! Used to set sensor serial port baud rate.
+	//! Brief
 	/**
-	 * Used to set sensor serial port baud rate. The three configuration bits
-	 * set the desired baud rate as shown below:
-	 * 000 -> 9600 Baud
-	 * 001 -> 14400 Baud
-	 * 010 -> 19200 Baud
-	 * 011 -> 38400 Baud
-	 * 100 -> 57600 Baud
-	 * 101 -> 115200 Baud
-	 * 110 -> NA
-	 * 111 -> NA
-	 * Note that if the desired baud rate is changed, the new configuration
-	 * must be written to FLASH in order for the new baud rate to persist
-	 * when power is cycled. A write to FLASH must be triggered by
-	 * sending a WRITE_TO_FLASH command with the currently selected
-	 * baud rate. This ensures that the baud rate is never mistakenly
-	 * changed permanently.
-	 * \param l_baudrate Baudrate value
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
+	 */
+	#endif
+	void GetFWVersion();
+
+	// UM6_COMMUNICATION Register (0x00) Functions
+
+	#ifdef English_dox
+	//! Brief
+	/**
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetBaudRate(long l_baudrate);
 
 	#ifdef English_dox
-	//! Used to set sensor serial port frequency.
+	//! Brief
 	/**
-	 * When in broadcast mode, these bits specify how often a data
-	 * packets are automatically transmitted over the serial port. The actual
-	 * broadcast frequency is given by
-	 * freq = (280/255)*broadcast_rate + 20
-	 * \param i_frequency Frequency value
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetFrequency(int i_frequency);
 
 	#ifdef English_dox
-	//! Used to set the baud rate used by the connected GPS receiver (if used).
+	//! Brief
 	/**
-	 * Used to set the baud rate used by the connected GPS receiver (if
-	 * used). The three configuration bits set the desired baud rate as
-	 * shown below:
-	 * 000 -> 9600 Baud
-	 * 001 -> 14400 Baud
-	 * 010 -> 19200 Baud
-	 * 011 -> 38400 Baud
-	 * 100 -> 57600 Baud
-	 * 101 -> 115200 Baud
-	 * 110 -> NA
-	 * 111 -> NA
-	 * Note that if the desired baud rate is changed, the new configuration
-	 * must be written to FLASH in order for the new baud rate to persist
-	 * when power is cycled. A write to FLASH must be triggered by
-	 * sending a WRITE_TO_FLASH command with the currently selected
-	 * baud rate. This ensures that the baud rate is never mistakenly
-	 * changed permanently.
-	 * \param l_baudrate Baudrate value
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetGPSBaudrate(long l_baudrate);
 
 	#ifdef English_dox
-	//! Detailed satellite status information enabled. This is available in firmware revisions UM2B and later.
+	//! Brief
 	/**
-	 * \param b_status if b_status is true, then detailed satellite status information is enabled.
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetDetailedSatelliteStatusTrasmission(bool b_status);
 
 	#ifdef English_dox
-	//! Satellite summary transmission enabled. This is available in firmware revisions UM2B and later.
+	//! Brief
 	/**
-	 * \param b_status If b_status is true, then detailed satellite status information is enabled.
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetSatelliteSummaryTrasmission(bool b_status);
 
 	#ifdef English_dox
-	//! GPS course and velocity transmission enabled. This is available in firmware revisions UM2B and later.
+	//! Brief
 	/**
-	 * \param b_status If b_status is true, then detailed satellite status information is enabled.
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetGPSCourseVelocityTrasmission(bool b_status);
 
 	#ifdef English_dox
-	//! GPS relative position transmission enabled. This is available in firmware revisions UM2B and later.
+	//! Brief
 	/**
-	 * \param b_status If b_status is true, then detailed satellite status information is enabled.
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetGPSRelativePositionTrasmission(bool b_status);
 
 	#ifdef English_dox
-	//! GPS position transmission enabled. This is available in firmware revisions UM2B and later.
+	//! Brief
 	/**
-	 * \param b_status If b_status is true, then detailed satellite status information is enabled.
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetGPSPositionTransmission(bool b_status);
 
 	#ifdef English_dox
-	//! Temperature measurement transmission enabled. This is only available in firmware revision UM2A and later.
+	//! Brief
 	/**
-	 * \param b_status If b_status is true, then detailed satellite status information is enabled.
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetTemperatureMeasurementTransmission(bool b_status);
 
 	#ifdef English_dox
-	//! Covariance matrix transmission enabled.
+	//! Brief
 	/**
-	 * \param b_status If b_status is true, then detailed satellite status information is enabled
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetCovarianceMatrixTransmission(bool b_status);
 
 	#ifdef English_dox
-	//! Euler angle transmission enabled.
+	//! Brief
 	/**
-	 * \param b_status If b_status is true, then detailed satellite status information is enabled.
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetEulerAngleTransmission(bool b_status);
 
 	#ifdef English_dox
-	//! Quaternion transmission enabled (only outputs valid data if quaternion estimation is enabled in the MISC_CONFIG register)
+	//! Brief
 	/**
-	 * \param b_status If b_status is true, then detailed satellite status information is enabled.
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetQuaternionTransmission(bool b_status);
 
 	#ifdef English_dox
-	//! Processed magnetometer data transmission enabled.
+	//! Brief
 	/**
-	 * \param b_status If b_status is true, then detailed satellite status information is enabled.
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetProcessedMagnetometerTransmission(bool b_status);
 
 	#ifdef English_dox
-	//! Processed accelerometer data transmission enabled.
+	//! Brief
 	/**
-	 * \param b_status If b_status is true, then detailed satellite status information is enabled.
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetProcessedAccelerometerTransmission(bool b_status);
 
 	#ifdef English_dox
-	//! Processed gyro data transmission enabled.
+	//! Brief
 	/**
-	 * \param b_status If b_status is true, then detailed satellite status information is enabled.
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetProcessedGyroTransmission(bool b_status);
 
 	#ifdef English_dox
-	//! Raw magnetometer data transmission enabled.
+	//! Brief
 	/**
-	 * \param b_status If b_status is true, then detailed satellite status information is enabled.
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetRawMagnetometerTransmission(bool b_status);
 
 	#ifdef English_dox
-	//! Raw accelerometer data transmission enabled.
+	//! Brief
 	/**
-	 * \param b_status If b_status is true, then detailed satellite status information is enabled.
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetRawAccelerometerTransmission(bool b_status);
 
 	#ifdef English_dox
-	//! Raw gyro data transmission enabled.
+	//! Brief
 	/**
-	 * \param b_status If b_status is true, then detailed satellite status information is enabled.
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetRawGyroTransmission(bool b_status);
 
 	#ifdef English_dox
-	//! Sets broadcast mode or listen mode.
+	//! Brief
 	/**
-	 * \param b_mode true for broadcast mode, false for listen mode
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
 	 */
 	#endif
-	int SetMode(bool b_mode);
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
+	 */
+	#endif
+	int SetMode(bool b_mode); // broadcast mode: true, listen mode: false
 
 
 	// UM6_MISC_CONFIG Register (0x01) Functions
 
 	#ifdef English_dox
-	//! Specifies whether PPS timing is enabled. This will be implemented in future firmware revisions.
+	//! Brief
 	/**
-	 * \param b_status If b_status is true, then detailed satellite status information is enabled.
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetPPSTiming(bool b_status);
 
 	#ifdef English_dox
-	//! Specifies whether quaternion state estimation is enabled.
+	//! Brief
 	/**
-	 * \param b_status If b_status is true, then detailed satellite status information is enabled.
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetQuaterninonState(bool b_status);
 
 	#ifdef English_dox
-	//! Enables startup gyro calibration. If this bit is set, then gyros will be calibrated automatically on sensor startup.
+	//! Brief
 	/**
-	 * \param b_status If b_status is true, then detailed satellite status information is enabled.
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetGyroCalibration(bool b_status);
 
 	#ifdef English_dox
-	//! EKF accelerometer updates enabled (pitch and roll angle correction).
+	//! Brief
 	/**
-	 * \param b_status If b_status is true, then detailed satellite status information is enabled.
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetEKFAccelerometerUpdates(bool b_status);
 
 	#ifdef English_dox
-	//! EKF magnetometer updates enabled (yaw angle correction).
+	//! Brief
 	/**
-	 * \param b_status If b_status is true, then detailed satellite status information is enabled.
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetEKFMagnetometerUpdates(bool b_status);
 
 	#ifdef English_dox
-	//! Gets raw data.
+	//! Brief
 	/**
-	 * \param &data Data is loaded to this variable.
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	bool GetRawData(IMUM6::UM6_DATA & data);
 
+//	void PrintLogData();
+
 	#ifdef English_dox
-	//! Gets received data to a vector.
+	//! Brief
 	/**
-	 * \param &T_i_registers Data stored on this vector.
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int ProcessData(vector<int> & T_i_registers);
 
 	#ifdef English_dox
-	//! Returns data at specified register.
+	//! Brief
 	/**
-	 * \param i_register Register address
-	 * \return Data at specified register.
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int32_t GetDataRegister(int i_register) const;
 
 	#ifdef English_dox
-	//! Sets specified register.
+	//! Brief
 	/**
-	 * \param i_register Register address
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetCommand(int i_register);
 
-	#ifdef English_dox
-		//! Struct to define a register.
-	#endif
 	struct REGISTERS
 	{
-		#ifdef English_dox
-			//! Configuration registers in Polulu MinIMU9
-		#endif
 		enum CONFIGURATION_REGISTERS
 			{
 				UM6_COMMUNICATION, // 0x00
@@ -472,9 +715,6 @@ public:
 				UM6_GPS_HOME_ALTITUDE = 0x40, // 0x40
 			};
 
-		#ifdef English_dox
-			//! Data registers in Polulu MinIMU9
-		#endif
 		enum DATA_REGISTERS
 		{
 			UM6_STATUS = 0x55, // 0x55
@@ -527,9 +767,6 @@ public:
 			UM6_GPS_SAT_11_12 // 0x84
 		};
 
-		#ifdef English_dox
-			//! Command registers in Polulu MinIMU9
-		#endif
 		enum COMMAND_REGISTERS
 		{
 			UM6_GET_FW_VERSION = 0xAA,
@@ -548,38 +785,66 @@ public:
 
 	};
 
-	#ifdef English_dox
-		//! Union to store data
-	#endif
 	union UNION32
 	{
 		float f;
 		int32_t i;
 		unsigned char c[4];
+
 	};
 
 private:
 
 	#ifdef English_dox
-	//! Parses data and writes it to T_c_stored_data
+	//! Brief
 	/**
-	 * \return Packet is complete or not.
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	bool ParseData();
 
 	#ifdef English_dox
-	//! Stores data from serial port to T_c_stored_data
+	//! Brief
+	/**
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
+	 */
 	#endif
 	void StoreData();
 
 	#ifdef English_dox
-	//! Sets values of register pins.
+	//! Brief
 	/**
-	 * \param &i_register Register number
-	 * \param i_pin_no Pin number
-	 * \param i_count_of_pins Number of pins
-	 * \param c_value Value to store
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	void SetRegisterPinValue(
@@ -590,100 +855,112 @@ private:
 			);
 
 	#ifdef English_dox
-	//! Sets register value.
+	//! Brief
 	/**
-	 * \param i_register Register number
-	 * \param f_data Value to store
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetRegister32bitValue(int i_register, float f_data);
 
 	#ifdef English_dox
-	//! Sets register value.
+	//! Brief
 	/**
-	 * \param i_register Register number
-	 * \param i_data Value to store
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetRegister32bitValue(int i_register, int32_t i_data);
 
 	#ifdef English_dox
-	//! Sets register value.
+	//! Brief
 	/**
-	 * \param i_register Register number
-	 * \param i_data Value to store
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetRegister16bitValue(int i_register, int16_t i_data);
 
 	#ifdef English_dox
-	//! Sets register value.
+	//! Brief
 	/**
-	 * \param i_register Register number
-	 * \param *p_i_data Value to store
-	 * \retval <0 if there is an error
-	 * \retval >=0 if everthing is OK
+	 * Detailed
+	 * \param
+	 * \return
+	 */
+	#endif
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
 	 */
 	#endif
 	int SetRegister16bitValue(int i_register, int16_t * p_i_data);
 
 	#ifdef English_dox
-	//! Data registers. 0x55 - 0xA9
+	//! Brief
+	/**
+	 * Detailed
+	 * \param
+	 * \return
+	 */
 	#endif
-	int32_t i_data_registers[85];
-	#ifdef English_dox
-	//! Communication registers.
+	#ifdef Turkish_dox
+	//! Kısa bilgi
+	/**
+	 * Detaylı bilgi
+	 * \param i_channel_no
+	 * \return
+	 */
 	#endif
+	int CalculateChecksum();
+
+	int32_t i_data_registers[85]; // 0x55 - 0xA9
 	int32_t i_communication_register;
-	#ifdef English_dox
-	//! Misc config registers.
-	#endif
 	int32_t i_misc_config_register;
-	#ifdef English_dox
-	//! Stores input data.
-	#endif
 	char c_input_buffer[500];
-	#ifdef English_dox
-	//! Start bits consists of three characters.
-	#endif
 	char c_start_bits[3];
-	#ifdef English_dox
-	//! Holds command completed or not.
-	#endif
 	bool b_command_complete;
 
-	#ifdef English_dox
-	//! Stores data which comes from sensor.
-	#endif
+
 	list<char> T_c_stored_data;
-	#ifdef English_dox
-	//! Stores logs.
-	#endif
 	list<char> T_c_serial_log;
 
-	#ifdef English_dox
-	//! Holds packet completed or not.
-	#endif
 	bool b_incomplete_packet;
 
-	#ifdef English_dox
-	//! Holds number of uncompleted packets.
-	#endif
 	int i_incomplete_no;
-	#ifdef English_dox
-	//! Number of start bits.
-	#endif
 	int i_start_bit_counter;
+	int i_buffer_read_index;
 
-	#ifdef English_dox
-	//! Class IMSerial is used for communicating with serial port.
-	#endif
 	IMSerial * p_imserial;
 };
 

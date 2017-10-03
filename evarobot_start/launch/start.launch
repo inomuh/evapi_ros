@@ -2,17 +2,14 @@
 	<arg name="ns" default="/"/> 
 	<group ns="$(arg ns)">
 		<include file="$(find evarobot_eio)/launch/evarobot_rgb.launch" />
-		<include file="$(find evarobot_battery)/launch/evarobot_battery.launch" />
+		
 		<include file="$(find evarobot_odometry)/launch/evarobot_odometry.launch" />
 		<include file="$(find evarobot_controller)/launch/evarobot_controller.launch" />
 		<include file="$(find evarobot_driver)/launch/driver.launch" />
-		<include file="$(find evarobot_minimu9)/launch/evarobot_minimu9.launch" />
+		
 		<include file="$(find evarobot_bumper)/launch/evarobot_bumper.launch" />
 		<include file="$(find evarobot_infrared)/launch/evarobot_infrared.launch" />
 		<include file="$(find evarobot_sonar)/launch/evarobot_sonar.launch" />
-		<include file="$(find evarobot_android)/launch/evarobot_android.launch" />
+		
 	</group>
-  <!-- multimaster_fkie -->
-  <include file="$(find evarobot_start)/launch/master_discovery.launch" />
-  <include file="$(find evarobot_start)/launch/master_sync.launch" /> 
-</launch>
+ </launch>

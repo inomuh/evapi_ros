@@ -13,8 +13,7 @@
 
 #include "ros/ros.h"
 
-#include "im_msgs/Bumper.h"
-#include "im_msgs/BumperState.h"
+#include "std_msgs/Bool.h"
 
 #include <diagnostic_updater/diagnostic_updater.h>
 #include <diagnostic_updater/publisher.h>
@@ -29,11 +28,15 @@
 #include <evarobot_bumper/ParamsConfig.h>
 #include "IMEIO.h"
 #include "ErrorCodes.h"
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdio.h>
 
 #ifdef English_dox
 //! Maximum number of bumper sensors.
 #endif
-#define MAX_BUMPER 3
+#define MAX_BUMPER 1
 
 using namespace std;
 
@@ -60,6 +63,6 @@ bool b_is_received_params = false;
 #ifdef English_dox
 //! Values of bumper sensors.
 #endif
-bool b_collision[3] = {true, true, true};
+bool b_collision = true;
 
 #endif

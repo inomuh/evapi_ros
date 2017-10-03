@@ -7,4 +7,4 @@ maxRange: 5.0
 maxFreq: 10.0
 minFreq: 0.2
 element: 1
-sonarPins: [0, 1, 2, 3, 4, 5, 6]
+sonarPins: [0, 1]
